@@ -1,4 +1,4 @@
-[extension screenshot](./screenshot.png)
+![alt text](https://github.com/Moon-0xff/mpris-music-label/raw/main/screenshot.png "extension screenshot")
 
 # About
 This GNOME extension reads metadata information from an mpris compatible player and displays it on the top bar.
