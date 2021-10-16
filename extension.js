@@ -74,10 +74,8 @@ function buildLabel() {
 	let artist = getMetadataField(player,"xesam:artist");
 	let album = getMetadataField(player,"xesam:album");
 
-	if( (title || artist || album) == "")
-		return ""
-
-	let labelstring = (artist + " | " + album + " | " + title);
+	let labelstring = artist + album + title;
+	labelstring = labelstring.substring(0,labelstring.length-3);
 
 	return labelstring
 }
@@ -124,6 +122,10 @@ function getMetadataField(player,field){
 }
 
 function parseMetadataField(data) {
+
+	if (data.length == 0)
+		return ""
+
 	if (data.includes("xesam:") || data.includes("mpris:"))
 		return ""
 	
@@ -139,6 +141,8 @@ function parseMetadataField(data) {
 
 	if(data.match(/Remaster/i))
 		data = removeRemasterText(data);
+
+	data += " | ";
 
 	return data
 }

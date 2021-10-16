@@ -10,7 +10,7 @@ This was originally a fork of mheine's spotify-label. I've rewritten almost the 
 Warning: user options have not been implemented yet. If you want to change default values, you will have to edit the source code.
 
 ## To Do List
-- [ ] Fix broken/messy label when artist or album field is empty
+- [X] Fix broken/messy label when artist or album field is empty
 - [ ] Discard player source if there is no metadata to read (fixes a bug with Chromium)
 - [ ] Change player source either by clicking the label or by a dropdown menu
 - [ ] Implement user accessible settings
