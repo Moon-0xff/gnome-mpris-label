@@ -45,7 +45,7 @@ class MprisLabel {
 		this._indicator.add_child(this.buttonText);
 		Main.panel.addToStatusArea('Mpris Label',this._indicator,EXTENSION_INDEX,EXTENSION_PLACE);
 
-		this.player = null;
+		this.player = new Player("");
 		this._refresh();
 	}
 
@@ -60,17 +60,14 @@ class MprisLabel {
 		try{
 			let playerList = getPlayerList();
 
-			if (!playerList[0]){
+			if(!playerList[0]){
 				this.buttonText.set_text("");
 				return
 			}
-			
-			if(!this.player)
-				this.player = new Player(playerList[0])
 
 			if(!playerList.includes(this.player.address))
 				this.player.address = playerList[0];
-
+			
 			this.buttonText.set_text(this._buildLabel());
 		}
 		catch{
