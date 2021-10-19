@@ -12,6 +12,22 @@ const EXTENSION_INDEX = 2;
 const EXTENSION_PLACE = "left";
 const REFRESH_RATE = 300;
 
+const playerInterface = `
+<node>
+	<interface name="org.mpris.MediaPlayer2.Player">
+		<property name="Metadata" type="a{sv}" access="read"/>
+	</interface>
+</node>`
+
+const dBusInterface = `
+<node>
+	<interface name="org.freedesktop.DBus">
+		<method name="ListNames">
+			<arg direction="out" type="as"/>
+		</method>
+	</interface>
+</node>`
+
 class MprisLabel {
 	constructor(){
 		this._indicator = null;
@@ -29,6 +45,7 @@ class MprisLabel {
 		this._indicator.add_child(this.buttonText);
 		Main.panel.addToStatusArea('Mpris Label',this._indicator,EXTENSION_INDEX,EXTENSION_PLACE);
 
+		this.player = null;
 		this._refresh();
 	}
 
@@ -41,12 +58,35 @@ class MprisLabel {
 
 	_loadData() {
 		try{
-			let labelstring = buildLabel();
-			this.buttonText.set_text(labelstring);
+			let playerList = getPlayerList();
+
+			if (!playerList[0]){
+				this.buttonText.set_text("");
+				return
+			}
+			
+			if(!this.player)
+				this.player = new Player(playerList[0])
+
+			if(!playerList.includes(this.player.address))
+				this.player.address = playerList[0];
+
+			this.buttonText.set_text(this._buildLabel());
 		}
 		catch{
 			this.buttonText.set_text("");
 		}
+	}
+
+	_buildLabel(){
+		let title = this.player.getMetadata("xesam:title");
+		let album = this.player.getMetadata("xesam:album");
+		let artist = this.player.getMetadata("xesam:artist");
+	
+		let labelstring = artist + album + title;
+		labelstring = labelstring.substring(0,labelstring.length-3);
+	
+		return labelstring
 	}
 
 	_removeTimeout() {
@@ -59,6 +99,8 @@ class MprisLabel {
 	disable(){
 		this._indicator.destroy();
 		this._indicator = null;
+		this.player.destroy();
+		this.player = null
 		this._removeTimeout();
 	}
 }
@@ -67,29 +109,24 @@ function init(){
 	return new MprisLabel();
 }
 
-function buildLabel() {
-	let player = getPlayer();
+class Player {
+	constructor(dbusAddress){
+		this.wrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
+		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
+		this.address = dbusAddress;
+	}
+	getMetadata(field){
+		if(field == "xesam:artist")
+			return parseMetadataField(this.proxy.Metadata[field].get_strv()[0]);
 
-	let title = getMetadataField(player,"xesam:title");
-	let artist = getMetadataField(player,"xesam:artist");
-	let album = getMetadataField(player,"xesam:album");
-
-	let labelstring = artist + album + title;
-	labelstring = labelstring.substring(0,labelstring.length-3);
-
-	return labelstring
+		return parseMetadataField(this.proxy.Metadata[field].get_string()[0]);
+	}
+	changeAddress(busAddress){
+		this.address = busAddress;
+	}
 }
 
-function getPlayer () {
-	let dBusInterface = `
-	<node>
-		<interface name="org.freedesktop.DBus">
-			<method name="ListNames">
-				<arg direction="out" type="as"/>
-			</method>
-		</interface>
-	</node>
-	`
+function getPlayerList () {
 	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
 	let dBusList = dBusProxy.ListNamesSync()[0];
@@ -100,25 +137,7 @@ function getPlayer () {
 			playerList.push(element);
 		}
 	});
-	return playerList[0];
-}
-
-function getMetadataField(player,field){
-	let playerInterface = `
-	<node>
-		<interface name="org.mpris.MediaPlayer2.Player">
-			<property name="Metadata" type="a{sv}" access="read"/>
-		</interface>
-	</node>`
-
-	let playerProxyWrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
-	playerProxy = playerProxyWrapper(Gio.DBus.session, player, "/org/mpris/MediaPlayer2");
-
-	if (field == "xesam:artist"){
-		return parseMetadataField(playerProxy.Metadata[field].get_strv()[0])
-	}
-
-	return parseMetadataField(playerProxy.Metadata[field].get_string()[0])
+	return playerList;
 }
 
 function parseMetadataField(data) {
