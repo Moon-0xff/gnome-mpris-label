@@ -99,7 +99,6 @@ class MprisLabel {
 	disable(){
 		this._indicator.destroy();
 		this._indicator = null;
-		this.player.destroy();
 		this.player = null
 		this._removeTimeout();
 	}
