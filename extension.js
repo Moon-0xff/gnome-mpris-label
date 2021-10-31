@@ -1,6 +1,6 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
-const {Clutter,Gio,GLib,St} = imports.gi;
+const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const Lang = imports.lang;
 
@@ -28,13 +28,14 @@ const dBusInterface = `
 	</interface>
 </node>`
 
-class MprisLabel {
-	constructor(){
-		this._indicator = null;
+var MprisLabel = GObject.registerClass(
+	{ GTypeName: 'MprisLabel' },
+class MprisLabel extends PanelMenu.Button {
+	_init(){
+		super._init(0.0,'Mpris Label',false);
 	}
 
 	enable() {
-		this._indicator = new PanelMenu.Button(0.0,'Mpris Label',false);
 		this.buttonText = new St.Label({
 			text: "",
 			style: "padding-left: " + LEFT_PADDING + "px;"
@@ -42,8 +43,8 @@ class MprisLabel {
 			y_align: Clutter.ActorAlign.CENTER,
 			x_align: Clutter.ActorAlign.FILL
 		});
-		this._indicator.add_child(this.buttonText);
-		Main.panel.addToStatusArea('Mpris Label',this._indicator,EXTENSION_INDEX,EXTENSION_PLACE);
+		this.actor.add_child(this.buttonText);
+		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this.player = null;
 		this._refresh();
@@ -97,12 +98,12 @@ class MprisLabel {
 	}
 
 	disable(){
-		this._indicator.destroy();
-		this._indicator = null;
+		this.destroy();
 		this.player = null
 		this._removeTimeout();
 	}
 }
+);
 
 function init(){
 	return new MprisLabel();
