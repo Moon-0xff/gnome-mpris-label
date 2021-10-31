@@ -11,6 +11,7 @@ const MAX_STRING_LENGTH = 40;
 const EXTENSION_INDEX = 2;
 const EXTENSION_PLACE = "left";
 const REFRESH_RATE = 300;
+const BUTTON_PLACEHOLDER = "＿"; //Default: fullwidth low line(U+FF3F). It's possible to use an empty string too
 
 const playerInterface = `
 <node>
@@ -44,10 +45,24 @@ class MprisLabel extends PanelMenu.Button {
 			x_align: Clutter.ActorAlign.FILL
 		});
 		this.actor.add_child(this.buttonText);
+		this.actor.connect('button-press-event',this._cyclePlayers.bind(this));
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this.player = null;
 		this._refresh();
+	}
+
+	_cyclePlayers(){
+		this.playerList = getPlayerList();
+
+		if(this.playerList.length < 2)
+			return
+		
+		if(this.playerList.indexOf(this.player.address) == this.playerList.length - 1){
+			this.player.changeAddress(this.playerList[0]);
+			return
+		}
+		this.player.changeAddress(this.playerList[this.playerList.indexOf(this.player.address)+1]);
 	}
 
 	_refresh() {
@@ -59,22 +74,23 @@ class MprisLabel extends PanelMenu.Button {
 
 	_loadData() {
 		try{
-			let playerList = getPlayerList();
+			this.playerList = getPlayerList();
 
-			if (!playerList[0]){
+			if (!this.playerList[0]){
 				this.buttonText.set_text("");
 				return
 			}
 			
 			if(!this.player)
-				this.player = new Player(playerList[0])
+				this.player = new Player(this.playerList[0])
 
-			if(!playerList.includes(this.player.address))
-				this.player.address = playerList[0];
+			if(!this.playerList.includes(this.player.address))
+				this.player.changeAddress(this.playerList[0]);
 
 			this.buttonText.set_text(this._buildLabel());
 		}
-		catch{
+		catch(err){
+			log("Mpris Label: " + err);
 			this.buttonText.set_text("");
 		}
 	}
@@ -86,6 +102,9 @@ class MprisLabel extends PanelMenu.Button {
 	
 		let labelstring = artist + album + title;
 		labelstring = labelstring.substring(0,labelstring.length-3);
+
+		if( (this.playerList.length >= 1) && (labelstring.length == 0) )
+			labelstring = BUTTON_PLACEHOLDER;
 	
 		return labelstring
 	}
@@ -116,13 +135,20 @@ class Player {
 		this.address = dbusAddress;
 	}
 	getMetadata(field){
-		if(field == "xesam:artist")
-			return parseMetadataField(this.proxy.Metadata[field].get_strv()[0]);
-
-		return parseMetadataField(this.proxy.Metadata[field].get_string()[0]);
+		let metadataField = "";
+		try{
+			if(field == "xesam:artist")
+				metadataField = parseMetadataField(this.proxy.Metadata[field].get_strv()[0]);
+			else
+				metadataField = parseMetadataField(this.proxy.Metadata[field].get_string()[0]);
+		}
+		finally{
+			return metadataField
+		}
 	}
 	changeAddress(busAddress){
 		this.address = busAddress;
+		this.proxy = this.wrapper(Gio.DBus.session,busAddress, "/org/mpris/MediaPlayer2");
 	}
 }
 
