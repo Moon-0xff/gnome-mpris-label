@@ -111,7 +111,7 @@ class MprisLabel extends PanelMenu.Button {
 		let labelstring = artist + album + title;
 		labelstring = labelstring.substring(0,labelstring.length-3);
 
-		if( (this.playerList.length >= 1) && (labelstring.length == 0) )
+		if( (this.playerList.length > 1) && (labelstring.length == 0) )
 			labelstring = BUTTON_PLACEHOLDER;
 	
 		return labelstring
