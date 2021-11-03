@@ -29,14 +29,22 @@ const dBusInterface = `
 	</interface>
 </node>`
 
+let indicator = null;
+
+function enable(){
+	indicator = new MprisLabel();
+}
+
+function disable(){
+	indicator.disable();
+	indicator = null;
+}
+
 var MprisLabel = GObject.registerClass(
 	{ GTypeName: 'MprisLabel' },
 class MprisLabel extends PanelMenu.Button {
 	_init(){
 		super._init(0.0,'Mpris Label',false);
-	}
-
-	enable() {
 		this.buttonText = new St.Label({
 			text: "",
 			style: "padding-left: " + LEFT_PADDING + "px;"
@@ -117,16 +125,13 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	disable(){
-		this.destroy();
+		this.actor.remove_child(this.buttonText);
 		this.player = null
 		this._removeTimeout();
+		this.destroy();
 	}
 }
 );
-
-function init(){
-	return new MprisLabel();
-}
 
 class Player {
 	constructor(dbusAddress){
