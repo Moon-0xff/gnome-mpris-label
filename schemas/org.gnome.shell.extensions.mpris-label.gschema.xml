@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.example" path="/org/gnome/shell/extensions/mpris-label/">
+
+    <key name="left-padding" type="i">
+      <default>30</default>
+    </key>
+
+    <key name="right-padding" type="i">
+      <default>30</default>
+    </key>
+
+    <key name="max-string-length" type="i">
+      <default>40</default>
+    </key>
+
+    <key name="extension-index" type="i">
+      <default>2</default>
+    </key>
+
+    <key name="extension-place" type="s">
+      <default>"left"</default>
+    </key>
+
+    <key name="refresh-rate" type="i">
+      <default>300</default>
+    </key>
+
+    <key name="button-placeholder" type="s">
+      <default>"＿"</default>
+    </key>
+
+    <key name="remove-remaster-text" type="b">
+      <default>true</default>
+    </key>
+
+    <key name="divider-string" type="s">
+      <default>" | "</default>
+    </key>
+
+  </schema>
+</schemalist>
