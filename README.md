@@ -13,6 +13,7 @@ Warning: user options have not been implemented yet. If you want to change defau
 - [X] Fix broken/messy label when artist or album field is empty
 - [X] Change player source either by clicking the label or by a dropdown menu
 - [ ] Implement user accessible settings
+- [ ] Test GNOME 40/41 compatibility
 
 ## Contribution
 
