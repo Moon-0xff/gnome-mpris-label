@@ -43,12 +43,21 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(title, 0, 0, 1, 1);
 
-    let leftPaddingLabel = new Gtk.Label({
-        label: 'Left padding:',
-        halign: Gtk.Align.START,
-        visible: true
+    let labels = [
+        'Left padding:','Right padding:','Max string length (Each field):',
+        'Extension index:','Extension place:','Refresh rate (milliseconds):',
+        'Button place holder (can be left empty):','Remove remaster text:',
+        'Divider String (you can use spaces):'
+    ]
+
+    labels.forEach(labelText =>{
+        let thisLabel = new Gtk.Label({
+            label: labelText,
+            halign: Gtk.Align.START,
+            visible: true
+        });
+        prefsWidget.attach(thisLabel, 0, labels.indexOf(labelText)+1, 1, 1);
     });
-    prefsWidget.attach(leftPaddingLabel, 0, 1, 1, 1);
 
     let leftPaddingEntry = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
@@ -60,13 +69,6 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(leftPaddingEntry, 1, 1, 1, 1);
 
-    let rightPaddingLabel = new Gtk.Label({
-        label: 'Right padding:',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(rightPaddingLabel, 0, 2, 1, 1);
-
     let rightPaddingEntry = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
             lower: 0,
@@ -76,13 +78,6 @@ function buildPrefsWidget() {
         visible: true
     });
     prefsWidget.attach(rightPaddingEntry, 1, 2, 1, 1);
-
-    let maxStringLengthLabel = new Gtk.Label({
-        label: 'Max string length (Each field):',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(maxStringLengthLabel, 0, 3, 1, 1);
 
     let maxStringLengthEntry = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
@@ -94,13 +89,6 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(maxStringLengthEntry, 1, 3, 1, 1);
 
-    let extensionIndexLabel = new Gtk.Label({
-        label: 'Extension index:',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(extensionIndexLabel, 0, 4, 1, 1);
-
     let extensionIndexEntry = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
             lower: 0,
@@ -110,13 +98,6 @@ function buildPrefsWidget() {
         visible: true
     });
     prefsWidget.attach(extensionIndexEntry, 1, 4, 1, 1);
-
-    let extensionPlaceLabel = new Gtk.Label({
-        label: 'Extension place:',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(extensionPlaceLabel, 0, 5, 1, 1);
 
     let extensionPlaceComboBox = new Gtk.ComboBoxText({
         halign: Gtk.Align.END,
@@ -129,13 +110,6 @@ function buildPrefsWidget() {
     extensionPlaceComboBox.set_active(options.indexOf(settings.get_string('extension-place')));
     prefsWidget.attach(extensionPlaceComboBox, 1, 5, 1, 1);
 
-    let refreshRateLabel = new Gtk.Label({
-        label: 'Refresh rate (milliseconds):',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(refreshRateLabel, 0, 6, 1, 1);
-
     let refreshRateEntry = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
             lower: 30,
@@ -146,24 +120,10 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(refreshRateEntry, 1, 6, 1, 1);
 
-    let buttonPlaceHolderLabel = new Gtk.Label({
-        label: "Button place holder (can be left empty):",
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(buttonPlaceHolderLabel, 0, 7, 1, 1);
-
     let buttonPlaceHolderEntry = new Gtk.Entry({
         visible: true
     });
     prefsWidget.attach(buttonPlaceHolderEntry, 1, 7, 1, 1);
-
-    let removeRemasterTextLabel = new Gtk.Label({
-        label: 'Remove remaster text:',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(removeRemasterTextLabel, 0, 8, 1, 1);
 
     let removeRemasterTextSwitch = new Gtk.Switch({
     	valign: Gtk.Align.END,
@@ -171,13 +131,6 @@ function buildPrefsWidget() {
     	visible: true
     });
     prefsWidget.attach(removeRemasterTextSwitch, 1, 8, 1, 1);
-
-    let dividerStringLabel = new Gtk.Label({
-        label: 'Divider String (you can use spaces):',
-        halign: Gtk.Align.START,
-        visible: true
-    });
-    prefsWidget.attach(dividerStringLabel, 0, 9, 1, 1);
 
     let dividerStringEntry = new Gtk.Entry({
         visible: true
