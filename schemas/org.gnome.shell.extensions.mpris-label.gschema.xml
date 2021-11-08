@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <schema id="org.gnome.shell.extensions.example" path="/org/gnome/shell/extensions/mpris-label/">
+  <schema id="org.gnome.shell.extensions.mpris-label" path="/org/gnome/shell/extensions/mpris-label/">
 
     <key name="left-padding" type="i">
       <default>30</default>
