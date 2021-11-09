@@ -222,10 +222,14 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	//Shorten string if it's longer than 
+	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
 		data = data.substring(0, MAX_STRING_LENGTH);
-		data = data.substring(0, data.lastIndexOf(" ")) + "...";
+		let lastIndex = data.lastIndexOf(" ");
+		if(lastIndex == -1)
+			lastIndex = data.length;
+
+		data = data.substring(0, lastIndex) + "...";
 	}
 
 	if(data.match(/Remaster/i))
