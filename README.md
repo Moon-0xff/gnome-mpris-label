@@ -7,12 +7,10 @@ It works with Spotify, Vlc, Rhythmbox, Chromium based browsers and (probably) an
 
 This was originally a fork of mheine's spotify-label. I've rewritten almost the entire original code and reverted almost every commit. So i decided to start this repository from scratch.
 
-Warning: user options have not been implemented yet. If you want to change default values, you will have to edit the source code.
-
 ## To Do List
 - [X] Fix broken/messy label when artist or album field is empty
 - [X] Change player source either by clicking the label or by a dropdown menu
-- [ ] Implement user accessible settings
+- [X] Implement user accessible settings
 - [ ] Test GNOME 40/41 compatibility
 
 ## Contribution

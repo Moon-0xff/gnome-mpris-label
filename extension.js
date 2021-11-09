@@ -3,15 +3,11 @@ const PanelMenu = imports.ui.panelMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const Lang = imports.lang;
+const ExtensionUtils = imports.misc.extensionUtils;
 
-//"User-defined" constants
-const LEFT_PADDING = 30;
-const RIGHT_PADDING = 30;
-const MAX_STRING_LENGTH = 40;
-const EXTENSION_INDEX = 2;
-const EXTENSION_PLACE = "left";
-const REFRESH_RATE = 300;
-const BUTTON_PLACEHOLDER = "＿"; //Default: fullwidth low line(U+FF3F). It's possible to use an empty string too
+let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
+	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
+	REMOVE_REMASTER_TEXT,DIVIDER_STRING;
 
 const playerInterface = `
 <node>
@@ -45,6 +41,13 @@ var MprisLabel = GObject.registerClass(
 class MprisLabel extends PanelMenu.Button {
 	_init(){
 		super._init(0.0,'Mpris Label',false);
+
+		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		LEFT_PADDING = this.settings.get_int('left-padding');
+		RIGHT_PADDING = this.settings.get_int('right-padding');
+		EXTENSION_INDEX = this.settings.get_int('extension-index');
+		EXTENSION_PLACE = this.settings.get_string('extension-place');
+
 		this.buttonText = new St.Label({
 			text: "",
 			style: "padding-left: " + LEFT_PADDING + "px;"
@@ -54,6 +57,12 @@ class MprisLabel extends PanelMenu.Button {
 		});
 		this.actor.add_child(this.buttonText);
 		this.actor.connect('button-press-event',this._cyclePlayers.bind(this));
+
+		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
+		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
+		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
+		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
+
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this.player = null;
@@ -73,7 +82,37 @@ class MprisLabel extends PanelMenu.Button {
 		this.player.changeAddress(this.playerList[this.playerList.indexOf(this.player.address)+1]);
 	}
 
+	_onPaddingChanged(){
+		LEFT_PADDING = this.settings.get_int('left-padding');
+		RIGHT_PADDING = this.settings.get_int('right-padding');
+		this.buttonText.set_style("padding-left: " + LEFT_PADDING + "px;"
+		+ "padding-right: " + RIGHT_PADDING + "px; ");
+	}
+
+	_updateTrayPosition(){
+		EXTENSION_PLACE = this.settings.get_string('extension-place');
+		EXTENSION_INDEX = this.settings.get_int('extension-index');
+
+		this.container.get_parent().remove_actor(this.container);
+
+		if(EXTENSION_PLACE == "left"){
+			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
+		}
+		else if(EXTENSION_PLACE == "center"){
+			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
+		}
+		else if(EXTENSION_PLACE == "right"){
+			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
+		}
+	}
+
 	_refresh() {
+		MAX_STRING_LENGTH = this.settings.get_int('max-string-length');
+		REFRESH_RATE = this.settings.get_int('refresh-rate');
+		BUTTON_PLACEHOLDER = this.settings.get_string('button-placeholder');
+		REMOVE_REMASTER_TEXT = this.settings.get_boolean('remove-remaster-text');
+		DIVIDER_STRING = this.settings.get_string('divider-string');
+
 		this._loadData();
 		this._removeTimeout();
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
@@ -109,7 +148,7 @@ class MprisLabel extends PanelMenu.Button {
 		let artist = this.player.getMetadata("xesam:artist");
 	
 		let labelstring = artist + album + title;
-		labelstring = labelstring.substring(0,labelstring.length-3);
+		labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
 
 		if( (this.playerList.length > 1) && (labelstring.length == 0) )
 			labelstring = BUTTON_PLACEHOLDER;
@@ -192,12 +231,15 @@ function parseMetadataField(data) {
 	if(data.match(/Remaster/i))
 		data = removeRemasterText(data);
 
-	data += " | ";
+	data += DIVIDER_STRING;
 
 	return data
 }
 
 function removeRemasterText(datastring) {
+	if(!REMOVE_REMASTER_TEXT)
+		return datastring
+
 	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
 
 	if (!matchedSubString)
