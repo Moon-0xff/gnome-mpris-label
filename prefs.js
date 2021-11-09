@@ -108,6 +108,12 @@ function buildPrefsWidget() {
         extensionPlaceComboBox.append(element,element);
     });
     extensionPlaceComboBox.set_active(options.indexOf(settings.get_string('extension-place')));
+    extensionPlaceComboBox.connect('changed',extPlaceSetString.bind(this));
+
+    function extPlaceSetString(){
+        settings.set_string('extension-place',extensionPlaceComboBox.get_active_text());
+    }
+
     prefsWidget.attach(extensionPlaceComboBox, 1, 5, 1, 1);
 
     let refreshRateEntry = new Gtk.SpinButton({
@@ -137,11 +143,30 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(dividerStringEntry, 1, 9, 1, 1);
 
+    let resetButton = new Gtk.Button({
+        label: 'Reset settings',
+        visible: true
+    });
+
+    resetButton.connect('clicked',() => {
+        settings.reset('left-padding');
+        settings.reset('right-padding');
+        settings.reset('max-string-length');
+        settings.reset('extension-index');
+        settings.reset('extension-place');
+        settings.reset('refresh-rate');
+        settings.reset('button-placeholder');
+        settings.reset('remove-remaster-text');
+        settings.reset('divider-string');
+    });
+
+    prefsWidget.attach(resetButton, 0, 10, 1, 1);
+
     settings.bind('left-padding',leftPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('right-padding',rightPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('max-string-length',maxStringLengthEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('extension-index',extensionIndexEntry,'value',Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('extension-place',extensionPlaceComboBox,'active',Gio.SettingsBindFlags.DEFAULT);
+    //extensionPlaceComboBox.connect('changed',extPlaceSetString.bind(this));
     settings.bind('refresh-rate',refreshRateEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('button-placeholder',buttonPlaceHolderEntry,'text',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-remaster-text',removeRemasterTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
