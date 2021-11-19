@@ -38,5 +38,17 @@
       <default>" | "</default>
     </key>
 
+    <key name="first-field" type="s">
+      <default>"xesam:artist"</default>
+    </key>
+
+    <key name="second-field" type="s">
+      <default>"xesam:album"</default>
+    </key>
+
+    <key name="last-field" type="s">
+      <default>"xesam:title"</default>
+    </key>
+
   </schema>
 </schemalist>
