@@ -12,7 +12,7 @@ This was originally a fork of mheine's spotify-label. I've rewritten almost the 
 - [X] Change player source either by clicking the label or by a dropdown menu
 - [X] Implement user accessible settings
 - [ ] Test GNOME 40/41 compatibility
-- [ ] Add option: Choose visible metadata fields and order
+- [X] Add option: Choose visible metadata fields and order
 
 ## Contribution
 

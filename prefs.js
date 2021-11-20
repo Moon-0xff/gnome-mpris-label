@@ -143,6 +143,11 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(dividerStringEntry, 1, 9, 1, 1);
 
+    let visibleFieldsBox = new Gtk.Box({
+        spacing: 12,
+        visible: true
+    });
+
     let fieldOptions = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
 
     let firstFieldComboBox = new Gtk.ComboBoxText({
@@ -156,7 +161,7 @@ function buildPrefsWidget() {
 
     firstFieldComboBox.set_active_id(settings.get_string('first-field'));
     firstFieldComboBox.connect('changed',comboBoxSetString.bind(this,'first-field',firstFieldComboBox));
-    prefsWidget.attach(firstFieldComboBox, 1, 10, 1, 1);
+    visibleFieldsBox.pack_start(firstFieldComboBox,true,true,0);
 
     fieldOptions["none"] = "";
 
@@ -171,7 +176,7 @@ function buildPrefsWidget() {
 
     secondFieldComboBox.set_active_id(settings.get_string('second-field'));
     secondFieldComboBox.connect('changed',comboBoxSetString.bind(this,'second-field',secondFieldComboBox));
-    prefsWidget.attach(secondFieldComboBox, 2, 10, 1, 1);
+    visibleFieldsBox.pack_start(secondFieldComboBox,true,true,0);
 
 
     let lastFieldComboBox = new Gtk.ComboBoxText({
@@ -185,7 +190,9 @@ function buildPrefsWidget() {
 
     lastFieldComboBox.set_active_id(settings.get_string('last-field'));
     lastFieldComboBox.connect('changed',comboBoxSetString.bind(this,'last-field',lastFieldComboBox));
-    prefsWidget.attach(lastFieldComboBox, 3, 10, 1, 1);
+    visibleFieldsBox.pack_start(lastFieldComboBox,true,true,0);
+
+    prefsWidget.attach(visibleFieldsBox, 1, 10, 1, 1);
 
     let resetButton = new Gtk.Button({
         label: 'Reset settings',
