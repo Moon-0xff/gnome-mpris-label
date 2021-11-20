@@ -47,7 +47,7 @@ function buildPrefsWidget() {
         'Left padding:','Right padding:','Max string length (Each field):',
         'Extension index:','Extension place:','Refresh rate (milliseconds):',
         'Button place holder (can be left empty):','Remove remaster text:',
-        'Divider String (you can use spaces):'
+        'Divider String (you can use spaces):','Visible fields and order:'
     ]
 
     labels.forEach(labelText =>{
@@ -108,10 +108,10 @@ function buildPrefsWidget() {
         extensionPlaceComboBox.append(element,element);
     });
     extensionPlaceComboBox.set_active(options.indexOf(settings.get_string('extension-place')));
-    extensionPlaceComboBox.connect('changed',extPlaceSetString.bind(this));
+    extensionPlaceComboBox.connect('changed',comboBoxSetString.bind(this,'extension-place',extensionPlaceComboBox));
 
-    function extPlaceSetString(){
-        settings.set_string('extension-place',extensionPlaceComboBox.get_active_text());
+    function comboBoxSetString(settingKey,thisComboBox){ //this function is reused later
+        settings.set_string(settingKey,thisComboBox.get_active_id());
     }
 
     prefsWidget.attach(extensionPlaceComboBox, 1, 5, 1, 1);
@@ -143,6 +143,50 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(dividerStringEntry, 1, 9, 1, 1);
 
+    let fieldOptions = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
+
+    let firstFieldComboBox = new Gtk.ComboBoxText({
+        halign: Gtk.Align.END,
+        visible: true,
+    });
+
+    for(let option in fieldOptions){
+        firstFieldComboBox.append(fieldOptions[option],option);
+    }
+
+    firstFieldComboBox.set_active_id(settings.get_string('first-field'));
+    firstFieldComboBox.connect('changed',comboBoxSetString.bind(this,'first-field',firstFieldComboBox));
+    prefsWidget.attach(firstFieldComboBox, 1, 10, 1, 1);
+
+    fieldOptions["none"] = "";
+
+    let secondFieldComboBox = new Gtk.ComboBoxText({
+        halign: Gtk.Align.END,
+        visible: true,
+    });
+
+    for(let option in fieldOptions){
+        secondFieldComboBox.append(fieldOptions[option],option);
+    }
+
+    secondFieldComboBox.set_active_id(settings.get_string('second-field'));
+    secondFieldComboBox.connect('changed',comboBoxSetString.bind(this,'second-field',secondFieldComboBox));
+    prefsWidget.attach(secondFieldComboBox, 2, 10, 1, 1);
+
+
+    let lastFieldComboBox = new Gtk.ComboBoxText({
+        halign: Gtk.Align.END,
+        visible: true,
+    });
+
+    for(let option in fieldOptions){
+        lastFieldComboBox.append(fieldOptions[option],option);
+    }
+
+    lastFieldComboBox.set_active_id(settings.get_string('last-field'));
+    lastFieldComboBox.connect('changed',comboBoxSetString.bind(this,'last-field',lastFieldComboBox));
+    prefsWidget.attach(lastFieldComboBox, 3, 10, 1, 1);
+
     let resetButton = new Gtk.Button({
         label: 'Reset settings',
         visible: true
@@ -158,15 +202,17 @@ function buildPrefsWidget() {
         settings.reset('button-placeholder');
         settings.reset('remove-remaster-text');
         settings.reset('divider-string');
+        settings.reset('first-field');
+        settings.reset('second-field');
+        settings.reset('last-field');
     });
 
-    prefsWidget.attach(resetButton, 0, 10, 1, 1);
+    prefsWidget.attach(resetButton, 0, 11, 1, 1);
 
     settings.bind('left-padding',leftPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('right-padding',rightPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('max-string-length',maxStringLengthEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('extension-index',extensionIndexEntry,'value',Gio.SettingsBindFlags.DEFAULT);
-    //extensionPlaceComboBox.connect('changed',extPlaceSetString.bind(this));
     settings.bind('refresh-rate',refreshRateEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('button-placeholder',buttonPlaceHolderEntry,'text',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-remaster-text',removeRemasterTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);

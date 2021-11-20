@@ -7,7 +7,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
-	REMOVE_REMASTER_TEXT,DIVIDER_STRING;
+	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
+	LAST_FIELD;
 
 const playerInterface = `
 <node>
@@ -112,6 +113,9 @@ class MprisLabel extends PanelMenu.Button {
 		BUTTON_PLACEHOLDER = this.settings.get_string('button-placeholder');
 		REMOVE_REMASTER_TEXT = this.settings.get_boolean('remove-remaster-text');
 		DIVIDER_STRING = this.settings.get_string('divider-string');
+		FIRST_FIELD = this.settings.get_string('first-field');
+		SECOND_FIELD = this.settings.get_string('second-field');
+		LAST_FIELD = this.settings.get_string('last-field');
 
 		this._loadData();
 		this._removeTimeout();
@@ -143,11 +147,11 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildLabel(){
-		let title = this.player.getMetadata("xesam:title");
-		let album = this.player.getMetadata("xesam:album");
-		let artist = this.player.getMetadata("xesam:artist");
-	
-		let labelstring = artist + album + title;
+		let labelstring = 
+			this.player.getMetadata(FIRST_FIELD)+
+			this.player.getMetadata(SECOND_FIELD)+
+			this.player.getMetadata(LAST_FIELD);
+
 		labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
 
 		if( (this.playerList.length > 1) && (labelstring.length == 0) )
@@ -180,6 +184,10 @@ class Player {
 	}
 	getMetadata(field){
 		let metadataField = "";
+
+		if(field == "")
+			return metadataField
+
 		try{
 			if(field == "xesam:artist")
 				metadataField = parseMetadataField(this.proxy.Metadata[field].get_strv()[0]);
