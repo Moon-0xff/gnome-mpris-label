@@ -1,8 +1,8 @@
 {
     "uuid": "mprisLabel@moon-0xff.github.com",
-    "name": "Mpris Music Label",
+    "name": "Mpris Label",
     "description": "Displays a label in the top bar with metadata from an mpris compatible source",
     "version": 1,
-    "shell-version": [ "3.38", "40" ],
-    "url": "https://github.com/Moon-0xff/mpris-music-label"
+    "shell-version": [ "3.38", "40", "41" ],
+    "url": "https://github.com/Moon-0xff/gnome-mpris-label"
 }

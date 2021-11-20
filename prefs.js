@@ -44,7 +44,7 @@ function buildPrefsWidget() {
     prefsWidget.attach(title, 0, 0, 1, 1);
 
     let labels = [
-        'Left padding:','Right padding:','Max string length (Each field):',
+        'Left padding:','Right padding:','Max string length (each field):',
         'Extension index:','Extension place:','Refresh rate (milliseconds):',
         'Button place holder (can be left empty):','Remove remaster text:',
         'Divider String (you can use spaces):','Visible fields and order:'
