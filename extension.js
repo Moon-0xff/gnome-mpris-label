@@ -230,6 +230,9 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
+	if(data.match(/Remaster/i))
+		data = removeRemasterText(data);
+
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
 		data = data.substring(0, MAX_STRING_LENGTH);
@@ -239,9 +242,6 @@ function parseMetadataField(data) {
 
 		data = data.substring(0, lastIndex) + "...";
 	}
-
-	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
 
 	data += DIVIDER_STRING;
 
