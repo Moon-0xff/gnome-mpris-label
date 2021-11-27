@@ -11,8 +11,9 @@ This was originally a fork of mheine's spotify-label. I've rewritten almost the 
 - [X] Fix broken/messy label when artist or album field is empty
 - [X] Change player source either by clicking the label or by a dropdown menu
 - [X] Implement user accessible settings
-- [ ] Test GNOME 40/41 compatibility
+- [X] Test GNOME 40/41 compatibility
 - [X] Add option: Choose visible metadata fields and order
+- [ ] Submit extension to `extensions.gnome.org`
 
 ## Contribution
 
