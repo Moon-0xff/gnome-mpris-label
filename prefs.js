@@ -161,7 +161,6 @@ function buildPrefsWidget() {
 
     firstFieldComboBox.set_active_id(settings.get_string('first-field'));
     firstFieldComboBox.connect('changed',comboBoxSetString.bind(this,'first-field',firstFieldComboBox));
-    visibleFieldsBox.pack_start(firstFieldComboBox,true,true,0);
 
     fieldOptions["none"] = "";
 
@@ -176,8 +175,6 @@ function buildPrefsWidget() {
 
     secondFieldComboBox.set_active_id(settings.get_string('second-field'));
     secondFieldComboBox.connect('changed',comboBoxSetString.bind(this,'second-field',secondFieldComboBox));
-    visibleFieldsBox.pack_start(secondFieldComboBox,true,true,0);
-
 
     let lastFieldComboBox = new Gtk.ComboBoxText({
         halign: Gtk.Align.END,
@@ -190,7 +187,17 @@ function buildPrefsWidget() {
 
     lastFieldComboBox.set_active_id(settings.get_string('last-field'));
     lastFieldComboBox.connect('changed',comboBoxSetString.bind(this,'last-field',lastFieldComboBox));
-    visibleFieldsBox.pack_start(lastFieldComboBox,true,true,0);
+
+    if(shellVersion < 40){
+        visibleFieldsBox.pack_start(firstFieldComboBox,true,true,0);
+        visibleFieldsBox.pack_start(secondFieldComboBox,true,true,0);
+        visibleFieldsBox.pack_start(lastFieldComboBox,true,true,0);
+    }
+    else{
+        visibleFieldsBox.append(firstFieldComboBox,true,true,0);
+        visibleFieldsBox.append(secondFieldComboBox,true,true,0);
+        visibleFieldsBox.append(lastFieldComboBox,true,true,0);
+    }
 
     prefsWidget.attach(visibleFieldsBox, 1, 10, 1, 1);
 
