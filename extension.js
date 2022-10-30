@@ -198,8 +198,10 @@ class Player {
 	}
 	getMetadata(field){
 		let metadataField = "";
+		
 		if(field == "")
 			return metadataField
+		
 		try{
 			if(field == "xesam:artist")
 				metadataField = parseMetadataField(this.proxy.Metadata[field].get_strv()[0]);
