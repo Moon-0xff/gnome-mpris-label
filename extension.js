@@ -200,7 +200,6 @@ class Player {
 		let metadataField = "";
 		if(field == "")
 			return metadataField
-
 		try{
 			if(field == "xesam:artist")
 				metadataField = parseMetadataField(this.proxy.Metadata[field].get_strv()[0]);
@@ -249,7 +248,6 @@ function getPlayerList () {
 }
 
 function parseMetadataField(data) {
-//log('hello2');
 	if (data.length == 0)
 		return ""
 
