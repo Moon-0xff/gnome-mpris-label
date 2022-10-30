@@ -8,12 +8,19 @@ const ExtensionUtils = imports.misc.extensionUtils;
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
 	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
-	LAST_FIELD;
+	LAST_FIELD,REMOVE_TEXT_PAUSED;
 
 const playerInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
 		<property name="Metadata" type="a{sv}" access="read"/>
+	</interface>
+</node>`
+
+const statusInterface = `
+<node>
+	<interface name="org.mpris.MediaPlayer2.Player">
+		<property name="PlaybackStatus" type="s" access="read"/>
 	</interface>
 </node>`
 
@@ -116,6 +123,7 @@ class MprisLabel extends PanelMenu.Button {
 		FIRST_FIELD = this.settings.get_string('first-field');
 		SECOND_FIELD = this.settings.get_string('second-field');
 		LAST_FIELD = this.settings.get_string('last-field');
+		REMOVE_TEXT_PAUSED = this.settings.get_boolean('remove-text-paused');
 
 		this._loadData();
 		this._removeTimeout();
@@ -138,7 +146,13 @@ class MprisLabel extends PanelMenu.Button {
 			if(!this.playerList.includes(this.player.address))
 				this.player.changeAddress(this.playerList[0]);
 
-			this.buttonText.set_text(this._buildLabel());
+            this.status= new Status(this.playerList[0]);
+
+            if( (this.status.getStatus() == "Paused") && (REMOVE_TEXT_PAUSED) )
+                this.buttonText.set_text("");
+            else
+                this.buttonText.set_text(this._buildLabel());
+			
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -184,7 +198,6 @@ class Player {
 	}
 	getMetadata(field){
 		let metadataField = "";
-
 		if(field == "")
 			return metadataField
 
@@ -197,6 +210,23 @@ class Player {
 		finally{
 			return metadataField
 		}
+	}
+	changeAddress(busAddress){
+		this.address = busAddress;
+		this.proxy = this.wrapper(Gio.DBus.session,busAddress, "/org/mpris/MediaPlayer2");
+	}
+}
+
+class Status {
+	constructor(dbusAddress){
+		this.wrapper = Gio.DBusProxy.makeProxyWrapper(statusInterface);
+		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
+		this.address = dbusAddress;
+	}
+	getStatus(){
+		let playerStatus = "";
+		playerStatus = this.proxy.PlaybackStatus;
+		return playerStatus
 	}
 	changeAddress(busAddress){
 		this.address = busAddress;
@@ -219,7 +249,7 @@ function getPlayerList () {
 }
 
 function parseMetadataField(data) {
-
+//log('hello2');
 	if (data.length == 0)
 		return ""
 
@@ -251,7 +281,10 @@ function parseMetadataField(data) {
 function removeRemasterText(datastring) {
 	if(!REMOVE_REMASTER_TEXT)
 		return datastring
-
+		
+	if(!REMOVE_TEXT_PAUSED)
+		return datastring
+		
 	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
 
 	if (!matchedSubString)
