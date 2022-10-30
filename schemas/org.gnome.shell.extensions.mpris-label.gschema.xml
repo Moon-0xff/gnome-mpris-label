@@ -50,5 +50,9 @@
       <default>"xesam:title"</default>
     </key>
 
+    <key name="remove-text-paused" type="b">
+      <default>true</default>
+    </key>
+    
   </schema>
 </schemalist>
