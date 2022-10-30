@@ -47,7 +47,8 @@ function buildPrefsWidget() {
         'Left padding:','Right padding:','Max string length (each field):',
         'Extension index:','Extension place:','Refresh rate (milliseconds):',
         'Button place holder (can be left empty):','Remove remaster text:',
-        'Divider String (you can use spaces):','Visible fields and order:'
+        'Divider String (you can use spaces):','Visible fields and order:',
+        'Remove text when paused:'
     ]
 
     labels.forEach(labelText =>{
@@ -200,6 +201,13 @@ function buildPrefsWidget() {
     }
 
     prefsWidget.attach(visibleFieldsBox, 1, 10, 1, 1);
+    
+    let removePausedTextSwitch = new Gtk.Switch({
+    	valign: Gtk.Align.END,
+    	halign: Gtk.Align.END,
+    	visible: true
+    });
+    prefsWidget.attach(removePausedTextSwitch, 1, 11, 1, 1);
 
     let resetButton = new Gtk.Button({
         label: 'Reset settings',
@@ -219,9 +227,10 @@ function buildPrefsWidget() {
         settings.reset('first-field');
         settings.reset('second-field');
         settings.reset('last-field');
+        settings.reset('remove-text-paused');
     });
 
-    prefsWidget.attach(resetButton, 0, 11, 1, 1);
+    prefsWidget.attach(resetButton, 0, 12, 1, 1);
 
     settings.bind('left-padding',leftPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('right-padding',rightPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
@@ -231,6 +240,7 @@ function buildPrefsWidget() {
     settings.bind('button-placeholder',buttonPlaceHolderEntry,'text',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-remaster-text',removeRemasterTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('divider-string',dividerStringEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('remove-text-paused',removePausedTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
 }
