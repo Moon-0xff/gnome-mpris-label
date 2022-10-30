@@ -320,8 +320,10 @@ function getMetadata(address,field){
 		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");
 		let metadataField = "";
+		
 		if(field == "")
 			return metadataField
+		
 		try{
 			if(field == "xesam:artist")
 				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
