@@ -140,19 +140,12 @@ class MprisLabel extends PanelMenu.Button {
 				return
 			}
 			
-			//cycle through players to find out which one is playing (defaults to 0)
-			let i = this.playerList.length;
-			do {
-			    i = i - 1;
-			    this.status= new Status(this.playerList[i]);
-			} while (this.status.getStatus() != "Playing" && i > 0)
-
-			this.player = new Player(this.playerList[i]);
+			this.player = new Player(this.playerList[0]);
 
 			if(!this.playerList.includes(this.player.address))
-				this.player.changeAddress(this.playerList[i]);
+				this.player.changeAddress(this.playerList[0]);
 
-            this.buttonText.set_text(this._buildLabel());
+			this.buttonText.set_text(this._buildLabel());
 			
 		}
 		catch(err){
@@ -162,8 +155,10 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildLabel(){
-	    if( (this.status.getStatus() == "Paused") && (REMOVE_TEXT_WHEN_PAUSED) )
-	        return ""
+		if(REMOVE_TEXT_WHEN_PAUSED){
+			if(this.player.getStatus() == "Paused")
+				return ""
+		}
 	
 		let labelstring = 
 			this.player.getMetadata(FIRST_FIELD)+
@@ -199,6 +194,7 @@ class Player {
 		this.wrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
 		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
 		this.address = dbusAddress;
+		this.status = new Status(dbusAddress);
 	}
 	getMetadata(field){
 		let metadataField = "";
@@ -215,6 +211,11 @@ class Player {
 			return metadataField
 		}
 	}
+	getStatus(){
+		let playerStatus = "";
+		playerStatus = this.status.proxy.PlaybackStatus;
+		return playerStatus
+	}
 	changeAddress(busAddress){
 		this.address = busAddress;
 		this.proxy = this.wrapper(Gio.DBus.session,busAddress, "/org/mpris/MediaPlayer2");
@@ -226,11 +227,6 @@ class Status {
 		this.wrapper = Gio.DBusProxy.makeProxyWrapper(statusInterface);
 		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
 		this.address = dbusAddress;
-	}
-	getStatus(){
-		let playerStatus = "";
-		playerStatus = this.proxy.PlaybackStatus;
-		return playerStatus
 	}
 }
 
