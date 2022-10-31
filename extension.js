@@ -156,10 +156,10 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildLabel(){
-		let labelstring = ""
-
-		if(!(REMOVE_TEXT_WHEN_PAUSED && this.player.getStatus() == "Paused")){
-			labelstring =
+		if (REMOVE_TEXT_WHEN_PAUSED && this.player.getStatus() == "Paused")
+			let labelstring = ""
+		else {
+			let labelstring =
 				this.player.getMetadata(FIRST_FIELD)+
 				this.player.getMetadata(SECOND_FIELD)+
 				this.player.getMetadata(LAST_FIELD);
@@ -168,7 +168,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		if( (this.playerList.length > 1) && (labelstring.length == 0) )
-			return BUTTON_PLACEHOLDER;
+			return BUTTON_PLACEHOLDER
 	
 		return labelstring
 	}
