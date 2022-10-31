@@ -140,13 +140,17 @@ class MprisLabel extends PanelMenu.Button {
 				return
 			}
 			
-			if(!this.player)
-				this.player = new Player(this.playerList[0])
+			//cycle through players to find out which one is playing (defaults to 0)
+			let i = this.playerList.length;
+			do {
+			    i = i - 1;
+			    this.status= new Status(this.playerList[i]);
+			} while (this.status.getStatus() != "Playing" && i > 0)
+
+			this.player = new Player(this.playerList[i]);
 
 			if(!this.playerList.includes(this.player.address))
-				this.player.changeAddress(this.playerList[0]);
-
-            this.status= new Status(this.playerList[0]);
+				this.player.changeAddress(this.playerList[i]);
 
             this.buttonText.set_text(this._buildLabel());
 			
@@ -159,7 +163,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_buildLabel(){
 	    if( (this.status.getStatus() == "Paused") && (REMOVE_TEXT_WHEN_PAUSED) )
-	        return
+	        return ""
 	
 		let labelstring = 
 			this.player.getMetadata(FIRST_FIELD)+
@@ -227,10 +231,6 @@ class Status {
 		let playerStatus = "";
 		playerStatus = this.proxy.PlaybackStatus;
 		return playerStatus
-	}
-	changeAddress(busAddress){
-		this.address = busAddress;
-		this.proxy = this.wrapper(Gio.DBus.session,busAddress, "/org/mpris/MediaPlayer2");
 	}
 }
 
