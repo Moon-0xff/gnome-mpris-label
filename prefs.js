@@ -227,7 +227,7 @@ function buildPrefsWidget() {
         settings.reset('first-field');
         settings.reset('second-field');
         settings.reset('last-field');
-        settings.reset('remove-text-paused');
+        settings.reset('remove-text-when-paused');
     });
 
     prefsWidget.attach(resetButton, 0, 12, 1, 1);
@@ -240,7 +240,7 @@ function buildPrefsWidget() {
     settings.bind('button-placeholder',buttonPlaceHolderEntry,'text',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-remaster-text',removeRemasterTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('divider-string',dividerStringEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('remove-text-paused',removePausedTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('remove-text-when-paused',removePausedTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
 }

@@ -50,7 +50,7 @@
       <default>"xesam:title"</default>
     </key>
 
-    <key name="remove-text-paused" type="b">
+    <key name="remove-text-when-paused" type="b">
       <default>true</default>
     </key>
     
