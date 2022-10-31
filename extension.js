@@ -167,8 +167,23 @@ class MprisLabel extends PanelMenu.Button {
 				labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
 		}
 
-		if( (this.playerList.length > 1) && (labelstring.length == 0) )
+		if( (this.playerList.length > 1) && (labelstring.length == 0) ){
+			if (REMOVE_TEXT_WHEN_PAUSED){
+				//find out if another player is active
+				let i = this.playerList.length;
+				let playerStatus;
+				do {
+					i = i - 1;
+					playerStatus= new Status(this.playerList[i]);
+					//if another is active, return button placeholder
+					if (playerStatus == "Playing")
+						return BUTTON_PLACEHOLDER
+				} while (i > 0)
+				//if not, return an empty string
+				return labelstring
+			}
 			return BUTTON_PLACEHOLDER
+		}
 	
 		return labelstring
 	}
