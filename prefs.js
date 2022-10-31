@@ -246,12 +246,15 @@ function buildPrefsWidget() {
         settings.reset('second-field');
         settings.reset('last-field');
         settings.reset('remove-text-when-paused');
+<<<<<<< HEAD
         settings.reset('remove-text-paused-delay');
         settings.reset('auto-switch-to-most-recent');
         extensionPlaceComboBox.set_active(options.indexOf(settings.get_string('extension-place')));
         firstFieldComboBox.set_active_id(settings.get_string('first-field'));
         secondFieldComboBox.set_active_id(settings.get_string('second-field'));
         lastFieldComboBox.set_active_id(settings.get_string('last-field'));
+=======
+>>>>>>> b394166 (Update after feedback)
     });
 
     prefsWidget.attach(resetButton, 0, 14, 1, 1);
@@ -265,8 +268,11 @@ function buildPrefsWidget() {
     settings.bind('remove-remaster-text',removeRemasterTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('divider-string',dividerStringEntry,'text',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-text-when-paused',removePausedTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+<<<<<<< HEAD
     settings.bind('remove-text-paused-delay',removePausedTextDelayEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('auto-switch-to-most-recent',autoSwitchToMostRecentSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+=======
+>>>>>>> b394166 (Update after feedback)
 
     return prefsWidget;
 }
