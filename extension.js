@@ -169,7 +169,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		if( (this.playerList.length > 1) && (labelstring.length == 0) ){
-			if ( (REMOVE_TEXT_WHEN_PAUSED) && (this.activePlayers.length == 0) )
+			if (this.activePlayers.length == 0)
 				return ""
 
 			return BUTTON_PLACEHOLDER
