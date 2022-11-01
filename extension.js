@@ -134,6 +134,7 @@ class MprisLabel extends PanelMenu.Button {
 	_loadData() {
 		try{
 			this.playerList = getPlayerList();
+			this.activePlayers = getActivePlayers(this.playerList);
 
 			if (!this.playerList[0]){
 				this.buttonText.set_text("");
@@ -156,28 +157,21 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildLabel(){
-		let labelstring =
+		let labelstring = "";
+
+		if(!(REMOVE_TEXT_WHEN_PAUSED && getPlayerStatus(this.player.address) == "Paused")){
+		labelstring =
 			this.player.getMetadata(FIRST_FIELD)+
 			this.player.getMetadata(SECOND_FIELD)+
 			this.player.getMetadata(LAST_FIELD);
 		labelstring =
 			labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
+		}
 
 		if( (this.playerList.length > 1) && (labelstring.length == 0) ){
-			if (REMOVE_TEXT_WHEN_PAUSED){
-				//find out if another player is active
-				let i = this.playerList.length;
-				let playerStatus;
-				do {
-					i = i - 1;
-					playerStatus= new Status(this.playerList[i]);
-					//if another is active, return button placeholder
-					if (playerStatus == "Playing")
-						return BUTTON_PLACEHOLDER
-				} while (i > 0)
-				//if not, return an empty string
+			if ( (REMOVE_TEXT_WHEN_PAUSED) && (this.activePlayers.length == 0) )
 				return ""
-			}
+
 			return BUTTON_PLACEHOLDER
 		}
 	
@@ -205,7 +199,7 @@ class Player {
 		this.wrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
 		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
 		this.address = dbusAddress;
-		this.status = new Status(dbusAddress);
+		this.status = getPlayerStatus(dbusAddress);
 	}
 	getMetadata(field){
 		let metadataField = "";
@@ -222,24 +216,17 @@ class Player {
 			return metadataField
 		}
 	}
-	getStatus(){
-		let playerStatus = "";
-		playerStatus = this.status.proxy.PlaybackStatus;
-		return playerStatus
-	}
 	changeAddress(busAddress){
 		this.address = busAddress;
 		this.proxy = this.wrapper(Gio.DBus.session,busAddress, "/org/mpris/MediaPlayer2");
-		this.status = new Status(busAddress);
+		this.status = getPlayerStatus(this.address);
 	}
 }
 
-class Status {
-	constructor(dbusAddress){
-		this.wrapper = Gio.DBusProxy.makeProxyWrapper(statusInterface);
-		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
-		this.address = dbusAddress;
-	}
+function getPlayerStatus(playerAddress) {
+	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(statusInterface);
+	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
+	return statusProxy.PlaybackStatus;
 }
 
 function getPlayerList () {
@@ -254,6 +241,17 @@ function getPlayerList () {
 		}
 	});
 	return playerList;
+}
+
+function getActivePlayers(playerList) {
+	let activePlayers = [];
+
+	playerList.forEach(element => {
+		if (getPlayerStatus(element) == "Playing"){
+			activePlayers.push(element);
+		}
+	});
+	return activePlayers;
 }
 
 function parseMetadataField(data) {
