@@ -5,6 +5,6 @@ if [ -d $DEFAULT_INSTALL_DIR ]; then
 	rm -rf $DEFAULT_INSTALL_DIR
 fi
 
-mkdir $DEFAULT_INSTALL_DIR
+mkdir -p $DEFAULT_INSTALL_DIR
 cp -R ./* $DEFAULT_INSTALL_DIR
 echo Done
