@@ -8,7 +8,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
 	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
-	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED;
+	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,AUTO_SWITCH_TO_MOST_RECENT
 
 const playerInterface = `
 <node>
@@ -124,6 +124,7 @@ class MprisLabel extends PanelMenu.Button {
 		SECOND_FIELD = this.settings.get_string('second-field');
 		LAST_FIELD = this.settings.get_string('last-field');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this._loadData();
 		this._removeTimeout();
@@ -139,6 +140,14 @@ class MprisLabel extends PanelMenu.Button {
 			if (!this.playerList[0]){
 				this.buttonText.set_text("");
 				return
+			}
+
+			if (AUTO_SWITCH_TO_MOST_RECENT){
+				// gjs doesn't support negative indexes
+				let lastIndex = this.activePlayers.length-1;
+
+				if (this.player != this.activePlayers[lastIndex])
+					this.player = new Player(this.activePlayers[lastIndex]);
 			}
 			
 			if(!this.player)

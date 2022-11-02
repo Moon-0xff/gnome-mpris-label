@@ -53,6 +53,10 @@
     <key name="remove-text-when-paused" type="b">
       <default>true</default>
     </key>
-    
+
+    <key name="auto-switch-to-most-recent" type="b">
+      <default>true</default>
+    </key>
+
   </schema>
 </schemalist>
