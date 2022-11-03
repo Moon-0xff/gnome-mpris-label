@@ -159,18 +159,18 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_pickPlayer(){
-		if (AUTO_SWITCH_TO_MOST_RECENT && this.activePlayers.length > 0){
-			let lastIndex = this.activePlayers.length-1;
-
-			if (this.player != this.activePlayers[lastIndex])
-				this.player = new Player(this.activePlayers[lastIndex]);
-		}
+		let bestChoice = this.playerList.at(-1);
+		if (this.activePlayers)
+			bestChoice = this.activePlayers.at(-1);
 
 		if(!this.player)
-			this.player = new Player(this.playerList[0]);
+			this.player = new Player(bestChoice);
 
 		if(!this.playerList.includes(this.player.address))
-			this.player.changeAddress(this.playerList[0]);
+			this.player.changeAddress(bestChoice);
+
+		if (AUTO_SWITCH_TO_MOST_RECENT && this.player != this.activePlayers.at(-1))
+			this.player.changeAddress(this.activePlayers.at(-1));
 	}
 
 	_buildLabel(){
