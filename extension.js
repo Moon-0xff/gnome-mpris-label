@@ -135,10 +135,16 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			this.playerList = getPlayerList();
-			this.activePlayers = getActivePlayers(this.playerList);
 
 			if (!this.playerList[0]){
 				this.buttonText.set_text("");
+				return
+			}
+
+			this.activePlayers = getActivePlayers(this.playerList);
+
+			if (!this.activePlayers[0] && REMOVE_TEXT_WHEN_PAUSED){
+				this.button.set_text("");
 				return
 			}
 
