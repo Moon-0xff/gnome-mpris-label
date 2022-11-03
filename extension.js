@@ -142,8 +142,7 @@ class MprisLabel extends PanelMenu.Button {
 				return
 			}
 
-			if (AUTO_SWITCH_TO_MOST_RECENT){
-				// gjs doesn't support negative indexes
+			if (AUTO_SWITCH_TO_MOST_RECENT && this.activePlayers.length > 0){
 				let lastIndex = this.activePlayers.length-1;
 
 				if (this.player != this.activePlayers[lastIndex])
