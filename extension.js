@@ -126,13 +126,13 @@ class MprisLabel extends PanelMenu.Button {
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
-		this._loadData();
+		this._setText();
 		this._removeTimeout();
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
 	}
 
-	_loadData() {
+	_setText() {
 		try{
 			this.playerList = getPlayerList();
 			this.activePlayers = getActivePlayers(this.playerList);
@@ -142,19 +142,7 @@ class MprisLabel extends PanelMenu.Button {
 				return
 			}
 
-			if (AUTO_SWITCH_TO_MOST_RECENT && this.activePlayers.length > 0){
-				let lastIndex = this.activePlayers.length-1;
-
-				if (this.player != this.activePlayers[lastIndex])
-					this.player = new Player(this.activePlayers[lastIndex]);
-			}
-			
-			if(!this.player)
-				this.player = new Player(this.playerList[0]);
-
-			if(!this.playerList.includes(this.player.address))
-				this.player.changeAddress(this.playerList[0]);
-
+			this._pickPlayer();
 			this.buttonText.set_text(this._buildLabel());
 			
 		}
@@ -162,6 +150,21 @@ class MprisLabel extends PanelMenu.Button {
 			log("Mpris Label: " + err);
 			this.buttonText.set_text("");
 		}
+	}
+
+	_pickPlayer(){
+		if (AUTO_SWITCH_TO_MOST_RECENT && this.activePlayers.length > 0){
+			let lastIndex = this.activePlayers.length-1;
+
+			if (this.player != this.activePlayers[lastIndex])
+				this.player = new Player(this.activePlayers[lastIndex]);
+		}
+
+		if(!this.player)
+			this.player = new Player(this.playerList[0]);
+
+		if(!this.playerList.includes(this.player.address))
+			this.player.changeAddress(this.playerList[0]);
 	}
 
 	_buildLabel(){
