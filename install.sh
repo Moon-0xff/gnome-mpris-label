@@ -6,5 +6,5 @@ if [ -d $DEFAULT_INSTALL_DIR ]; then
 fi
 
 mkdir -p $DEFAULT_INSTALL_DIR
-cp -R ./* $DEFAULT_INSTALL_DIR
+cp -Rv ./* $DEFAULT_INSTALL_DIR
 echo Done
