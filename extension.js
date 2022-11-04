@@ -128,7 +128,9 @@ class MprisLabel extends PanelMenu.Button {
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this._setText();
+		
 		this._removeTimeout();
+		
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
 	}
@@ -155,7 +157,7 @@ class MprisLabel extends PanelMenu.Button {
 
 			this._pickPlayer();
 
-			if(this.activePlayers[0])
+			if(this.activePlayers[0] && this.activePlayers.length > 0)
 				this.prevLastActive = this.activePlayers.at(-1);
 
 			this.buttonText.set_text(this._buildLabel());
@@ -179,7 +181,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_pickPlayer(){
 		let bestChoice = this.playerList.at(-1);
-		if (this.activePlayers)
+		if (this.activePlayers.length > 0)
 			bestChoice = this.activePlayers.at(-1);
 
 		if(!this.player)
@@ -188,7 +190,7 @@ class MprisLabel extends PanelMenu.Button {
 		if(!this.playerList.includes(this.player.address))
 			this.player.changeAddress(bestChoice);
 
-		if (AUTO_SWITCH_TO_MOST_RECENT && this.prevLastActive){
+		if (AUTO_SWITCH_TO_MOST_RECENT && this.prevLastActive && this.activePlayers.length > 0){
 			if (this.prevLastActive != this.activePlayers.at(-1))
 				this.player.changeAddress(this.activePlayers.at(-1));
 		}
@@ -198,6 +200,7 @@ class MprisLabel extends PanelMenu.Button {
 		let labelstring = "";
 
 		if(!(REMOVE_TEXT_WHEN_PAUSED && getPlayerStatus(this.player.address) == "Paused")){
+		
 		labelstring =
 			this.player.getMetadata(FIRST_FIELD)+
 			this.player.getMetadata(SECOND_FIELD)+
