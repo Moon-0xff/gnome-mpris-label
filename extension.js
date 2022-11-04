@@ -74,6 +74,7 @@ class MprisLabel extends PanelMenu.Button {
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this.player = null;
+		this.prevLastActive = null;
 		this._refresh();
 	}
 
@@ -153,6 +154,10 @@ class MprisLabel extends PanelMenu.Button {
 			}
 
 			this._pickPlayer();
+
+			if(this.activePlayers[0])
+				this.prevLastActive = this.activePlayers.at(-1);
+
 			this.buttonText.set_text(this._buildLabel());
 			
 		}
@@ -183,8 +188,10 @@ class MprisLabel extends PanelMenu.Button {
 		if(!this.playerList.includes(this.player.address))
 			this.player.changeAddress(bestChoice);
 
-		if (AUTO_SWITCH_TO_MOST_RECENT && this.player != this.activePlayers.at(-1))
-			this.player.changeAddress(this.activePlayers.at(-1));
+		if (AUTO_SWITCH_TO_MOST_RECENT && this.prevLastActive){
+			if (this.prevLastActive != this.activePlayers.at(-1))
+				this.player.changeAddress(this.activePlayers.at(-1));
+		}
 	}
 
 	_buildLabel(){
