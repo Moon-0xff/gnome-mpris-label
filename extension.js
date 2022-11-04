@@ -141,10 +141,14 @@ class MprisLabel extends PanelMenu.Button {
 				return
 			}
 
-			this.activePlayers = getActivePlayers(this.playerList);
+			if(!this.activePlayers)
+				this.activePlayers = getActivePlayers(this.playerList);
+
+			if(this.activePlayers != getActivePlayers(this.playerList))
+				this._sortActivePlayers();
 
 			if (!this.activePlayers[0] && REMOVE_TEXT_WHEN_PAUSED){
-				this.button.set_text("");
+				this.buttonText.set_text("");
 				return
 			}
 
@@ -157,6 +161,16 @@ class MprisLabel extends PanelMenu.Button {
 			this.buttonText.set_text("");
 		}
 	}
+
+	_sortActivePlayers(){
+		//this bit sorts active players by "activity" instead of "spawn order"
+
+		let newActivePlayers = getActivePlayers(this.playerList);
+
+		//how?
+
+		this.activePlayers = newActivePlayers;
+        }
 
 	_pickPlayer(){
 		let bestChoice = this.playerList.at(-1);
@@ -260,6 +274,7 @@ function getPlayerList () {
 	return playerList;
 }
 
+//the list returned by getActivePlayers is sorted by "spawn order" (oldest to newest)
 function getActivePlayers(playerList) {
 	let activePlayers = [];
 
