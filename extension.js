@@ -237,10 +237,7 @@ class MprisLabel extends PanelMenu.Button {
 
 class Player {
 	constructor(dbusAddress){
-		this.wrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
-		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
 		this.address = dbusAddress;
-		this.status = getPlayerStatus(dbusAddress);
 	}
 	getMetadata(field){
 		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
@@ -260,8 +257,6 @@ class Player {
 	}
 	changeAddress(busAddress){
 		this.address = busAddress;
-		this.proxy = this.wrapper(Gio.DBus.session,busAddress, "/org/mpris/MediaPlayer2");
-		this.status = getPlayerStatus(this.address);
 	}
 }
 
