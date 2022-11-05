@@ -243,15 +243,16 @@ class Player {
 		this.status = getPlayerStatus(dbusAddress);
 	}
 	getMetadata(field){
+		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
+		let metadataProxy = metadataWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2");
 		let metadataField = "";
 		if(field == "")
 			return metadataField
-
 		try{
 			if(field == "xesam:artist")
-				metadataField = parseMetadataField(this.proxy.Metadata[field].get_strv()[0]);
+				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
 			else
-				metadataField = parseMetadataField(this.proxy.Metadata[field].get_string()[0]);
+				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_string()[0]);
 		}
 		finally{
 			return metadataField
