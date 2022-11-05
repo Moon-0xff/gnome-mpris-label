@@ -79,7 +79,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_cyclePlayers(){
-		this.playerList = getPlayerList();
+		this._getPlayers();
 
 		if(this.playerList.length < 2)
 			return
@@ -137,18 +137,12 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setText() {
 		try{
-			this.playerList = getPlayerList();
+			this._getPlayers();
 
 			if (!this.playerList[0]){
 				this.buttonText.set_text("");
 				return
 			}
-
-			if(!this.activePlayers)
-				this.activePlayers = getActivePlayers(this.playerList);
-
-			if(this.activePlayers != getActivePlayers(this.playerList))
-				this._sortActivePlayers();
 
 			if (!this.activePlayers[0] && REMOVE_TEXT_WHEN_PAUSED){
 				this.buttonText.set_text("");
@@ -161,7 +155,6 @@ class MprisLabel extends PanelMenu.Button {
 				this.prevLastActive = this.activePlayers.at(-1);
 
 			this.buttonText.set_text(this._buildLabel());
-			
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -169,14 +162,29 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_sortActivePlayers(){
-		//this bit sorts active players by "activity" instead of "spawn order"
+	_getPlayers(){
+		let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
+		let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
+		let dBusList = dBusProxy.ListNamesSync()[0];
 
-		let newActivePlayers = getActivePlayers(this.playerList);
+		let playerList = [];
+		dBusList.forEach(element => {
+			if (element.startsWith("org.mpris.MediaPlayer2")){
+				playerList.push(element);
+			}
+		});
 
-		//how?
+		this.playerList = playerList;
 
-		this.activePlayers = newActivePlayers;
+		let activePlayers = [];
+
+		playerList.forEach(element => {
+			if (getPlayerStatus(element) == "Playing"){
+				activePlayers.push(element);
+			}
+		});
+
+		this.activePlayers = activePlayers;
         }
 
 	_pickPlayer(){
@@ -264,32 +272,6 @@ function getPlayerStatus(playerAddress) {
 	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(statusInterface);
 	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
 	return statusProxy.PlaybackStatus;
-}
-
-function getPlayerList () {
-	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
-	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
-	let dBusList = dBusProxy.ListNamesSync()[0];
-
-	let playerList = [];
-	dBusList.forEach(element => {
-		if (element.startsWith("org.mpris.MediaPlayer2")){
-			playerList.push(element);
-		}
-	});
-	return playerList;
-}
-
-//the list returned by getActivePlayers is sorted by "spawn order" (oldest to newest)
-function getActivePlayers(playerList) {
-	let activePlayers = [];
-
-	playerList.forEach(element => {
-		if (getPlayerStatus(element) == "Playing"){
-			activePlayers.push(element);
-		}
-	});
-	return activePlayers;
 }
 
 function parseMetadataField(data) {
