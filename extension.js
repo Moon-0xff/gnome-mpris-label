@@ -84,11 +84,11 @@ class MprisLabel extends PanelMenu.Button {
 		if(this.playerList.length < 2)
 			return
 		
-		if(this.playerList.indexOf(this.player.address) == this.playerList.length - 1){
-			this.player.changeAddress(this.playerList[0]);
+		if(this.playerList.indexOf(this.player) == this.playerList.length - 1){
+			this.player = this.playerList[0];
 			return
 		}
-		this.player.changeAddress(this.playerList[this.playerList.indexOf(this.player.address)+1]);
+		this.player = this.playerList[this.playerList.indexOf(this.player)+1];
 	}
 
 	_onPaddingChanged(){
@@ -191,26 +191,26 @@ class MprisLabel extends PanelMenu.Button {
 			bestChoice = this.activePlayers.at(-1);
 
 		if(!this.player)
-			this.player = new Player(bestChoice);
+			this.player = bestChoice;
 
-		if(!this.playerList.includes(this.player.address))
-			this.player.changeAddress(bestChoice);
+		if(!this.playerList.includes(this.player))
+			this.player = bestChoice;
 
 		if (AUTO_SWITCH_TO_MOST_RECENT && this.prevLastActive && this.activePlayers.length > 0){
 			if (this.prevLastActive != this.activePlayers.at(-1))
-				this.player.changeAddress(this.activePlayers.at(-1));
+				this.player = this.activePlayers.at(-1);
 		}
 	}
 
 	_buildLabel(){
 		let labelstring = "";
 
-		if(!(REMOVE_TEXT_WHEN_PAUSED && getPlayerStatus(this.player.address) == "Paused")){
+		if(!(REMOVE_TEXT_WHEN_PAUSED && getPlayerStatus(this.player) == "Paused")){
 		
 		labelstring =
-			this.player.getMetadata(FIRST_FIELD)+
-			this.player.getMetadata(SECOND_FIELD)+
-			this.player.getMetadata(LAST_FIELD);
+			getMetadata(this.player,FIRST_FIELD)+
+			getMetadata(this.player,SECOND_FIELD)+
+			getMetadata(this.player,LAST_FIELD);
 		labelstring =
 			labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
 		}
@@ -241,13 +241,9 @@ class MprisLabel extends PanelMenu.Button {
 }
 );
 
-class Player {
-	constructor(dbusAddress){
-		this.address = dbusAddress;
-	}
-	getMetadata(field){
+function getMetadata(address,field){
 		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
-		let metadataProxy = metadataWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2");
+		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");
 		let metadataField = "";
 		if(field == "")
 			return metadataField
@@ -260,10 +256,6 @@ class Player {
 		finally{
 			return metadataField
 		}
-	}
-	changeAddress(busAddress){
-		this.address = busAddress;
-	}
 }
 
 function getDBusList(){
