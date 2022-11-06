@@ -109,7 +109,7 @@ class MprisLabel extends PanelMenu.Button {
 		EXTENSION_PLACE = this.settings.get_string('extension-place');
 		EXTENSION_INDEX = this.settings.get_int('extension-index');
 
-		this.container.get_parent().remove_actor(this.container);
+		this.container.get_parent().remove_child(this.container);
 
 		if(EXTENSION_PLACE == "left"){
 			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
@@ -244,7 +244,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.remove_child(this.buttonText);
 		this.player = null;
 		this._removeTimeout();
-		this.destroy();
+		this.container.destroy();
 	}
 }
 );
