@@ -163,20 +163,11 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_getPlayers(){
-		let dBusList = getDBusList();
-		let playerList = [];
-
-		dBusList.forEach(element => {
-			if (element.startsWith("org.mpris.MediaPlayer2")){
-				playerList.push(element);
-			}
-		});
-
-		this.playerList = playerList;
+		this.playerList = getDBusList();
 
 		let activePlayers = [];
 
-		playerList.forEach(element => {
+		this.playerList.forEach(element => {
 			if (getPlayerStatus(element) == "Playing"){
 				activePlayers.push(element);
 			}
@@ -261,7 +252,8 @@ function getMetadata(address,field){
 function getDBusList(){
 	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
-	return dBusProxy.ListNamesSync()[0];
+	let dBusList = dBusProxy.ListNamesSync()[0];
+	return dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 }
 
 function getPlayerStatus(playerAddress) {
