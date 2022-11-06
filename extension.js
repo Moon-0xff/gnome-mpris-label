@@ -74,12 +74,19 @@ class MprisLabel extends PanelMenu.Button {
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this.player = null;
-		this.prevLastActive = null;
+		this.activePlayers = null;
+
+		let dBusList = getDBusList();
+		this.playerList = [];
+                dBusList.forEach(element => {
+				this.playerList.push(new Player(element));
+                });
+
 		this._refresh();
 	}
 
 	_cyclePlayers(){
-		this._getPlayers();
+		this._updatePlayerList();
 
 		if(this.playerList.length < 2)
 			return
@@ -127,6 +134,8 @@ class MprisLabel extends PanelMenu.Button {
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
+		this._updatePlayerList();
+		this._pickPlayer();
 		this._setText();
 		
 		this._removeTimeout();
@@ -135,24 +144,63 @@ class MprisLabel extends PanelMenu.Button {
 		return true;
 	}
 
+	_updatePlayerList(){
+		let dBusList = getDBusList();
+		let addresses = [];
+
+		this.playerList.forEach(player => {
+			if (dBusList.includes(player.address)){
+				player.update();
+				addresses.push(player.address);
+			}
+			else {
+				this.playerList.splice(playerList.indexOf(player),1);
+			}
+		});
+
+		dBusList.forEach(address => {
+			if(!addresses.includes(address))
+				this.playerList.push(new Player(address));
+		});
+
+		this.activePlayers = [];
+		this.playerList.forEach(player => {
+			if(player.playbackStatus == "Playing")
+				this.activePlayers.push(player);
+		});
+
+        }
+
+	_pickPlayer(){
+		if(this.playerList.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
+			return
+
+		let bestChoice = this.playerList.at(-1);
+
+		if(!this.activePlayers || this.activePlayers.length == 0)
+			return
+
+		let winner = 0;
+		this.activePlayers.forEach(player => {
+			if(player.statusTimestamp > winner){
+				winner = player.statusTimestamp;
+				bestChoice = player;
+			}
+		});
+		this.player = bestChoice;
+	}
+
 	_setText() {
 		try{
-			this._getPlayers();
-
 			if (!this.playerList[0]){
 				this.buttonText.set_text("");
 				return
 			}
 
-			if (!this.activePlayers[0] && REMOVE_TEXT_WHEN_PAUSED){
+			if ( (!this.activePlayers || this.activePlayers.length == 0) && REMOVE_TEXT_WHEN_PAUSED){
 				this.buttonText.set_text("");
 				return
 			}
-
-			this._pickPlayer();
-
-			if(this.activePlayers[0] && this.activePlayers.length > 0)
-				this.prevLastActive = this.activePlayers.at(-1);
 
 			this.buttonText.set_text(this._buildLabel());
 		}
@@ -162,46 +210,15 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_getPlayers(){
-		this.playerList = getDBusList();
-
-		let activePlayers = [];
-
-		this.playerList.forEach(element => {
-			if (getPlayerStatus(element) == "Playing"){
-				activePlayers.push(element);
-			}
-		});
-
-		this.activePlayers = activePlayers;
-        }
-
-	_pickPlayer(){
-		let bestChoice = this.playerList.at(-1);
-		if (this.activePlayers.length > 0)
-			bestChoice = this.activePlayers.at(-1);
-
-		if(!this.player)
-			this.player = bestChoice;
-
-		if(!this.playerList.includes(this.player))
-			this.player = bestChoice;
-
-		if (AUTO_SWITCH_TO_MOST_RECENT && this.prevLastActive && this.activePlayers.length > 0){
-			if (this.prevLastActive != this.activePlayers.at(-1))
-				this.player = this.activePlayers.at(-1);
-		}
-	}
-
 	_buildLabel(){
 		let labelstring = "";
 
-		if(!(REMOVE_TEXT_WHEN_PAUSED && getPlayerStatus(this.player) == "Paused")){
+		if(!(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus == "Paused")){
 		
 		labelstring =
-			getMetadata(this.player,FIRST_FIELD)+
-			getMetadata(this.player,SECOND_FIELD)+
-			getMetadata(this.player,LAST_FIELD);
+			getMetadata(this.player.address,FIRST_FIELD)+
+			getMetadata(this.player.address,SECOND_FIELD)+
+			getMetadata(this.player.address,LAST_FIELD);
 		labelstring =
 			labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
 		}
@@ -231,6 +248,22 @@ class MprisLabel extends PanelMenu.Button {
 	}
 }
 );
+
+class Player {
+        constructor(address){
+                this.address = address;
+                this.playbackStatus = getPlayerStatus(address);
+                this.statusTimestamp = new Date().getTime();
+        }
+        update(){
+                let playbackStatus = getPlayerStatus(this.address);
+
+                if(this.playbackStatus != playbackStatus){
+                        this.playbackStatus = playbackStatus;
+                        this.statusTimestamp = new Date().getTime();
+                }
+        }
+}
 
 function getMetadata(address,field){
 		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(playerInterface);
