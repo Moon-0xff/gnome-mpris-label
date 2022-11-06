@@ -63,8 +63,8 @@ class MprisLabel extends PanelMenu.Button {
 			y_align: Clutter.ActorAlign.CENTER,
 			x_align: Clutter.ActorAlign.FILL
 		});
-		this.actor.add_child(this.buttonText);
-		this.actor.connect('button-press-event',this._cyclePlayers.bind(this));
+		this.add_child(this.buttonText);
+		this.connect('button-press-event',this._cyclePlayers.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -241,8 +241,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	disable(){
-		this.actor.remove_child(this.buttonText);
-		this.player = null
+		this.remove_child(this.buttonText);
+		this.player = null;
 		this._removeTimeout();
 		this.destroy();
 	}
