@@ -73,14 +73,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
-		this.player = null;
-		this.activePlayers = null;
-
-		let dBusList = getDBusList();
 		this.playerList = [];
-                dBusList.forEach(element => {
-				this.playerList.push(new Player(element));
-                });
 
 		this._refresh();
 	}
@@ -146,44 +139,41 @@ class MprisLabel extends PanelMenu.Button {
 
 	_updatePlayerList(){
 		let dBusList = getDBusList();
+
+		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
+
 		let addresses = [];
-
-		this.playerList.forEach(player => {
-			if (dBusList.includes(player.address)){
-				player.update();
-				addresses.push(player.address);
-			}
-			else {
-				this.playerList.splice(playerList.indexOf(player),1);
-			}
+		this.playerList.forEach(element => {
+			element.update();
+			addresses.push(element.address);
 		});
 
-		dBusList.forEach(address => {
-			if(!addresses.includes(address))
-				this.playerList.push(new Player(address));
-		});
+		let newPlayers = dBusList.filter(element => !addresses.includes(element));
+		newPlayers.forEach(element => this.playerList.push(new Player(element)));
 
-		this.activePlayers = [];
-		this.playerList.forEach(player => {
-			if(player.playbackStatus == "Playing")
-				this.activePlayers.push(player);
-		});
-
+		this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing");
         }
 
 	_pickPlayer(){
+		if(this.playerList.length == 0){
+			this.player = null;
+			return;
+		}
+
 		if(this.playerList.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
 			return
 
-		let bestChoice = this.playerList.at(-1);
+		this.player = this.playerList.at(-1);
 
 		if(!this.activePlayers || this.activePlayers.length == 0)
 			return
 
-		let winner = 0;
+		let newestTimestamp = 0;
+		let bestChoice = this.player;
+
 		this.activePlayers.forEach(player => {
-			if(player.statusTimestamp > winner){
-				winner = player.statusTimestamp;
+			if(player.statusTimestamp > newestTimestamp){
+				newestTimestamp = player.statusTimestamp;
 				bestChoice = player;
 			}
 		});
@@ -192,17 +182,8 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setText() {
 		try{
-			if (!this.playerList[0]){
-				this.buttonText.set_text("");
-				return
-			}
-
-			if ( (!this.activePlayers || this.activePlayers.length == 0) && REMOVE_TEXT_WHEN_PAUSED){
-				this.buttonText.set_text("");
-				return
-			}
-
-			this.buttonText.set_text(this._buildLabel());
+			if(this.player != null || undefined)
+				this.buttonText.set_text(this._buildLabel());
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -211,25 +192,25 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildLabel(){
-		let labelstring = "";
+		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus == "Paused"){
+			if(this.activePlayers.length == 0)
+				return ""
+			return BUTTON_PLACEHOLDER
+		}
 
-		if(!(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus == "Paused")){
-		
-		labelstring =
+		let labelstring =
 			getMetadata(this.player.address,FIRST_FIELD)+
 			getMetadata(this.player.address,SECOND_FIELD)+
 			getMetadata(this.player.address,LAST_FIELD);
+
 		labelstring =
 			labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
-		}
 
-		if( (this.playerList.length > 1) && (labelstring.length == 0) ){
+		if(labelstring.length == 0){
 			if (this.activePlayers.length == 0)
 				return ""
-
 			return BUTTON_PLACEHOLDER
 		}
-	
 		return labelstring
 	}
 
