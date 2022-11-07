@@ -80,15 +80,24 @@ class MprisLabel extends PanelMenu.Button {
 
 	_cyclePlayers(){
 		this._updatePlayerList();
+		let list = this.playerList;
 
-		if(this.playerList.length < 2)
+		if(AUTO_SWITCH_TO_MOST_RECENT)
+			list = this.activePlayers;
+
+		if(list < 2)
 			return
-		
-		if(this.playerList.indexOf(this.player) == this.playerList.length - 1){
-			this.player = this.playerList[0];
-			return
+
+		let newIndex = list.indexOf(this.player)+1;
+
+		if(this.player == list.at(-1))
+			newIndex = 0;
+
+		this.player = list[newIndex];
+
+		if (AUTO_SWITCH_TO_MOST_RECENT){
+			this.player.statusTimestamp = new Date().getTime();
 		}
-		this.player = this.playerList[this.playerList.indexOf(this.player)+1];
 	}
 
 	_onPaddingChanged(){
@@ -160,18 +169,17 @@ class MprisLabel extends PanelMenu.Button {
 			return;
 		}
 
-		if(this.playerList.includes(this.player) || !AUTO_SWITCH_TO_MOST_RECENT)
-			return
-
-		this.player = this.playerList.at(-1);
-
-		if(!this.activePlayers || this.activePlayers.length == 0)
+		if(this.playerList.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
 			return
 
 		let newestTimestamp = 0;
-		let bestChoice = this.player;
+		let bestChoice = this.playerList[0];
+		let list = this.playerList;
 
-		this.activePlayers.forEach(player => {
+		if (AUTO_SWITCH_TO_MOST_RECENT)
+			list = this.activePlayers;
+
+		list.forEach(player => {
 			if(player.statusTimestamp > newestTimestamp){
 				newestTimestamp = player.statusTimestamp;
 				bestChoice = player;
@@ -182,8 +190,10 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setText() {
 		try{
-			if(this.player != null || undefined)
-				this.buttonText.set_text(this._buildLabel());
+			if(this.player == null || undefined)
+				this.buttonText.set_text("");
+
+			this.buttonText.set_text(this._buildLabel());
 		}
 		catch(err){
 			log("Mpris Label: " + err);
