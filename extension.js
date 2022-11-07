@@ -202,7 +202,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildLabel(){
-		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus == "Paused"){
+		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
 			if(this.activePlayers.length == 0)
 				return ""
 			return BUTTON_PLACEHOLDER
