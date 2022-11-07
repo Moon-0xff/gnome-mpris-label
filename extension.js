@@ -160,7 +160,7 @@ class MprisLabel extends PanelMenu.Button {
 			return;
 		}
 
-		if(this.playerList.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
+		if(this.playerList.includes(this.player) || !AUTO_SWITCH_TO_MOST_RECENT)
 			return
 
 		this.player = this.playerList.at(-1);
