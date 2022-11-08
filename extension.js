@@ -192,8 +192,8 @@ class MprisLabel extends PanelMenu.Button {
 		try{
 			if(this.player == null || undefined)
 				this.buttonText.set_text("");
-
-			this.buttonText.set_text(this._buildLabel());
+			else
+				this.buttonText.set_text(this._buildLabel());
 		}
 		catch(err){
 			log("Mpris Label: " + err);
