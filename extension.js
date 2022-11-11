@@ -40,7 +40,8 @@ function enable(){
 }
 
 function disable(){
-	indicator.disable();
+	indicator._disable();
+	indicator.destroy();
 	indicator = null;
 }
 
@@ -231,11 +232,9 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	disable(){
+	_disable(){
 		this.remove_child(this.buttonText);
-		this.player = null;
 		this._removeTimeout();
-		this.container.destroy();
 	}
 }
 );
