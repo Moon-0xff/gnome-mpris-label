@@ -177,10 +177,11 @@ class MprisLabel extends PanelMenu.Button {
 		let bestChoice = this.playerList[0];
 		let list = this.playerList;
 
-		if (AUTO_SWITCH_TO_MOST_RECENT)
+		if (AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0)
 				return
 			list = this.activePlayers;
+		}
 
 		list.forEach(player => {
 			if(player.statusTimestamp > newestTimestamp){
