@@ -178,6 +178,8 @@ class MprisLabel extends PanelMenu.Button {
 		let list = this.playerList;
 
 		if (AUTO_SWITCH_TO_MOST_RECENT)
+			if(this.activePlayers.length == 0)
+				return
 			list = this.activePlayers;
 
 		list.forEach(player => {
