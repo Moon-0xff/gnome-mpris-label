@@ -9,17 +9,21 @@ This was originally a fork of mheine's spotify-label. I've rewritten almost the 
 
 [Now avaliable at extensions.gnome.org](https://extensions.gnome.org/extension/4928/mpris-label)
 
-## To Do List
-- [X] Fix broken/messy label when artist or album field is empty
-- [X] Change player source either by clicking the label or by a dropdown menu
-- [X] Implement user accessible settings
-- [X] Test GNOME 40/41 compatibility
-- [X] Add option: Choose visible metadata fields and order
-- [X] Submit extension to `extensions.gnome.org`
-
 ## Contribution
 
-If you can tackle any missing feature or you encountered a bug and fixed it yourself feel free to submit a pull request. I'm more than happy to receive your help.
+Feel free to submit an issue if you have encountered a bug, want to ask something, want to share an idea for a feature, or something else entirely.
+
+Feel free to submit a pull request for a bug you squashed, a feature you added, or anything you want merged to this repo.
+
+Down below there's a list of stuff you can help me with, I'm not actively working in any of them (unless stated) so any contribution it's a great contribution.
+
+## To do List / Help Wanted
+
+- Add an option to include application icons alongside the label
+- Add a user definable filter list (regex) for mpris sources
+- Add an option to select active player by a dropdown menu
+- Add an option to pause a player by clicking the label when no other mpris player is avaliable
+- Make this extension refresh asynchronously
 
 ## Manual Installation
 Note: you can also [install it from extensions.gnome.org](https://extensions.gnome.org/extension/4928/mpris-label) with just one click. If this is your first time installing an extension perhaps you don't have the necessary software to do it though. Visit the page for further instructions
