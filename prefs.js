@@ -237,6 +237,10 @@ function buildPrefsWidget() {
         settings.reset('last-field');
         settings.reset('remove-text-when-paused');
         settings.reset('auto-switch-to-most-recent');
+        extensionPlaceComboBox.set_active(options.indexOf(settings.get_string('extension-place')));
+        firstFieldComboBox.set_active_id(settings.get_string('first-field'));
+        secondFieldComboBox.set_active_id(settings.get_string('second-field'));
+        lastFieldComboBox.set_active_id(settings.get_string('last-field'));
     });
 
     prefsWidget.attach(resetButton, 0, 13, 1, 1);
