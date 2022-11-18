@@ -8,7 +8,11 @@ const ExtensionUtils = imports.misc.extensionUtils;
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
 	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
-	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,AUTO_SWITCH_TO_MOST_RECENT;
+	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,REMOVE_TEXT_PAUSED_DELAY,
+	AUTO_SWITCH_TO_MOST_RECENT;
+
+let removeTextPausedDelayStamp = null;
+let removeTextPlayerTimestamp = 0;
 
 const playerInterface = `
 <node>
@@ -135,6 +139,7 @@ class MprisLabel extends PanelMenu.Button {
 		SECOND_FIELD = this.settings.get_string('second-field');
 		LAST_FIELD = this.settings.get_string('last-field');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+		REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this._updatePlayerList();
@@ -207,9 +212,11 @@ class MprisLabel extends PanelMenu.Button {
 
 	_buildLabel(){
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-			if(this.activePlayers.length == 0)
-				return ""
-			return BUTTON_PLACEHOLDER
+			if(removeTextPausedIsActive(this.player)){
+				if(this.activePlayers.length == 0)
+					return ""
+				return BUTTON_PLACEHOLDER
+			}
 		}
 
 		let labelstring =
@@ -339,3 +346,23 @@ function removeRemasterText(datastring) {
 
 	return datastring
 }
+
+function removeTextPausedIsActive(player){
+	if (REMOVE_TEXT_PAUSED_DELAY <= 0){
+		return true
+	}
+
+	if (player.statusTimestamp != removeTextPlayerTimestamp && removeTextPausedDelayStamp == null){
+		removeTextPausedDelayStamp = new Date().getTime() / 1000;
+		return false
+	}
+
+	let timeNow = new Date().getTime() / 1000;
+	if(removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
+		removeTextPausedDelayStamp = null;
+		removeTextPlayerTimestamp = player.statusTimestamp;
+		return true
+	}
+	return false
+}
+
