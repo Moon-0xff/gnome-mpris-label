@@ -9,7 +9,7 @@ let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
 	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
 	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,REMOVE_TEXT_PAUSED_DELAY,
-	AUTO_SWITCH_TO_MOST_RECENT;
+	AUTO_SWITCH_TO_MOST_RECENT,FILTER_MUTED_SOURCES;
 
 let removeTextPausedDelayStamp = null;
 let removeTextPlayerTimestamp = 0;
@@ -25,6 +25,13 @@ const statusInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
 		<property name="PlaybackStatus" type="s" access="read"/>
+	</interface>
+</node>`
+
+const volumeInterface = `
+<node>
+	<interface name="org.mpris.MediaPlayer2.Player">
+		<property name="Volume" type="d" access="read"/>
 	</interface>
 </node>`
 
@@ -141,6 +148,7 @@ class MprisLabel extends PanelMenu.Button {
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+		FILTER_MUTED_SOURCES = this.settings.get_boolean('filter-muted-sources');
 
 		this._updatePlayerList();
 		this._pickPlayer();
@@ -154,15 +162,15 @@ class MprisLabel extends PanelMenu.Button {
 
 	_updatePlayerList(){
 		let dBusList = getDBusList();
-
+		
 		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
-
+		
 		let addresses = [];
 		this.playerList.forEach(element => {
 			element.update();
 			addresses.push(element.address);
 		});
-
+		
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
 		newPlayers.forEach(element => this.playerList.push(new Player(element)));
 
@@ -189,12 +197,18 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		list.forEach(player => {
-			if(player.statusTimestamp > newestTimestamp){
+			if(player.statusTimestamp > newestTimestamp && !(FILTER_MUTED_SOURCES && player.volume == "0")){
 				newestTimestamp = player.statusTimestamp;
 				bestChoice = player;
 			}
 		});
+
 		this.player = bestChoice;
+
+		if (FILTER_MUTED_SOURCES && this.player.volume == "0"){
+			this.player = null;
+			return;
+		}
 	}
 
 	_setText() {
@@ -262,6 +276,8 @@ class Player {
                         this.playbackStatus = playbackStatus;
                         this.statusTimestamp = new Date().getTime();
                 }
+
+				this.volume = getPlayerVolume(this.address);
         }
 }
 
@@ -294,6 +310,13 @@ function getPlayerStatus(playerAddress) {
 	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
 	return statusProxy.PlaybackStatus;
 }
+
+function getPlayerVolume(playerAddress) {
+	let volumeWrapper = Gio.DBusProxy.makeProxyWrapper(volumeInterface);
+	let volumeProxy = volumeWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
+	return volumeProxy.Volume;
+}
+
 
 function parseMetadataField(data) {
 	if (data.length == 0)
