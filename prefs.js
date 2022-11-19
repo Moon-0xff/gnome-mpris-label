@@ -49,7 +49,7 @@ function buildPrefsWidget() {
         'Button place holder (can be left empty):','Remove remaster text:',
         'Divider String (you can use spaces):','Visible fields and order:',
         'Remove text when paused:','Remove text when paused delay (seconds):',
-	    'Switch to the most recent source automatically:','Filter out muted sources:'
+        'Switch to the most recent source automatically:','Filter out muted sources:'
     ]
 
     labels.forEach(labelText =>{
