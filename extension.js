@@ -9,7 +9,7 @@ let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
 	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
 	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,REMOVE_TEXT_PAUSED_DELAY,
-	AUTO_SWITCH_TO_MOST_RECENT,FILTER_MUTED_SOURCES;
+	AUTO_SWITCH_TO_MOST_RECENT;
 
 let removeTextPausedDelayStamp = null;
 let removeTextPlayerTimestamp = 0;
@@ -19,7 +19,6 @@ const mprisInterface = `
 	<interface name="org.mpris.MediaPlayer2.Player">
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
-		<property name="Volume" type="d" access="read"/>
 	</interface>
 </node>`
 
@@ -136,7 +135,6 @@ class MprisLabel extends PanelMenu.Button {
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
-		FILTER_MUTED_SOURCES = this.settings.get_boolean('filter-muted-sources');
 
 		this._updatePlayerList();
 		this._pickPlayer();
@@ -150,7 +148,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_updatePlayerList(){
 		let dBusList = getDBusList();
-		
+
 		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
 
 		let addresses = [];
@@ -161,9 +159,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
 		newPlayers.forEach(element => this.playerList.push(new Player(element)));
-
-		if(FILTER_MUTED_SOURCES)
-			this.playerList = this.playerList.filter(element => element.volume != "0");
 
 		this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing");
         }
@@ -253,7 +248,6 @@ class Player {
                 this.address = address;
                 this.playbackStatus = getPlayerStatus(address);
                 this.statusTimestamp = new Date().getTime();
-		this.volume = getPlayerVolume(this.address);
         }
         update(){
                 let playbackStatus = getPlayerStatus(this.address);
@@ -262,8 +256,6 @@ class Player {
                         this.playbackStatus = playbackStatus;
                         this.statusTimestamp = new Date().getTime();
                 }
-
-		this.volume = getPlayerVolume(this.address);
         }
 }
 
@@ -295,12 +287,6 @@ function getPlayerStatus(playerAddress) {
 	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
 	return statusProxy.PlaybackStatus;
-}
-
-function getPlayerVolume(playerAddress) {
-	let volumeWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-	let volumeProxy = volumeWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
-	return volumeProxy.Volume;
 }
 
 function parseMetadataField(data) {
