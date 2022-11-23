@@ -47,7 +47,9 @@ function buildPrefsWidget() {
         'Left padding:','Right padding:','Max string length (each field):',
         'Extension index:','Extension place:','Refresh rate (milliseconds):',
         'Button place holder (can be left empty):','Remove remaster text:',
-        'Divider String (you can use spaces):','Visible fields and order:'
+        'Divider String (you can use spaces):','Visible fields and order:',
+        'Remove text when paused:','Remove text when paused delay (seconds):',
+	'Switch to the most recent source automatically:'
     ]
 
     labels.forEach(labelText =>{
@@ -200,6 +202,30 @@ function buildPrefsWidget() {
     }
 
     prefsWidget.attach(visibleFieldsBox, 1, 10, 1, 1);
+    
+    let removePausedTextSwitch = new Gtk.Switch({
+        valign: Gtk.Align.END,
+        halign: Gtk.Align.END,
+        visible: true
+    });
+    prefsWidget.attach(removePausedTextSwitch, 1, 11, 1, 1);
+
+    let removePausedTextDelayEntry = new Gtk.SpinButton({
+        adjustment: new Gtk.Adjustment({
+            lower: 1,
+            upper: 10800, //3 hours
+            step_increment: 1
+        }),
+        visible: true
+    });
+    prefsWidget.attach(removePausedTextDelayEntry, 1, 12, 1, 1);
+
+    let autoSwitchToMostRecentSwitch = new Gtk.Switch({
+        valign: Gtk.Align.END,
+        halign: Gtk.Align.END,
+        visible: true
+    });
+    prefsWidget.attach(autoSwitchToMostRecentSwitch, 1, 13, 1, 1);
 
     let resetButton = new Gtk.Button({
         label: 'Reset settings',
@@ -219,9 +245,16 @@ function buildPrefsWidget() {
         settings.reset('first-field');
         settings.reset('second-field');
         settings.reset('last-field');
+        settings.reset('remove-text-when-paused');
+        settings.reset('remove-text-paused-delay');
+        settings.reset('auto-switch-to-most-recent');
+        extensionPlaceComboBox.set_active(options.indexOf(settings.get_string('extension-place')));
+        firstFieldComboBox.set_active_id(settings.get_string('first-field'));
+        secondFieldComboBox.set_active_id(settings.get_string('second-field'));
+        lastFieldComboBox.set_active_id(settings.get_string('last-field'));
     });
 
-    prefsWidget.attach(resetButton, 0, 11, 1, 1);
+    prefsWidget.attach(resetButton, 0, 14, 1, 1);
 
     settings.bind('left-padding',leftPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('right-padding',rightPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
@@ -231,6 +264,9 @@ function buildPrefsWidget() {
     settings.bind('button-placeholder',buttonPlaceHolderEntry,'text',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-remaster-text',removeRemasterTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('divider-string',dividerStringEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('remove-text-when-paused',removePausedTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('remove-text-paused-delay',removePausedTextDelayEntry,'value',Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('auto-switch-to-most-recent',autoSwitchToMostRecentSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 
     return prefsWidget;
 }
