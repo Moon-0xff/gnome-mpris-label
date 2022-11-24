@@ -59,7 +59,7 @@
     </key>
 
     <key name="auto-switch-to-most-recent" type="b">
-      <default>true</default>
+      <default>false</default>
     </key>
 
   </schema>
