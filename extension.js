@@ -5,6 +5,9 @@ const Mainloop = imports.mainloop;
 const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 
+const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const { IconHandler } = CurrentExtension.imports.icons;
+
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
 	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
@@ -62,7 +65,8 @@ class MprisLabel extends PanelMenu.Button {
 			y_align: Clutter.ActorAlign.CENTER,
 			x_align: Clutter.ActorAlign.FILL
 		});
-		this.add_child(this.buttonText);
+		//this.add_child(this.buttonText);
+		this.add_child(new IconHandler().getIcon("firefox"));
 		this.connect('button-press-event',this._cyclePlayers.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
