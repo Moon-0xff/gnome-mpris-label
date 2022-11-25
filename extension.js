@@ -8,12 +8,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
 	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
-<<<<<<< HEAD
 	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,REMOVE_TEXT_PAUSED_DELAY,
 	AUTO_SWITCH_TO_MOST_RECENT;
-=======
-	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED;
->>>>>>> b394166 (Update after feedback)
 
 let removeTextPausedDelayStamp = null;
 let removeTextPlayerTimestamp = 0;
@@ -158,7 +154,6 @@ class MprisLabel extends PanelMenu.Button {
 		SECOND_FIELD = this.settings.get_string('second-field');
 		LAST_FIELD = this.settings.get_string('last-field');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
-<<<<<<< HEAD
 		REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
@@ -166,9 +161,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._pickPlayer();
 		this._setText();
 		
-		this.ui.get("icon", this.makeIcon("google-chrome"));
-=======
->>>>>>> b394166 (Update after feedback)
+		this.ui.get("icon", this.makeIcon("google-chrome")); //currently ignored
 
 		this._removeTimeout();
 		
@@ -209,21 +202,8 @@ class MprisLabel extends PanelMenu.Button {
 		if (AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0)
 				return
-<<<<<<< HEAD
 			list = this.activePlayers;
 		}
-=======
-			}
-			
-			//cycle through players to find out which one is playing (defaults to 0)
-			let i = this.playerList.length;
-			do {
-			    i = i - 1;
-			    this.status= new Status(this.playerList[i]);
-			} while (this.status.getStatus() != "Playing" && i > 0)
-
-			this.player = new Player(this.playerList[i]);
->>>>>>> 94eaad8 (Update to cycle through multiple media players and identify Playing one)
 
 		list.forEach(player => {
 			if(player.statusTimestamp > newestTimestamp){
@@ -234,20 +214,12 @@ class MprisLabel extends PanelMenu.Button {
 		this.player = bestChoice;
 	}
 
-<<<<<<< HEAD
 	_setText() {
 		try{
 			if(this.player == null || undefined)
 				this.ui.get("label").set_text("");
 			else
 				this.ui.get("label").set_text(this._buildLabel());
-=======
-			if(!this.playerList.includes(this.player.address))
-				this.player.changeAddress(this.playerList[i]);
-
-            this.buttonText.set_text(this._buildLabel());
-			
->>>>>>> b394166 (Update after feedback)
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -256,7 +228,6 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildLabel(){
-<<<<<<< HEAD
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
 			if(removeTextPausedIsActive(this.player)){
 				if(this.activePlayers.length == 0)
@@ -264,15 +235,6 @@ class MprisLabel extends PanelMenu.Button {
 				return BUTTON_PLACEHOLDER
 			}
 		}
-=======
-	    if( (this.status.getStatus() == "Paused") && (REMOVE_TEXT_WHEN_PAUSED) )
-	        return ""
-	
-		let labelstring = 
-			this.player.getMetadata(FIRST_FIELD)+
-			this.player.getMetadata(SECOND_FIELD)+
-			this.player.getMetadata(LAST_FIELD);
->>>>>>> b394166 (Update after feedback)
 
 		let labelstring =
 			getMetadata(this.player.address,FIRST_FIELD)+
@@ -372,24 +334,7 @@ function getMetadata(address,field){
 		}
 }
 
-<<<<<<< HEAD
 function getDBusList(){
-=======
-class Status {
-	constructor(dbusAddress){
-		this.wrapper = Gio.DBusProxy.makeProxyWrapper(statusInterface);
-		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
-		this.address = dbusAddress;
-	}
-	getStatus(){
-		let playerStatus = "";
-		playerStatus = this.proxy.PlaybackStatus;
-		return playerStatus
-	}
-}
-
-function getPlayerList () {
->>>>>>> 94eaad8 (Update to cycle through multiple media players and identify Playing one)
 	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
 	let dBusList = dBusProxy.ListNamesSync()[0];
@@ -472,4 +417,3 @@ function removeTextPausedIsActive(player){
 	}
 	return false
 }
-
