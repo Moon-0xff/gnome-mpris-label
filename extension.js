@@ -209,8 +209,21 @@ class MprisLabel extends PanelMenu.Button {
 		if (AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0)
 				return
+<<<<<<< HEAD
 			list = this.activePlayers;
 		}
+=======
+			}
+			
+			//cycle through players to find out which one is playing (defaults to 0)
+			let i = this.playerList.length;
+			do {
+			    i = i - 1;
+			    this.status= new Status(this.playerList[i]);
+			} while (this.status.getStatus() != "Playing" && i > 0)
+
+			this.player = new Player(this.playerList[i]);
+>>>>>>> 94eaad8 (Update to cycle through multiple media players and identify Playing one)
 
 		list.forEach(player => {
 			if(player.statusTimestamp > newestTimestamp){
@@ -230,9 +243,7 @@ class MprisLabel extends PanelMenu.Button {
 				this.ui.get("label").set_text(this._buildLabel());
 =======
 			if(!this.playerList.includes(this.player.address))
-				this.player.changeAddress(this.playerList[0]);
-
-            this.status= new Status(this.playerList[0]);
+				this.player.changeAddress(this.playerList[i]);
 
             this.buttonText.set_text(this._buildLabel());
 			
@@ -255,7 +266,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 =======
 	    if( (this.status.getStatus() == "Paused") && (REMOVE_TEXT_WHEN_PAUSED) )
-	        return
+	        return ""
 	
 		let labelstring = 
 			this.player.getMetadata(FIRST_FIELD)+
@@ -361,7 +372,24 @@ function getMetadata(address,field){
 		}
 }
 
+<<<<<<< HEAD
 function getDBusList(){
+=======
+class Status {
+	constructor(dbusAddress){
+		this.wrapper = Gio.DBusProxy.makeProxyWrapper(statusInterface);
+		this.proxy = this.wrapper(Gio.DBus.session,dbusAddress, "/org/mpris/MediaPlayer2");
+		this.address = dbusAddress;
+	}
+	getStatus(){
+		let playerStatus = "";
+		playerStatus = this.proxy.PlaybackStatus;
+		return playerStatus
+	}
+}
+
+function getPlayerList () {
+>>>>>>> 94eaad8 (Update to cycle through multiple media players and identify Playing one)
 	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
 	let dBusList = dBusProxy.ListNamesSync()[0];
