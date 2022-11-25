@@ -301,19 +301,19 @@ class MprisLabel extends PanelMenu.Button {
 );
 
 class Player {
-		constructor(address){
-			this.address = address;
-			this.playbackStatus = getPlayerStatus(address);
+	constructor(address){
+		this.address = address;
+		this.playbackStatus = getPlayerStatus(address);
+		this.statusTimestamp = new Date().getTime();
+	}
+	update(){
+		let playbackStatus = getPlayerStatus(this.address);
+
+		if(this.playbackStatus != playbackStatus){
+			this.playbackStatus = playbackStatus;
 			this.statusTimestamp = new Date().getTime();
 		}
-		update(){
-			let playbackStatus = getPlayerStatus(this.address);
-
-			if(this.playbackStatus != playbackStatus){
-				this.playbackStatus = playbackStatus;
-				this.statusTimestamp = new Date().getTime();
-			}
-		}
+	}
 }
 
 function getMetadata(address,field){
