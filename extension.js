@@ -49,31 +49,20 @@ class MprisLabel extends PanelMenu.Button {
 	_init(){
 		super._init(0.0,'Mpris Label',false);
 
-		this.ui = new Map();
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		LEFT_PADDING = this.settings.get_int('left-padding');
 		RIGHT_PADDING = this.settings.get_int('right-padding');
 		EXTENSION_INDEX = this.settings.get_int('extension-index');
 		EXTENSION_PLACE = this.settings.get_string('extension-place');
 
-		const box = new St.BoxLayout({
-			style_class: "panel-status-menu-box",
+		this.buttonText = new St.Label({
+			text: "",
+			style: "padding-left: " + LEFT_PADDING + "px;"
+			+ "padding-right: " + RIGHT_PADDING + "px; ",
+			y_align: Clutter.ActorAlign.CENTER,
+			x_align: Clutter.ActorAlign.FILL
 		});
-		this.ui.set("box", box);
-
-		this.ui.set("label", this.makeLabel());
-
-		this.ui.set("icon", this.makeIcon("spotify")); //works also with "firefox" and "google-chrome"
-
-		box.add_child(this.ui.get("icon"));
-		box.add_child(this.ui.get("label"));
-		this.ui.get("label").set_text("hello");
-		this.add_child(box);
-		this._onPaddingChanged(); //set padding
-
-		this.ui.get("label").set_text("world"); //changes the text
-		this.ui.get("icon", this.makeIcon("firefox")); //doesn't change the icon... need to find correct code to change icon dynamically
-
+		this.add_child(this.buttonText);
 		this.connect('button-press-event',this._cyclePlayers.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
@@ -86,14 +75,6 @@ class MprisLabel extends PanelMenu.Button {
 		this.playerList = [];
 
 		this._refresh();
-	}
-
-	makeLabel(){
-		return new St.Label({
-			text: "",
-			y_align: Clutter.ActorAlign.CENTER,
-			x_align: Clutter.ActorAlign.FILL
-		});
 	}
 
 	_cyclePlayers(){
@@ -121,10 +102,8 @@ class MprisLabel extends PanelMenu.Button {
 	_onPaddingChanged(){
 		LEFT_PADDING = this.settings.get_int('left-padding');
 		RIGHT_PADDING = this.settings.get_int('right-padding');
-		//this.ui.set_style("padding-left: " + LEFT_PADDING + "px;"
-		//+ "padding-right: " + RIGHT_PADDING + "px; ");
-		this.ui.get("icon").set_style("padding-left: " + LEFT_PADDING + "px;");
-		this.ui.get("label").set_style("padding-right: " + RIGHT_PADDING + "px; ");
+		this.buttonText.set_style("padding-left: " + LEFT_PADDING + "px;"
+		+ "padding-right: " + RIGHT_PADDING + "px; ");
 	}
 
 	_updateTrayPosition(){
@@ -161,8 +140,6 @@ class MprisLabel extends PanelMenu.Button {
 		this._pickPlayer();
 		this._setText();
 		
-		this.ui.get("icon", this.makeIcon("google-chrome")); //currently ignored
-
 		this._removeTimeout();
 		
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
@@ -184,7 +161,7 @@ class MprisLabel extends PanelMenu.Button {
 		newPlayers.forEach(element => this.playerList.push(new Player(element)));
 
 		this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing");
-	}
+        }
 
 	_pickPlayer(){
 		if(this.playerList.length == 0){
@@ -217,13 +194,13 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.ui.get("label").set_text("");
+				this.buttonText.set_text("");
 			else
-				this.ui.get("label").set_text(this._buildLabel());
+				this.buttonText.set_text(this._buildLabel());
 		}
 		catch(err){
 			log("Mpris Label: " + err);
-			this.ui.get("label").set_text("");
+			this.buttonText.set_text("");
 		}
 	}
 
@@ -259,61 +236,27 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	makeIcon(app_name) {
-		const snapFileContents = this.readSnapFile(app_name);
-		if (snapFileContents) {
-			// There's a snap build of Spotify installed
-			const gicon = Gio.icon_new_for_string(snapFileContents);
-			return new St.Icon({
-				gicon,
-				style_class: "system-status-icon",
-				y_align: Clutter.ActorAlign.CENTER,
-			});
-		}
-		return new St.Icon({
-			icon_name: app_name,
-			style_class: "system-status-icon",
-			fallback_icon_name: "com."+app_name+".Client", // icon name for flatpak, in case it's not a native build
-		});
-	}
-
-	readSnapFile(app_name) {
-		try {
-			const [ok, contents] = GLib.file_get_contents(
-				"/var/lib/snapd/desktop/applications/"+app_name+"_"+app_name+".desktop",
-			);
-			if (!ok) {
-				return false;
-			}
-			const matched = String.fromCharCode(...contents).match(/Icon=(.*)\n/m);
-			return matched ? matched[1] : false;
-		} catch (error) {
-			return false;
-		}
-	}
-
 	_disable(){
-		this.ui.get("box").destroy();
-		//this.remove_child(this.buttonText);
+		this.remove_child(this.buttonText);
 		this._removeTimeout();
 	}
 }
 );
 
 class Player {
-	constructor(address){
-		this.address = address;
-		this.playbackStatus = getPlayerStatus(address);
-		this.statusTimestamp = new Date().getTime();
-	}
-	update(){
-		let playbackStatus = getPlayerStatus(this.address);
+        constructor(address){
+                this.address = address;
+                this.playbackStatus = getPlayerStatus(address);
+                this.statusTimestamp = new Date().getTime();
+        }
+        update(){
+                let playbackStatus = getPlayerStatus(this.address);
 
-		if(this.playbackStatus != playbackStatus){
-			this.playbackStatus = playbackStatus;
-			this.statusTimestamp = new Date().getTime();
-		}
-	}
+                if(this.playbackStatus != playbackStatus){
+                        this.playbackStatus = playbackStatus;
+                        this.statusTimestamp = new Date().getTime();
+                }
+        }
 }
 
 function getMetadata(address,field){
@@ -322,7 +265,6 @@ function getMetadata(address,field){
 		let metadataField = "";
 		if(field == "")
 			return metadataField
-
 		try{
 			if(field == "xesam:artist")
 				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
@@ -417,3 +359,4 @@ function removeTextPausedIsActive(player){
 	}
 	return false
 }
+
