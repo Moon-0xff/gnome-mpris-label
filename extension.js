@@ -6,7 +6,7 @@ const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
-const { IconHandler } = CurrentExtension.imports.icons;
+const { getIcon } = CurrentExtension.imports.icons;
 
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
@@ -65,7 +65,11 @@ class MprisLabel extends PanelMenu.Button {
 		});
 		this.add_child(this.box);
 
-		this.icon = new IconHandler().getIcon("firefox");
+		this.icon = getIcon("firefox");
+		this.box.add_child(this.icon);
+		this.box.remove_child(this.icon);
+
+		this.icon = getIcon("rhythmbox");
 		this.box.add_child(this.icon);
 
 		this.buttonText = new St.Label({
