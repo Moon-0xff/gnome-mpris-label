@@ -65,13 +65,6 @@ class MprisLabel extends PanelMenu.Button {
 		});
 		this.add_child(this.box);
 
-		this.icon = getIcon("firefox");
-		this.box.add_child(this.icon);
-		this.box.remove_child(this.icon);
-
-		this.icon = getIcon("rhythmbox");
-		this.box.add_child(this.icon);
-
 		this.buttonText = new St.Label({
 			text: "",
 			y_align: Clutter.ActorAlign.CENTER
@@ -154,6 +147,12 @@ class MprisLabel extends PanelMenu.Button {
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
+
+		if (this.icon)
+			this.box.remove_child(this.icon);
+		this.icon = getIcon();
+		this.box.add_child(this.icon);
+		
 		
 		this._removeTimeout();
 		
