@@ -58,7 +58,11 @@ class MprisLabel extends PanelMenu.Button {
 		EXTENSION_INDEX = this.settings.get_int('extension-index');
 		EXTENSION_PLACE = this.settings.get_string('extension-place');
 
-		this.box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+		this.box = new St.BoxLayout({
+			style: "padding-left: " + LEFT_PADDING + "px;"
+			+ "padding-right: " + RIGHT_PADDING + "px;",
+			x_align: Clutter.ActorAlign.FILL
+		});
 		this.add_child(this.box);
 
 		this.icon = new IconHandler().getIcon("firefox");
@@ -109,7 +113,7 @@ class MprisLabel extends PanelMenu.Button {
 	_onPaddingChanged(){
 		LEFT_PADDING = this.settings.get_int('left-padding');
 		RIGHT_PADDING = this.settings.get_int('right-padding');
-		this.buttonText.set_style("padding-left: " + LEFT_PADDING + "px;"
+		this.box.set_style("padding-left: " + LEFT_PADDING + "px;"
 		+ "padding-right: " + RIGHT_PADDING + "px; ");
 	}
 
