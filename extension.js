@@ -6,7 +6,7 @@ const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
-const { getIcon } = CurrentExtension.imports.icons;
+const { fallbackIcon,getIcon } = CurrentExtension.imports.icons;
 
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
 	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
@@ -150,10 +150,13 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (this.icon)
 			this.box.remove_child(this.icon);
-		this.icon = getIcon();
-		this.box.add_child(this.icon);
-		
-		
+		if (this.player)
+			this.icon = getIcon(this.player.address);
+		if (this.icon != null | undefined)
+			this.box.add_child(this.icon);
+		else
+			this.box.add_child(fallbackIcon);
+
 		this._removeTimeout();
 		
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
