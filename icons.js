@@ -81,7 +81,7 @@ var getIcon = function getIcon(playerAddress){
 function matchWithDesktopEntries(suspectAppName){
 	let matchedEntries = Gio.DesktopAppInfo.search(suspectAppName);
 
-	if(!matchedEntries[0][0]){
+	if(matchedEntries.length === 0){
 		return null
 	}
 
