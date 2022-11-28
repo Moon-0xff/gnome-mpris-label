@@ -254,7 +254,11 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_disable(){
-		this.remove_child(this.buttonText);
+		if(this.icon)
+			this.box.remove_child(this.icon);
+
+		this.box.remove_child(this.buttonText);
+		this.remove_child(this.box);
 		this._removeTimeout();
 	}
 }
