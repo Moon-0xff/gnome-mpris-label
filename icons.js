@@ -15,7 +15,7 @@ var getIcon = function getIcon(playerAddress){
 		return fallbackIcon
 
 	// Try to get the desktop entry string from DBus
-	let desktopEntry = getDesktopEntry(playerAddress);
+	let playerDesktopEntry = getDesktopEntry(playerAddress);
 
 	// Get desktop entries that match DBus first "element" after org.mpris.MediaPlayer2.Player
 	let addressWithoutMPRIS =
