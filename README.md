@@ -19,7 +19,7 @@ Down below there's a list of stuff you can help me with, I'm not actively workin
 
 ## To do List / Help Wanted
 
-- Add an option to include application icons alongside the label
+- Add an option to include application icons alongside the label ([Active pull request](https://github.com/Moon-0xff/gnome-mpris-label/pull/5))
 - Add a user definable filter list (regex) for mpris sources
 - Add an option to select active player by a dropdown menu
 - Add an option to pause a player by clicking the label when no other mpris player is avaliable
@@ -32,3 +32,4 @@ Note: you can also [install it from extensions.gnome.org](https://extensions.gno
 - Rename it to `mprisLabel@moon-0xff.github.com`
 - Move it to your gnome-shell extensions folder. Default path is `~/.local/share/gnome-shell/extensions/`
 - Restart GNOME and it should be enabled by default, check tweaks or extensions if it's not
+
