@@ -4,32 +4,14 @@ const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
+const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
-	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
-	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
-	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,REMOVE_TEXT_PAUSED_DELAY,
+const {getDBusList,getPlayerStatus} = CurrentExtension.imports.dbus;
+const {buildLabel} = CurrentExtension.imports.label;
+
+let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,
+	EXTENSION_PLACE,REFRESH_RATE,
 	AUTO_SWITCH_TO_MOST_RECENT;
-
-let removeTextPausedDelayStamp = null;
-let removeTextPlayerTimestamp = 0;
-
-const mprisInterface = `
-<node>
-	<interface name="org.mpris.MediaPlayer2.Player">
-		<property name="Metadata" type="a{sv}" access="read"/>
-		<property name="PlaybackStatus" type="s" access="read"/>
-	</interface>
-</node>`
-
-const dBusInterface = `
-<node>
-	<interface name="org.freedesktop.DBus">
-		<method name="ListNames">
-			<arg direction="out" type="as"/>
-		</method>
-	</interface>
-</node>`
 
 let indicator = null;
 
@@ -124,16 +106,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_refresh() {
-		MAX_STRING_LENGTH = this.settings.get_int('max-string-length');
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
-		BUTTON_PLACEHOLDER = this.settings.get_string('button-placeholder');
-		REMOVE_REMASTER_TEXT = this.settings.get_boolean('remove-remaster-text');
-		DIVIDER_STRING = this.settings.get_string('divider-string');
-		FIRST_FIELD = this.settings.get_string('first-field');
-		SECOND_FIELD = this.settings.get_string('second-field');
-		LAST_FIELD = this.settings.get_string('last-field');
-		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
-		REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this._updatePlayerList();
@@ -196,37 +169,12 @@ class MprisLabel extends PanelMenu.Button {
 			if(this.player == null || undefined)
 				this.buttonText.set_text("");
 			else
-				this.buttonText.set_text(this._buildLabel());
+				this.buttonText.set_text(buildLabel(this.player,this.activePlayers));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
 			this.buttonText.set_text("");
 		}
-	}
-
-	_buildLabel(){
-		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-			if(removeTextPausedIsActive(this.player)){
-				if(this.activePlayers.length == 0)
-					return ""
-				return BUTTON_PLACEHOLDER
-			}
-		}
-
-		let labelstring =
-			getMetadata(this.player.address,FIRST_FIELD)+
-			getMetadata(this.player.address,SECOND_FIELD)+
-			getMetadata(this.player.address,LAST_FIELD);
-
-		labelstring =
-			labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
-
-		if(labelstring.length == 0){
-			if (this.activePlayers.length == 0)
-				return ""
-			return BUTTON_PLACEHOLDER
-		}
-		return labelstring
 	}
 
 	_removeTimeout() {
@@ -257,106 +205,5 @@ class Player {
                         this.statusTimestamp = new Date().getTime();
                 }
         }
-}
-
-function getMetadata(address,field){
-		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");
-		let metadataField = "";
-		if(field == "")
-			return metadataField
-		try{
-			if(field == "xesam:artist")
-				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
-			else
-				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_string()[0]);
-		}
-		finally{
-			return metadataField
-		}
-}
-
-function getDBusList(){
-	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
-	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
-	let dBusList = dBusProxy.ListNamesSync()[0];
-	return dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
-}
-
-function getPlayerStatus(playerAddress) {
-	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
-	return statusProxy.PlaybackStatus;
-}
-
-function parseMetadataField(data) {
-	if (data.length == 0)
-		return ""
-
-	if (data.includes("xesam:") || data.includes("mpris:"))
-		return ""
-	
-	//Replaces every instance of " | "
-	if(data.includes(" | "))
-		data = data.replace(/ \| /g, " / ");
-
-	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
-
-	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
-	if (data.length > MAX_STRING_LENGTH){
-		data = data.substring(0, MAX_STRING_LENGTH);
-		let lastIndex = data.lastIndexOf(" ");
-		if(lastIndex == -1)
-			lastIndex = data.length;
-
-		data = data.substring(0, lastIndex) + "...";
-	}
-
-	data += DIVIDER_STRING;
-
-	return data
-}
-
-function removeRemasterText(datastring) {
-	if(!REMOVE_REMASTER_TEXT)
-		return datastring
-		
-	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
-
-	if (!matchedSubString)
-		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
-
-	if (!matchedSubString)
-		return datastring //returns <datastring> unaltered if both matches were not successful
-
-	if(!matchedSubString[0].match(/Remaster/i))
-		return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
-
-	datastring = datastring.replace(matchedSubString[0],"");
-
-	if (datastring.charAt(datastring.length-1) == " ")
-		datastring = datastring.substring(0,datastring.length-1); 
-
-	return datastring
-}
-
-function removeTextPausedIsActive(player){
-	if (REMOVE_TEXT_PAUSED_DELAY <= 0){
-		return true
-	}
-
-	if (player.statusTimestamp != removeTextPlayerTimestamp && removeTextPausedDelayStamp == null){
-		removeTextPausedDelayStamp = new Date().getTime() / 1000;
-		return false
-	}
-
-	let timeNow = new Date().getTime() / 1000;
-	if(removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
-		removeTextPausedDelayStamp = null;
-		removeTextPlayerTimestamp = player.statusTimestamp;
-		return true
-	}
-	return false
 }
 
