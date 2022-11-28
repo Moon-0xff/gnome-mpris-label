@@ -147,20 +147,31 @@ class MprisLabel extends PanelMenu.Button {
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
-
-		if (this.icon)
-			this.box.remove_child(this.icon);
-		if (this.player)
-			this.icon = getIcon(this.player.address);
-		if (this.icon != null | undefined)
-			this.box.add_child(this.icon);
-		else
-			this.box.add_child(fallbackIcon);
+		this._setIcon();
 
 		this._removeTimeout();
 		
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
+	}
+
+	_setIcon(){
+		if (this.icon){
+			this.box.remove_child(this.icon)
+		}
+
+		if (REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
+			if(removeTextPausedIsActive(this.player))
+				return
+		}
+		
+		if (this.player)
+			this.icon = getIcon(this.player.address)
+
+		if (this.icon != null | undefined)
+			this.box.add_child(this.icon)
+		else
+			this.box.add_child(fallbackIcon)
 	}
 
 	_updatePlayerList(){
