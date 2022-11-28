@@ -38,14 +38,16 @@ var getIcon = function getIcon(playerAddress){
 	let suspectAppName =
 		addressWithoutMPRIS.substring(0,firstDot);
 
-	// Try to guess desktop entry by DBus address
+	// get desktop entries that match suspectAppName
 	DBusAddressMatches = matchWithDesktopEntries(suspectAppName);
 
-	// If provided, try to guess desktop entry by DBus desktop entry string
+	// get desktop entries that match playerDesktopEntry
 	if (playerDesktopEntry){
 		DBusDesktopEntryMatches = matchWithDesktopEntries(playerDesktopEntry);
 
+	guessingGame(DBusAddressMatches,DBusDesktopEntryMatches);
 	guessByActiveApps(DBusAddressMatches,DBusDesktopEntryMatches);
+	//compare the results of guessingGame and guessByActiveApps or prefer one
 
 	// get the icon name of the best match
 	let bestMatchEntry = Gio.DesktopAppInfo.new(bestMatch);
@@ -69,6 +71,10 @@ function matchWithDesktopEntries(suspectAppName){
 	}
 
 	return matchedEntries
+}
+
+function guessingGame(addressMatches,DBusEntryMatches){
+	//Try to guess what desktop entry we should use
 }
 
 function guessByActiveApps(addressMatch,DBusEntryMatch){
