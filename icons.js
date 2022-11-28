@@ -44,25 +44,8 @@ var getIcon = function getIcon(playerAddress){
 	// If provided, try to guess desktop entry by DBus desktop entry string
 	if (playerDesktopEntry){
 		DBusDesktopEntryMatches = matchWithDesktopEntries(playerDesktopEntry);
-	}
-	// If no matches, return fallbackIcon
-	if ( DBusAddressMatches == null && DBusDesktopEntryMatches == null ){
-		return fallbackIcon
-	}
-	// If only one guess returned matches, assign the fist element as bestMatch
-	else if ( (DBusAddressMatches || DBusDesktopEntryMatches) != null ){
-		if (DBusAddressMatches != null){
-			bestMatch = DBusAddressMatches[0][0];
-		}
-		else if (DBusDesktopEntryMatches != null){
-			bestMatch = DBusDesktopEntryMatches[0][0];
-		}
-	}
-	// If both returned matches, compare them
-	else if ( (DBusAddressMatches != null) && (DBusDesktopEntryMatches != null || undefined) ){
-		//how?
-		bestMatch = DBusDesktopEntryMatches[0][0];
-	}
+
+	guessByActiveApps(DBusAddressMatches,DBusDesktopEntryMatches);
 
 	// get the icon name of the best match
 	let bestMatchEntry = Gio.DesktopAppInfo.new(bestMatch);
@@ -87,3 +70,35 @@ function matchWithDesktopEntries(suspectAppName){
 
 	return matchedEntries
 }
+
+function guessByActiveApps(addressMatch,DBusEntryMatch){
+	let appSystem = Shell.AppSystem.get_default();
+	let runningApps = appSystem.get_running();
+	let appInfos = [];
+
+	runningApps.forEach(app => {
+		let info = app.get_app_info();
+		appInfos.push(info);
+	});
+
+	let addressMatch = matchWithDekstopEntries(suspectFromAddress);
+	let DBusEntryMatch;
+
+	if (suspectFromDBusEntry)
+		DBusEntryMatch = matchWithDesktopEntries(suspectFromDBusEntry);
+
+	let bestMatch;
+
+	//if no matches, return
+	if (addressMatch == null && DBusEntryMatch == null || undefined)
+		return
+
+	//let's assume DBusEntry is better (if exists)
+	if (DBusEntryMatch)
+		bestMatch = DBusEntryMatch[0][0];
+	else
+		bestMatch = addressMatch[0][0];
+
+	//now let's try to find bestMatch in runningApps
+}
+
