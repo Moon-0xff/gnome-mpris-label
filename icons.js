@@ -1,12 +1,9 @@
 const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 const Panel = imports.ui.panel;
+const ExtensionUtils = imports.misc.extensionUtils;
+const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-const entryInterface = `
-<node>
-	<interface name="org.mpris.MediaPlayer2">
-		<property name="DesktopEntry" type="s" access="read"/>
-	</interface>
-</node>`
+const {getDesktopEntry} = CurrentExtension.imports.dbus;
 
 var fallbackIcon = new St.Icon({
 	style_class: 'system-status-icon',
@@ -18,14 +15,7 @@ var getIcon = function getIcon(playerAddress){
 		return fallbackIcon
 
 	// Try to get the desktop entry string from DBus
-	try {
-		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
-		let entryProxy = entryWrapper(Gio.DBus.session,playerAddress,"/org/mpris/MediaPlayer2");
-		playerDesktopEntry = entryProxy.DesktopEntry;
-	}
-	catch {
-		playerDesktopEntry = "";
-	}
+	let desktopEntry = getDesktopEntry(playerAddress);
 
 	// Get desktop entries that match DBus first "element" after org.mpris.MediaPlayer2.Player
 	let addressWithoutMPRIS =
