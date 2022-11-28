@@ -130,14 +130,19 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setIcon(){
 		if (this.icon){
-			this.box.remove_child(this.icon)
+			this.box.remove_child(this.icon);
+			this.box.add_child(fallbackIcon);
 		}
 
-		if (REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
+		if (fallbackIcon){
+			this.box.remove_child(fallbackIcon);
+		}
+
+		if (REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){//also remove icon when paused (no longer works)
 			if(removeTextPausedIsActive(this.player))
 				return
 		}
-		
+
 		if (this.player)
 			this.icon = getIcon(this.player.address)
 
