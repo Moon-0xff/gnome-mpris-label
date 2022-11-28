@@ -7,7 +7,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 const {getDBusList,getPlayerStatus} = CurrentExtension.imports.dbus;
-const {buildLabel} = CurrentExtension.imports.label;
+const {LabelBuilder} = CurrentExtension.imports.label;
 const { fallbackIcon,getIcon } = CurrentExtension.imports.icons;
 
 let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
@@ -61,6 +61,8 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
+
+		this.labelBuilder = new LabelBuilder();
 
 		this.playerList = [];
 
@@ -202,7 +204,7 @@ class MprisLabel extends PanelMenu.Button {
 			if(this.player == null || undefined)
 				this.buttonText.set_text("");
 			else
-				this.buttonText.set_text(buildLabel(this.player,this.activePlayers));
+				this.buttonText.set_text(this.labelBuilder.buildLabel(this.player,this.activePlayers));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
