@@ -7,7 +7,7 @@ const {getDesktopEntry} = CurrentExtension.imports.dbus;
 
 var fallbackIcon = new St.Icon({
 	style_class: 'system-status-icon',
-	icon_name: 'audio-volume-high'
+	icon_name: 'audio-volume-high',
 });
 
 var getIcon = function getIcon(playerAddress){
@@ -29,13 +29,13 @@ var getIcon = function getIcon(playerAddress){
 
 	let DBusAddressMatches = matchWithDesktopEntries(suspectAppName);
 
+	let bestMatch = DBusAddressMatches;//default
 	// Get desktop entries that match the one provided by DBus (if avaliable)
 	if (playerDesktopEntry){
-		DBusDesktopEntryMatches = matchWithDesktopEntries(playerDesktopEntry);
+		let DBusDesktopEntryMatches = matchWithDesktopEntries(playerDesktopEntry);
+		// Guess the best match
+		let bestMatch = compareMatches(DBusAddressMatches,DBusDesktopEntryMatches);
 	}
-
-	// Guess the best match
-	let bestMatch = compareMatches(DBusAddressMatches,DBusDesktopEntryMatches);
 
 	// If there's no best match, return fallbackIcon
 	if (bestMatch == null)
@@ -58,7 +58,7 @@ var getIcon = function getIcon(playerAddress){
 function compareMatches(DBusAddressMatches,DBusDesktopEntryMatches){
 	// If no matches, return null
 	if ( DBusAddressMatches == null && DBusDesktopEntryMatches == null ){
-		return null
+		return null;
 	}
 	// If only one guess returned matches, assign the fist element as bestMatch
 	else if ( (DBusAddressMatches || DBusDesktopEntryMatches) != null ){
@@ -71,7 +71,7 @@ function compareMatches(DBusAddressMatches,DBusDesktopEntryMatches){
 	}
 	// If both returned matches, compare them
 	else if ( (DBusAddressMatches != null) && (DBusDesktopEntryMatches != null || undefined) ){
-		//how?
+		//how? let's identify the most reliable and if it's non empty, use it.
 		bestMatch = DBusDesktopEntryMatches;
 	}
 
@@ -81,9 +81,14 @@ function compareMatches(DBusAddressMatches,DBusDesktopEntryMatches){
 function matchWithDesktopEntries(suspectAppName){
 	let matchedEntries = Gio.DesktopAppInfo.search(suspectAppName);
 
-	if(matchedEntries.length === 0){
-		return null;
-	}
+	if(!matchedEntries.length === 0)
+		return matchedEntries[0][0];
+
+	if (suspectAppName == "chromium") //retry with the name google-chrome if as both browsers identify as chromium
+		matchedEntries = Gio.DesktopAppInfo.search("google-chrome");
+	
+	if(matchedEntries.length === 0)
+		return null
 
 	return matchedEntries[0][0];
 }
