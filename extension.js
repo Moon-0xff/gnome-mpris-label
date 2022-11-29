@@ -230,19 +230,19 @@ class MprisLabel extends PanelMenu.Button {
 );
 
 class Player {
-        constructor(address){
-                this.address = address;
-                this.playbackStatus = getPlayerStatus(address);
-                this.statusTimestamp = new Date().getTime();
+	constructor(address){
+		this.address = address;
+		this.playbackStatus = getPlayerStatus(address);
+		this.statusTimestamp = new Date().getTime();
 		this.icon = getIcon(address);
-        }
-        update(){
-                let playbackStatus = getPlayerStatus(this.address);
+	}
+	update(){
+		let playbackStatus = getPlayerStatus(this.address);
 
-                if(this.playbackStatus != playbackStatus){
-                        this.playbackStatus = playbackStatus;
-                        this.statusTimestamp = new Date().getTime();
-                }
-        }
+		if(this.playbackStatus != playbackStatus){
+			this.playbackStatus = playbackStatus;
+			this.statusTimestamp = new Date().getTime();
+		}
+	}
 }
 
