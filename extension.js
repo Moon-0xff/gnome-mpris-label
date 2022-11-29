@@ -8,13 +8,11 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 const {getDBusList,getPlayerStatus} = CurrentExtension.imports.dbus;
 const {LabelBuilder} = CurrentExtension.imports.label;
-const { fallbackIcon,getIcon } = CurrentExtension.imports.icons;
+const { getIcon } = CurrentExtension.imports.icons;
 
-let LEFT_PADDING,RIGHT_PADDING,MAX_STRING_LENGTH,EXTENSION_INDEX,
-	EXTENSION_PLACE,REFRESH_RATE,BUTTON_PLACEHOLDER,
-	REMOVE_REMASTER_TEXT,DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,
-	LAST_FIELD,REMOVE_TEXT_WHEN_PAUSED,REMOVE_TEXT_PAUSED_DELAY,
-	AUTO_SWITCH_TO_MOST_RECENT;
+let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,EXTENSION_PLACE,
+	REFRESH_RATE,AUTO_SWITCH_TO_MOST_RECENT,
+	REMOVE_TEXT_WHEN_PAUSED;
 
 let indicator = null;
 
@@ -118,6 +116,7 @@ class MprisLabel extends PanelMenu.Button {
 	_refresh() {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 
 		this._updatePlayerList();
 		this._pickPlayer();
@@ -131,27 +130,27 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_setIcon(){
-		if (this.icon){
-			this.box.remove_child(this.icon);
-			this.box.add_child(fallbackIcon);
+		if (!this.player){
+			if (this.icon){
+				this.box.remove_child(this.icon);
+				this.icon = null;
+			}
+			return
 		}
 
-		if (fallbackIcon){
-			this.box.remove_child(fallbackIcon);
+		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
+			if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
+				this.box.remove_child(this.icon);
+				this.icon = null;
+			}
+			return
 		}
 
-		if (REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){//also remove icon when paused (no longer works)
-			if(removeTextPausedIsActive(this.player))
-				return
-		}
-
-		if (this.player)
-			this.icon = getIcon(this.player.address)
+		if(!this.icon)
+			this.icon = getIcon(this.player.address);
 
 		if (this.icon != null | undefined)
-			this.box.add_child(this.icon)
-		else
-			this.box.add_child(fallbackIcon)
+			this.box.add_child(this.icon);
 	}
 
 	_updatePlayerList(){

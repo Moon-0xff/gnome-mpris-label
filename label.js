@@ -23,15 +23,15 @@ function getSettings(){
 
 var LabelBuilder = class LabelBuilder {
 	constructor(){
-		let removeTextPausedDelayStamp = null;
-		let removeTextPlayerTimestamp = 0;
+		this.removeTextPausedDelayStamp = null;
+		this.removeTextPlayerTimestamp = 0;
 	}
 
 	buildLabel(player,activePlayers){
 		getSettings();
 
 		if(REMOVE_TEXT_WHEN_PAUSED && player.playbackStatus != "Playing"){
-			if(removeTextPausedIsActive(player)){
+			if(this.removeTextPausedIsActive(player)){
 				if(activePlayers.length == 0)
 					return ""
 				return BUTTON_PLACEHOLDER
@@ -82,15 +82,15 @@ var LabelBuilder = class LabelBuilder {
 			return true
 		}
 
-		if (player.statusTimestamp != removeTextPlayerTimestamp && removeTextPausedDelayStamp == null){
-			removeTextPausedDelayStamp = new Date().getTime() / 1000;
+		if (player.statusTimestamp != this.removeTextPlayerTimestamp && this.removeTextPausedDelayStamp == null){
+			this.removeTextPausedDelayStamp = new Date().getTime() / 1000;
 			return false
 		}
 
 		let timeNow = new Date().getTime() / 1000;
-		if(removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
-			removeTextPausedDelayStamp = null;
-			removeTextPlayerTimestamp = player.statusTimestamp;
+		if(this.removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
+			this.removeTextPausedDelayStamp = null;
+			this.removeTextPlayerTimestamp = player.statusTimestamp;
 			return true
 		}
 		return false
