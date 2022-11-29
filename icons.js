@@ -7,7 +7,7 @@ const {getDesktopEntry} = CurrentExtension.imports.dbus;
 
 var fallbackIcon = new St.Icon({
 	style_class: 'system-status-icon',
-	icon_name: 'rhythmbox'
+	icon_name: 'audio-volume-high'
 });
 
 var getIcon = function getIcon(playerAddress){
