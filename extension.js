@@ -147,7 +147,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		if(!this.icon)
-			this.icon = getIcon(this.player.address);
+			this.icon = this.player.icon
 
 		if (this.icon != null | undefined)
 			this.box.add_child(this.icon);
@@ -234,6 +234,7 @@ class Player {
                 this.address = address;
                 this.playbackStatus = getPlayerStatus(address);
                 this.statusTimestamp = new Date().getTime();
+		this.icon = getIcon(address);
         }
         update(){
                 let playbackStatus = getPlayerStatus(this.address);
