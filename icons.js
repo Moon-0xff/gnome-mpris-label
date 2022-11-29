@@ -7,7 +7,7 @@ const {getDesktopEntry} = CurrentExtension.imports.dbus;
 
 var fallbackIcon = new St.Icon({
 	style_class: 'system-status-icon',
-	icon_name: 'audio-volume-high',
+	icon_name: 'audio-volume-high'
 });
 
 var getIcon = function getIcon(playerAddress){
@@ -82,10 +82,10 @@ function matchWithDesktopEntries(suspectAppName){
 	let matchedEntries = Gio.DesktopAppInfo.search(suspectAppName);
 
 	if(!matchedEntries.length === 0)
-		return matchedEntries[0][0];
+		return matchedEntries[0][0]
 
 	if (suspectAppName == "chromium") //retry with the name google-chrome if as both browsers identify as chromium
-		matchedEntries = Gio.DesktopAppInfo.search("google-chrome");
+		matchedEntries = Gio.DesktopAppInfo.search("google-chrome")
 	
 	if(matchedEntries.length === 0)
 		return null
