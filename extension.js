@@ -12,7 +12,7 @@ const { getIcon } = CurrentExtension.imports.icons;
 
 let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,EXTENSION_PLACE,
 	REFRESH_RATE,AUTO_SWITCH_TO_MOST_RECENT,
-	REMOVE_TEXT_WHEN_PAUSED;
+	REMOVE_TEXT_WHEN_PAUSED,SHOW_ICON;
 
 let indicator = null;
 
@@ -37,6 +37,7 @@ class MprisLabel extends PanelMenu.Button {
 		RIGHT_PADDING = this.settings.get_int('right-padding');
 		EXTENSION_INDEX = this.settings.get_int('extension-index');
 		EXTENSION_PLACE = this.settings.get_string('extension-place');
+		SHOW_ICON = this.settings.get_boolean('show-icon');
 
 		this.box = new St.BoxLayout({
 			style: "padding-left: " + LEFT_PADDING + "px;"
@@ -57,6 +58,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
+		this.settings.connect('changed::show-icon',this._updateSetIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -121,7 +123,8 @@ class MprisLabel extends PanelMenu.Button {
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
-		this._setIcon();
+		if (SHOW_ICON)
+			this._setIcon()
 
 		this._removeTimeout();
 		
@@ -151,6 +154,17 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (this.icon != null | undefined)
 			this.box.add_child(this.icon);
+	}
+
+	_updateSetIcon(){
+		SHOW_ICON = this.settings.get_boolean('show-icon');
+		if (this.icon){
+			this.box.remove_child(this.icon);
+			this.icon = null;
+		}
+
+		if (SHOW_ICON)
+			this._setIcon()
 	}
 
 	_updatePlayerList(){
