@@ -23,8 +23,9 @@ var getIcon = function getIcon(playerAddress){
 
 	let firstDot = addressWithoutMPRIS.indexOf(".");
 
-	let suspectAppName =
-		addressWithoutMPRIS.substring(0,firstDot);
+	let suspectAppName = addressWithoutMPRIS
+	if (firstDot > 1)
+		suspectAppName = addressWithoutMPRIS.substring(0,firstDot);
 
 	let DBusAddressMatches = matchWithDesktopEntries(suspectAppName);
 
@@ -62,17 +63,18 @@ function compareMatches(DBusAddressMatches,DBusDesktopEntryMatches){
 	// If only one guess returned matches, assign the fist element as bestMatch
 	else if ( (DBusAddressMatches || DBusDesktopEntryMatches) != null ){
 		if (DBusAddressMatches != null){
-			bestMatch = DBusAddressMatches[0][0];
+			bestMatch = DBusAddressMatches;
 		}
 		else if (DBusDesktopEntryMatches != null){
-			bestMatch = DBusDesktopEntryMatches[0][0];
+			bestMatch = DBusDesktopEntryMatches;
 		}
 	}
 	// If both returned matches, compare them
 	else if ( (DBusAddressMatches != null) && (DBusDesktopEntryMatches != null || undefined) ){
 		//how?
-		bestMatch = DBusDesktopEntryMatches[0][0];
+		bestMatch = DBusDesktopEntryMatches;
 	}
+
 	return bestMatch
 }
 
@@ -80,8 +82,8 @@ function matchWithDesktopEntries(suspectAppName){
 	let matchedEntries = Gio.DesktopAppInfo.search(suspectAppName);
 
 	if(matchedEntries.length === 0){
-		return null
+		return null;
 	}
 
-	return matchedEntries
+	return matchedEntries[0][0];
 }
