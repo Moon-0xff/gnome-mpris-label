@@ -7,7 +7,8 @@ const {getDesktopEntry} = CurrentExtension.imports.dbus;
 
 var fallbackIcon = new St.Icon({
 	style_class: 'system-status-icon',
-	icon_name: 'audio-volume-high'
+	icon_name: 'audio-volume-high',
+	style: "padding-left: 0px;padding-right: 0px;"
 });
 
 var getIcon = function getIcon(playerAddress){
@@ -51,7 +52,8 @@ var getIcon = function getIcon(playerAddress){
 	return new St.Icon({
 		icon_name: iconName,
 		style_class: 'system-status-icon',
-		y_align: Clutter.ActorAlign.CENTER
+		y_align: Clutter.ActorAlign.CENTER,
+		style: "padding-left: 0px;padding-right: 0px;"
 	});
 }
 

@@ -40,10 +40,9 @@ class MprisLabel extends PanelMenu.Button {
 		SHOW_ICON = this.settings.get_boolean('show-icon');
 
 		this.box = new St.BoxLayout({
-			style: "padding-left: " + LEFT_PADDING + "px;"
-			+ "padding-right: " + RIGHT_PADDING + "px;",
 			x_align: Clutter.ActorAlign.FILL
 		});
+		this._onPaddingChanged();//apply padding
 		this.add_child(this.box);
 
 		this.buttonText = new St.Label({
@@ -97,8 +96,16 @@ class MprisLabel extends PanelMenu.Button {
 	_onPaddingChanged(){
 		LEFT_PADDING = this.settings.get_int('left-padding');
 		RIGHT_PADDING = this.settings.get_int('right-padding');
+
+		if (SHOW_ICON){
+			if (RIGHT_PADDING < 5)
+				RIGHT_PADDING = 0
+			else
+				RIGHT_PADDING = RIGHT_PADDING - 5
+		}
+
 		this.box.set_style("padding-left: " + LEFT_PADDING + "px;"
-		+ "padding-right: " + RIGHT_PADDING + "px; ");
+			+ "padding-right: " + RIGHT_PADDING  + "px; ");
 	}
 
 	_updateTrayPosition(){
