@@ -23,9 +23,9 @@ var getIcon = function getIcon(playerAddress){
 
 	let firstDot = addressWithoutMPRIS.indexOf(".");
 
-	let suspectAppName = addressWithoutMPRIS
-	if (firstDot > 1)
-		suspectAppName = addressWithoutMPRIS.substring(0,firstDot);
+	let suspectAppName = addressWithoutMPRIS;
+	if (firstDot > 0)
+		suspectAppName = addressWithoutMPRIS.substring(0,firstDot)
 
 	let DBusAddressMatches = matchWithDesktopEntries(suspectAppName);
 
@@ -57,9 +57,9 @@ var getIcon = function getIcon(playerAddress){
 
 function compareMatches(DBusAddressMatches,DBusDesktopEntryMatches){
 	// If no matches, return null
-	if ( DBusAddressMatches == null && DBusDesktopEntryMatches == null ){
+	if ( DBusAddressMatches == null && DBusDesktopEntryMatches == null )
 		return null;
-	}
+
 	// If only one guess returned matches, assign the fist element as bestMatch
 	else if ( (DBusAddressMatches || DBusDesktopEntryMatches) != null ){
 		if (DBusAddressMatches != null){
@@ -71,7 +71,7 @@ function compareMatches(DBusAddressMatches,DBusDesktopEntryMatches){
 	}
 	// If both returned matches, compare them
 	else if ( (DBusAddressMatches != null) && (DBusDesktopEntryMatches != null || undefined) ){
-		//how? let's identify the most reliable and if it's non empty, use it.
+		//how?
 		bestMatch = DBusDesktopEntryMatches;
 	}
 
