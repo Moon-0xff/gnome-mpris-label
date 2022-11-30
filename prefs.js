@@ -212,7 +212,7 @@ function buildPrefsWidget() {
 
     let removePausedTextDelayEntry = new Gtk.SpinButton({
         adjustment: new Gtk.Adjustment({
-            lower: 1,
+            lower: 0,
             upper: 10800, //3 hours
             step_increment: 1
         }),
