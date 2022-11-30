@@ -89,6 +89,9 @@ class MprisLabel extends PanelMenu.Button {
 		if (AUTO_SWITCH_TO_MOST_RECENT){
 			this.player.statusTimestamp = new Date().getTime();
 		}
+
+		if (SHOW_ICON)
+			this._updateSetIcon()
 	}
 
 	_onPaddingChanged(){
