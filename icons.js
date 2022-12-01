@@ -1,10 +1,15 @@
 const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 
 var getIcon = function getIcon(playerAddress){
-	let icon = new St.Icon({
+	const Config = imports.misc.config;
+	let icon_left_padding = 0;
+	if (Config.PACKAGE_VERSION.startsWith("3."))
+		icon_left_padding = 3
+
+		let icon = new St.Icon({
 		style_class: 'system-status-icon',
 		fallback_icon_name: 'audio-volume-high',
-		style: "padding-left: 0px;padding-right: 0px;"
+		style: "padding-left: " + icon_left_padding + "px;padding-right: 0px;"
 	});
 
 	if(playerAddress == null | undefined)
