@@ -130,11 +130,20 @@ class MprisLabel extends PanelMenu.Button {
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 
+		let lastAddress = null;
+		if (this.player)
+			lastAddress = this.player.address
+
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
-		if (SHOW_ICON)
-			this._setIcon()
+
+		let newAddress = null;
+		if (this.player)
+			newAddress = this.player.address
+
+		if ( newAddress != lastAddress )
+			this._updateSetIcon()
 
 		this._removeTimeout();
 		
@@ -143,13 +152,13 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_setIcon(){
-		if (!this.player){
-			if (this.icon){
-				this.box.remove_child(this.icon);
-				this.icon = null;
-			}
-			return
+		if (this.icon){
+			this.box.remove_child(this.icon);
+			this.icon = null;
 		}
+
+		if (!this.player)
+			return
 
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
 			if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
@@ -159,8 +168,7 @@ class MprisLabel extends PanelMenu.Button {
 			return
 		}
 
-		if(!this.icon)
-			this.icon = this.player.icon
+		this.icon = this.player.icon
 
 		if (this.icon != null | undefined)
 			this.box.add_child(this.icon);
@@ -168,10 +176,6 @@ class MprisLabel extends PanelMenu.Button {
 
 	_updateSetIcon(){
 		SHOW_ICON = this.settings.get_boolean('show-icon');
-		if (this.icon){
-			this.box.remove_child(this.icon);
-			this.icon = null;
-		}
 
 		if (SHOW_ICON)
 			this._setIcon()
@@ -208,8 +212,10 @@ class MprisLabel extends PanelMenu.Button {
 		let list = this.playerList;
 
 		if (AUTO_SWITCH_TO_MOST_RECENT){
-			if(this.activePlayers.length == 0)
-				return
+			if(this.activePlayers.length == 0){
+				this.player = null;
+				return;
+			}
 			list = this.activePlayers;
 		}
 
