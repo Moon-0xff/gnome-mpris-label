@@ -1,7 +1,7 @@
 const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
+const Config = imports.misc.config;
 
 var getIcon = function getIcon(playerAddress){
-	const Config = imports.misc.config;
 	let icon_left_padding = 0;
 	if (Config.PACKAGE_VERSION.startsWith("3."))
 		icon_left_padding = 3
@@ -21,9 +21,6 @@ var getIcon = function getIcon(playerAddress){
 	log("mpris-label: " + "addressSuspectName=(" + addressSuspectName + ")");
 
 	let suspectMatch = searchInDesktopEntries(addressSuspectName);
-
-	if(suspectMatch == null)
-		suspectMatch = searchInDesktopEntries(dBusEntrySuspectName);
 
 	if(suspectMatch == null)
 		return icon
