@@ -7,11 +7,12 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 const {getDBusList,getPlayerStatus} = CurrentExtension.imports.dbus;
-const {buildLabel} = CurrentExtension.imports.label;
+const {LabelBuilder} = CurrentExtension.imports.label;
+const { getIcon } = CurrentExtension.imports.icons;
 
-let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,
-	EXTENSION_PLACE,REFRESH_RATE,
-	AUTO_SWITCH_TO_MOST_RECENT;
+let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,EXTENSION_PLACE,
+	REFRESH_RATE,AUTO_SWITCH_TO_MOST_RECENT,
+	REMOVE_TEXT_WHEN_PAUSED,SHOW_ICON;
 
 let indicator = null;
 
@@ -36,23 +37,31 @@ class MprisLabel extends PanelMenu.Button {
 		RIGHT_PADDING = this.settings.get_int('right-padding');
 		EXTENSION_INDEX = this.settings.get_int('extension-index');
 		EXTENSION_PLACE = this.settings.get_string('extension-place');
+		SHOW_ICON = this.settings.get_boolean('show-icon');
+
+		this.box = new St.BoxLayout({
+			x_align: Clutter.ActorAlign.FILL
+		});
+		this._onPaddingChanged();//apply padding
+		this.add_child(this.box);
 
 		this.buttonText = new St.Label({
 			text: "",
-			style: "padding-left: " + LEFT_PADDING + "px;"
-			+ "padding-right: " + RIGHT_PADDING + "px; ",
-			y_align: Clutter.ActorAlign.CENTER,
-			x_align: Clutter.ActorAlign.FILL
+			y_align: Clutter.ActorAlign.CENTER
 		});
-		this.add_child(this.buttonText);
+		this.box.add_child(this.buttonText);
+
 		this.connect('button-press-event',this._cyclePlayers.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
+		this.settings.connect('changed::show-icon',this._updateSetIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
+
+		this.labelBuilder = new LabelBuilder();
 
 		this.playerList = [];
 
@@ -79,13 +88,24 @@ class MprisLabel extends PanelMenu.Button {
 		if (AUTO_SWITCH_TO_MOST_RECENT){
 			this.player.statusTimestamp = new Date().getTime();
 		}
+
+		if (SHOW_ICON)
+			this._updateSetIcon()
 	}
 
 	_onPaddingChanged(){
 		LEFT_PADDING = this.settings.get_int('left-padding');
 		RIGHT_PADDING = this.settings.get_int('right-padding');
-		this.buttonText.set_style("padding-left: " + LEFT_PADDING + "px;"
-		+ "padding-right: " + RIGHT_PADDING + "px; ");
+
+		if (SHOW_ICON){
+			if (RIGHT_PADDING < 5)
+				RIGHT_PADDING = 0
+			else
+				RIGHT_PADDING = RIGHT_PADDING - 5
+		}
+
+		this.box.set_style("padding-left: " + LEFT_PADDING + "px;"
+			+ "padding-right: " + RIGHT_PADDING  + "px; ");
 	}
 
 	_updateTrayPosition(){
@@ -108,15 +128,57 @@ class MprisLabel extends PanelMenu.Button {
 	_refresh() {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+
+		let lastAddress = null;
+		if (this.player)
+			lastAddress = this.player.address
 
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
-		
+
+		let newAddress = null;
+		if (this.player)
+			newAddress = this.player.address
+
+		if ( newAddress != lastAddress )
+			this._updateSetIcon()
+
 		this._removeTimeout();
 		
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
+	}
+
+	_setIcon(){
+		if (this.icon){
+			this.box.remove_child(this.icon);
+			this.icon = null;
+		}
+
+		if (!this.player)
+			return
+
+		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
+			if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
+				this.box.remove_child(this.icon);
+				this.icon = null;
+			}
+			return
+		}
+
+		this.icon = this.player.icon
+
+		if (this.icon != null | undefined)
+			this.box.add_child(this.icon);
+	}
+
+	_updateSetIcon(){
+		SHOW_ICON = this.settings.get_boolean('show-icon');
+
+		if (SHOW_ICON)
+			this._setIcon()
 	}
 
 	_updatePlayerList(){
@@ -150,8 +212,10 @@ class MprisLabel extends PanelMenu.Button {
 		let list = this.playerList;
 
 		if (AUTO_SWITCH_TO_MOST_RECENT){
-			if(this.activePlayers.length == 0)
-				return
+			if(this.activePlayers.length == 0){
+				this.player = null;
+				return;
+			}
 			list = this.activePlayers;
 		}
 
@@ -169,7 +233,7 @@ class MprisLabel extends PanelMenu.Button {
 			if(this.player == null || undefined)
 				this.buttonText.set_text("");
 			else
-				this.buttonText.set_text(buildLabel(this.player,this.activePlayers));
+				this.buttonText.set_text(this.labelBuilder.buildLabel(this.player,this.activePlayers));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -185,25 +249,30 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_disable(){
-		this.remove_child(this.buttonText);
+		if(this.icon)
+			this.box.remove_child(this.icon);
+
+		this.box.remove_child(this.buttonText);
+		this.remove_child(this.box);
 		this._removeTimeout();
 	}
 }
 );
 
 class Player {
-        constructor(address){
-                this.address = address;
-                this.playbackStatus = getPlayerStatus(address);
-                this.statusTimestamp = new Date().getTime();
-        }
-        update(){
-                let playbackStatus = getPlayerStatus(this.address);
+	constructor(address){
+		this.address = address;
+		this.playbackStatus = getPlayerStatus(address);
+		this.statusTimestamp = new Date().getTime();
+		this.icon = getIcon(address);
+	}
+	update(){
+		let playbackStatus = getPlayerStatus(this.address);
 
-                if(this.playbackStatus != playbackStatus){
-                        this.playbackStatus = playbackStatus;
-                        this.statusTimestamp = new Date().getTime();
-                }
-        }
+		if(this.playbackStatus != playbackStatus){
+			this.playbackStatus = playbackStatus;
+			this.statusTimestamp = new Date().getTime();
+		}
+	}
 }
 

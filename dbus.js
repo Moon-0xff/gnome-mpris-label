@@ -19,6 +19,24 @@ const dBusInterface = `
 	</interface>
 </node>`
 
+const entryInterface = `
+<node>
+        <interface name="org.mpris.MediaPlayer2">
+                <property name="DesktopEntry" type="s" access="read"/>
+        </interface>
+</node>`
+
+var getDesktopEntry = function getDesktopEntry(playerAddress){
+	try {
+		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
+		let entryProxy = entryWrapper(Gio.DBus.session,playerAddress,"/org/mpris/MediaPlayer2");
+		return entryProxy.DesktopEntry;
+	}
+	catch {
+		return ""
+	}
+}
+
 var getDBusList = function getDBusList(){
 	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
