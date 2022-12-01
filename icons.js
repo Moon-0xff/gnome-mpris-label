@@ -18,7 +18,7 @@ var getIcon = function getIcon(playerAddress){
 	let addressWithoutMPRIS = playerAddress.substring(23);
 	let addressSuspectName = getSuspectAppName(addressWithoutMPRIS);
 
-	log("mpris-label: " + "addressSuspectName=(" + addressSuspectName + ")");
+	//log("mpris-label: " + "addressSuspectName=(" + addressSuspectName + ")");
 
 	let suspectMatch = searchInDesktopEntries(addressSuspectName);
 
@@ -46,8 +46,8 @@ function getSuspectAppName(initialString){
 			filteredElements.push(element);
 	});
 
-	log("mpris-label: " + "initialString=(" + initialString +
-		") elements=(" + elements + ") filteredElements=(" + filteredElements + ")");
+	//log("mpris-label: " + "initialString=(" + initialString +
+	//	") elements=(" + elements + ") filteredElements=(" + filteredElements + ")");
 
 	if (filteredElements.length == 1)
 		return filteredElements[0]
