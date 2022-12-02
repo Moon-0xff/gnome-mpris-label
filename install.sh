@@ -9,7 +9,12 @@ mkdir -p $DEFAULT_INSTALL_DIR
 cd "$(dirname "$0")"
 printf "\e[32mCopying extension files to target directory:\n\e[0m"
 cp -Rv ./* $DEFAULT_INSTALL_DIR
-printf "\n\e[32mAll files copied. Please reload by logging back in if using Wayland or reload the shell (Alt + F2, r) if using X11\n\n\e[0m"
+
+if [ $XDG_SESSION_TYPE = "x11" ]; then
+	printf "\n\e[32mAll files copied. \nPlease reload the gnome-shell (shortcut Alt + F2, r) to load the extension.\n\n\e[0m"
+else
+	printf "\n\e[32mAll files copied. \nPlease log out and log back in again to load the extension.\n\n\e[0m"
+fi
 
 #keep terminal open if script run from file browser
 $SHELL
