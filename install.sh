@@ -16,6 +16,3 @@ else
 	printf "\n\e[32mAll files copied. \nPlease log out and log back in again to load the extension.\n\n\e[0m"
 fi
 cd $OLDPWD
-
-#keep terminal open if script run from file browser
-$SHELL
