@@ -30,7 +30,7 @@ Note: you can also [install it from extensions.gnome.org](https://extensions.gno
 - Clone this repository `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git`
 
 To install, either:
-- Run the install script `sh install.sh`
+- Run the install script `sh gnome-mpris-label/install.sh`
 
 or
 
