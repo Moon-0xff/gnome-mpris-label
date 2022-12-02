@@ -30,7 +30,7 @@ Note: you can also [install it from extensions.gnome.org](https://extensions.gno
 - Clone this repository `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git`
 - Switch to the latest version branch: `$ git checkout latest-version`  
   you can skip this step if you want a not-yet-finished version of the upcoming release. Although it could be broken or buggy
-- Run the installation script `sh gnome-mpris-label/install.sh`
+- Run the installation script `$ sh gnome-mpris-label/install.sh`
 
 or if you don't want to use the installation script:
 - Rename the `gnome-mpris-label` folder to `mprisLabel@moon-0xff.github.com`
