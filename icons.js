@@ -67,13 +67,13 @@ function searchInDesktopEntries(suspectAppName){
 
 	let matchedEntries = Gio.DesktopAppInfo.search(suspectAppName);
 
-	if(matchedEntries[0][0])
+	if(!matchedEntries.length === 0)
 		return matchedEntries[0][0]
 
-	if (suspectAppName == "chromium") //retry with the name google-chrome if as both browsers identify as chromium
+	if (suspectAppName == "chromium" && matchedEntries.length === 0) //retry with the name google-chrome if as both browsers identify as chromium
 		matchedEntries = Gio.DesktopAppInfo.search("google-chrome")
 	
-	if(!matchedEntries[0][0])
+	if(matchedEntries.length === 0)
 		return null
 
 	return matchedEntries[0][0];
