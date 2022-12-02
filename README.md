@@ -37,5 +37,5 @@ or
 - Rename it to `mprisLabel@moon-0xff.github.com`
 - Move it to your gnome-shell extensions folder. Default path is `~/.local/share/gnome-shell/extensions/`
 
-Finally, restart GNOME and it should be enabled by default, check tweaks or extensions if it's not
+Finally, restart GNOME and it should be enabled by default, check tweaks or extensions if it's not.
 
