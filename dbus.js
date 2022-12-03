@@ -50,7 +50,7 @@ var getPlayerStatus = function getPlayerStatus(playerAddress) {
 	return statusProxy.PlaybackStatus;
 }
 
-var getMetadata = function getMetadata(address,field){
+var getMetadata = function getMetadata(address,field){//could we split this function to source metadata array from DBus only once and split the string separately?
 		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");
 		let metadataField = "";
