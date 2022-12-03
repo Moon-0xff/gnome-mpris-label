@@ -20,24 +20,26 @@ const dBusInterface = `
 </node>`
 
 var getDBusList = function getDBusList(){
-	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
-	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
-	let dBusList = dBusProxy.ListNamesSync()[0];
+	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface); let start_time = new Date().getTime();log("mpris-label - -----------------------------------------------");
+	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
+	let dBusList = dBusProxy.ListNamesSync()[0];end_time = new Date().getTime();
 	return dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 }
 
 var getPlayerStatus = function getPlayerStatus(playerAddress) {
-	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
+	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);let start_time = new Date().getTime();
+	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - playbackStatus:("+playerAddress.substring(23)+"): "+step+"ms");
 	return statusProxy.PlaybackStatus;
 }
 
 var getMetadata = function getMetadata(address,field){//could we split this function to source metadata array from DBus only once and split the string separately?
-		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");
 		let metadataField = "";
 		if(field == "")
 			return metadataField
+		
+		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);let start_time = new Date().getTime();
+		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - metadata ("+address.substring(23)+"/"+field+"):"+step+"ms");
+
 		try{
 			if(field == "xesam:artist")
 				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);

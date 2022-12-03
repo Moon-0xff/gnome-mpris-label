@@ -129,7 +129,7 @@ class MprisLabel extends PanelMenu.Button {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
-
+//log("mpris-label - this.player: "+this.player.address);
 		let lastAddress = null;
 		if (this.player)
 			lastAddress = this.player.address
@@ -160,12 +160,14 @@ class MprisLabel extends PanelMenu.Button {
 		if (!this.player)
 			return
 
-		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-			if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
-				this.box.remove_child(this.icon);
-				this.icon = null;
+		if (REMOVE_TEXT_WHEN_PAUSED){
+			if (this.player.playbackStatus != "Playing"){
+				if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
+					this.box.remove_child(this.icon);
+					this.icon = null;
+				}
+				return
 			}
-			return
 		}
 
 		this.icon = this.player.icon
@@ -195,8 +197,9 @@ class MprisLabel extends PanelMenu.Button {
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
 		newPlayers.forEach(element => this.playerList.push(new Player(element)));
 
-		this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing");
-        }
+		if (AUTO_SWITCH_TO_MOST_RECENT)
+			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
+	}
 
 	_pickPlayer(){
 		if(this.playerList.length == 0){
@@ -264,11 +267,11 @@ class Player {
 		this.address = address;
 		this.statusTimestamp = new Date().getTime();
 		this.icon = getIcon(address);
-		if(REMOVE_TEXT_WHEN_PAUSED)
+		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT)
 			this.playbackStatus = getPlayerStatus(address)
 	}
 	update(){
-		if(REMOVE_TEXT_WHEN_PAUSED){
+		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT){
 			let playbackStatus = getPlayerStatus(this.address);
 
 			if(this.playbackStatus != playbackStatus){
