@@ -129,7 +129,10 @@ class MprisLabel extends PanelMenu.Button {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
-//log("mpris-label - this.player: "+this.player.address);
+log("mpris-label - -----------------------------------------------");
+if(this.player)
+	log("mpris-label - this.player: "+this.player.address)
+
 		let lastAddress = null;
 		if (this.player)
 			lastAddress = this.player.address
@@ -178,6 +181,10 @@ class MprisLabel extends PanelMenu.Button {
 
 	_updateSetIcon(){
 		SHOW_ICON = this.settings.get_boolean('show-icon');
+		if (this.icon){
+			this.box.remove_child(this.icon);
+			this.icon = null;
+		}		
 
 		if (SHOW_ICON)
 			this._setIcon()
@@ -216,7 +223,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0){
-				this.player = null;
+				if(REMOVE_TEXT_WHEN_PAUSED)
+					this.player = null
+					
 				return;
 			}
 			list = this.activePlayers;
@@ -233,8 +242,9 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setText() {
 		try{
-			if(this.player == null || undefined)
-				this.buttonText.set_text("");
+			if(this.player == null || undefined){
+				this.buttonText.set_text("");log('mpris-label: exited');
+			}
 			else
 				this.buttonText.set_text(this.labelBuilder.buildLabel(this.player,this.activePlayers));
 		}

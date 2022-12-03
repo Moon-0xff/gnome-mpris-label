@@ -20,7 +20,7 @@ const dBusInterface = `
 </node>`
 
 var getDBusList = function getDBusList(){
-	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface); let start_time = new Date().getTime();log("mpris-label - -----------------------------------------------");
+	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface); let start_time = new Date().getTime();
 	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
 	let dBusList = dBusProxy.ListNamesSync()[0];end_time = new Date().getTime();
 	return dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
@@ -28,7 +28,7 @@ var getDBusList = function getDBusList(){
 
 var getPlayerStatus = function getPlayerStatus(playerAddress) {
 	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);let start_time = new Date().getTime();
-	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - playbackStatus:("+playerAddress.substring(23)+"): "+step+"ms");
+	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - playbackStatus:("+playerAddress.substring(23)+"): "+step+"ms ("+statusProxy.PlaybackStatus+")");
 	return statusProxy.PlaybackStatus;
 }
 
