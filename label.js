@@ -2,7 +2,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-const {getMetadata,getPlayerMetadata} = CurrentExtension.imports.dbus;
+const {getMetadata} = CurrentExtension.imports.dbus;
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,LAST_FIELD,
