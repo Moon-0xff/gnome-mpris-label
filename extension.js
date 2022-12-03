@@ -130,24 +130,10 @@ class MprisLabel extends PanelMenu.Button {
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 log("mpris-label - -----------------------------------------------");
-if(this.player)
-	log("mpris-label - this.player: "+this.player.address)
-
-		let lastAddress = null;
-		if (this.player)
-			lastAddress = this.player.address
-
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
-
-		let newAddress = null;
-		if (this.player)
-			newAddress = this.player.address
-
-		if ( newAddress != lastAddress )
-			this._updateSetIcon()
-
+		this._setIcon();
 		this._removeTimeout();
 		
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
@@ -242,9 +228,8 @@ if(this.player)
 
 	_setText() {
 		try{
-			if(this.player == null || undefined){
-				this.buttonText.set_text("");log('mpris-label: exited');
-			}
+			if(this.player == null || undefined)
+				this.buttonText.set_text("")
 			else
 				this.buttonText.set_text(this.labelBuilder.buildLabel(this.player,this.activePlayers));
 		}
