@@ -129,22 +129,10 @@ class MprisLabel extends PanelMenu.Button {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
-
-		let lastAddress = null;
-		if (this.player)
-			lastAddress = this.player.address
-
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
-
-		let newAddress = null;
-		if (this.player)
-			newAddress = this.player.address
-
-		if ( newAddress != lastAddress )
-			this._updateSetIcon()
-
+		this._setIcon();
 		this._removeTimeout();
 		
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
