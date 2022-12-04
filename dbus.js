@@ -2,6 +2,8 @@ const {Gio,GObject} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
+let FIRST_FIELD,SECOND_FIELD,LAST_FIELD,MAX_STRING_LENGTH,DIVIDER_STRING;
+
 const mprisInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
@@ -50,21 +52,26 @@ var getPlayerStatus = function getPlayerStatus(playerAddress) {
 	return statusProxy.PlaybackStatus;
 }
 
-var getMetadata = function getMetadata(address,field){
-		let metadataField = "";
-		if(field == "")
-			return metadataField
-		
+var getMetadata = function getMetadata(address){
+		FIRST_FIELD = settings.get_string('first-field');
+		SECOND_FIELD = settings.get_string('second-field');
+		LAST_FIELD = settings.get_string('last-field');
+
+		let metadata = "";
+
 		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);let start_time = new Date().getTime();
-		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - metadata ("+address.substring(23)+"/"+field+"):"+step+"ms");
+		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - metadata ("+address.substring(23)+"):"+step+"ms");
 		try{
-			if(field == "xesam:artist")
-				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
-			else
-				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_string()[0]);
+			let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
+			fields.forEach(field => {
+				if(field == "xesam:artist")
+					metadata = metadata + parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
+				else
+					metadata = metadata + parseMetadataField(metadataProxy.Metadata[field].get_string()[0]);
+			});
 		}
 		finally{
-			return metadataField
+			return metadata
 		}
 }
 
