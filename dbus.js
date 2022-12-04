@@ -51,11 +51,12 @@ var getPlayerStatus = function getPlayerStatus(playerAddress) {
 }
 
 var getMetadata = function getMetadata(address,field){
-		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");
 		let metadataField = "";
 		if(field == "")
 			return metadataField
+		
+		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);let start_time = new Date().getTime();
+		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - metadata ("+address.substring(23)+"/"+field+"):"+step+"ms");
 		try{
 			if(field == "xesam:artist")
 				metadataField = parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
