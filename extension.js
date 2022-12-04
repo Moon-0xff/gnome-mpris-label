@@ -181,7 +181,8 @@ class MprisLabel extends PanelMenu.Button {
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
 		newPlayers.forEach(element => this.playerList.push(new Player(element)));
 
-		this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing");
+		if (AUTO_SWITCH_TO_MOST_RECENT)
+			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
         }
 
 	_pickPlayer(){
@@ -219,7 +220,7 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.buttonText.set_text("");
+				this.buttonText.set_text("")
 			else
 				this.buttonText.set_text(this.labelBuilder.buildLabel(this.player,this.activePlayers));
 		}
