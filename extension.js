@@ -145,7 +145,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.icon = null;
 		}
 
-		if (!this.player)
+		if (!SHOW_ICON || !this.player)
 			return
 
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
@@ -164,9 +164,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_updateSetIcon(){
 		SHOW_ICON = this.settings.get_boolean('show-icon');
-
-		if (SHOW_ICON)
-			this._setIcon()
+		this._setIcon();
 	}
 
 	_updatePlayerList(){
