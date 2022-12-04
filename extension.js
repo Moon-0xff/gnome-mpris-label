@@ -199,7 +199,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0){
-				this.player = null;
+				if(REMOVE_TEXT_WHEN_PAUSED)
+					this.player = null
+					
 				return;
 			}
 			list = this.activePlayers;
