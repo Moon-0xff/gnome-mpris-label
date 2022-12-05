@@ -129,12 +129,14 @@ class MprisLabel extends PanelMenu.Button {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+		log("mpris-label ------------------------------------------------------------");
+		let start_time = new Date().getTime();
 		this._updatePlayerList();
 		this._pickPlayer();
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
-		
+		end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - cycle time:"+step+"ms");
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
 	}
@@ -149,11 +151,11 @@ class MprisLabel extends PanelMenu.Button {
 			return
 
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-			if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
-				this.box.remove_child(this.icon);
-				this.icon = null;
-			}
-			return
+				if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
+					this.box.remove_child(this.icon);
+					this.icon = null;
+				}
+				return
 		}
 
 		this.icon = this.player.icon
@@ -183,7 +185,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (AUTO_SWITCH_TO_MOST_RECENT)
 			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
-        }
+	}
 
 	_pickPlayer(){
 		if(this.playerList.length == 0){
@@ -258,11 +260,11 @@ class Player {
 	}
 	update(){
 		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT){
-		let playbackStatus = getPlayerStatus(this.address);
+			let playbackStatus = getPlayerStatus(this.address);
 
-		if(this.playbackStatus != playbackStatus){
-			this.playbackStatus = playbackStatus;
-			this.statusTimestamp = new Date().getTime();
+			if(this.playbackStatus != playbackStatus){
+				this.playbackStatus = playbackStatus;
+				this.statusTimestamp = new Date().getTime();
 			}
 		}
 	}
