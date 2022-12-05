@@ -85,11 +85,11 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.player = list[newIndex];
 
-		if (AUTO_SWITCH_TO_MOST_RECENT){
+		if(AUTO_SWITCH_TO_MOST_RECENT){
 			this.player.statusTimestamp = new Date().getTime();
 		}
 
-		if (SHOW_ICON)
+		if(SHOW_ICON)
 			this._updateSetIcon()
 	}
 
@@ -97,7 +97,7 @@ class MprisLabel extends PanelMenu.Button {
 		LEFT_PADDING = this.settings.get_int('left-padding');
 		RIGHT_PADDING = this.settings.get_int('right-padding');
 
-		if (SHOW_ICON){
+		if(SHOW_ICON){
 			if (RIGHT_PADDING < 5)
 				RIGHT_PADDING = 0
 			else
@@ -136,18 +136,18 @@ class MprisLabel extends PanelMenu.Button {
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
-		end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - cycle time:"+step+"ms");
+		end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - total cycle time: "+step+"ms");
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
 	}
 
 	_setIcon(){
-		if (this.icon){
+		if(this.icon){
 			this.box.remove_child(this.icon);
 			this.icon = null;
 		}
 
-		if (!SHOW_ICON || !this.player)
+		if(!SHOW_ICON || !this.player)
 			return
 
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
@@ -183,7 +183,7 @@ class MprisLabel extends PanelMenu.Button {
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
 		newPlayers.forEach(element => this.playerList.push(new Player(element)));
 
-		if (AUTO_SWITCH_TO_MOST_RECENT)
+		if(AUTO_SWITCH_TO_MOST_RECENT)
 			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
 	}
 
@@ -200,7 +200,7 @@ class MprisLabel extends PanelMenu.Button {
 		let bestChoice = this.playerList[0];
 		let list = this.playerList;
 
-		if (AUTO_SWITCH_TO_MOST_RECENT){
+		if(AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0){
 				if(REMOVE_TEXT_WHEN_PAUSED)
 					this.player = null
@@ -233,7 +233,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_removeTimeout() {
-		if (this._timeout) {
+		if(this._timeout) {
 			Mainloop.source_remove(this._timeout);
 			this._timeout = null;
 		}
