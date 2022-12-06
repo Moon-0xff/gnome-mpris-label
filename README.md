@@ -28,7 +28,7 @@ Down below there's a list of stuff you can help me with, I'm not actively workin
 Note: you can also [install it from extensions.gnome.org](https://extensions.gnome.org/extension/4928/mpris-label) with just one click. If this is your first time installing an extension perhaps you don't have the necessary software to do it though. Visit the page for further instructions
 
 - Clone this repository `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git`
-- Switch to the latest version branch: `$ git checkout latest-version`  
+- Switch to the latest version branch: `$ git checkout stable`  
   you can skip this step if you want a not-yet-finished version of the upcoming release. Although it could be broken or buggy
 - Run the installation script `$ sh gnome-mpris-label/install.sh`
 
