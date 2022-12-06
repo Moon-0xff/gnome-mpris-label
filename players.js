@@ -159,35 +159,21 @@ var getMetadata = function getMetadata(address){
 		}
 }
 
-function parseMetadataField(data) {
-	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	DIVIDER_STRING = settings.get_string('divider-string');
-
-	if (data.length == 0)
-		return ""
-
-	if (data.includes("xesam:") || data.includes("mpris:"))
-		return ""
-	
-	//Replaces every instance of " | "
-	if(data.includes(" | "))
-		data = data.replace(/ \| /g, " / ");
-
-	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
-
-	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
-	if (data.length > MAX_STRING_LENGTH){
-		data = data.substring(0, MAX_STRING_LENGTH);
-		let lastIndex = data.lastIndexOf(" ");
-		if(lastIndex == -1)
-			lastIndex = data.length;
-
-		data = data.substring(0, lastIndex) + "...";
+removeTextPausedIsActive(player){
+	if (REMOVE_TEXT_PAUSED_DELAY <= 0){
+		return true
 	}
 
-	data += DIVIDER_STRING;
+	if (player.statusTimestamp != this.removeTextPlayerTimestamp && this.removeTextPausedDelayStamp == null){
+		this.removeTextPausedDelayStamp = new Date().getTime() / 1000;
+		return false
+	}
 
-	return data
+	let timeNow = new Date().getTime() / 1000;
+	if(this.removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
+		this.removeTextPausedDelayStamp = null;
+		this.removeTextPlayerTimestamp = player.statusTimestamp;
+		return true
+	}
+	return false
 }
-

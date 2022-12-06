@@ -18,76 +18,82 @@ function getSettings(){
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
 }
 
-var LabelBuilder = class LabelBuilder {
-	constructor(){
-		this.removeTextPausedDelayStamp = null;
-		this.removeTextPlayerTimestamp = 0;
-	}
+function buildLabel(player,activePlayers){
+	getSettings();
 
-	buildLabel(player,activePlayers){
-		getSettings();
-
-		if(REMOVE_TEXT_WHEN_PAUSED && player.playbackStatus != "Playing"){
-			if(this.removeTextPausedIsActive(player)){
-				if(activePlayers.length == 0)
-					return ""
-				return BUTTON_PLACEHOLDER
-			}
-		}
-
-		let labelstring = getMetadata(player.address);
-
-		labelstring =
-			labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
-
-		if(labelstring.length == 0){
-			if (activePlayers.length == 0)
+	if(REMOVE_TEXT_WHEN_PAUSED && player.playbackStatus != "Playing"){
+		if(this.removeTextPausedIsActive(player)){
+			if(activePlayers.length == 0)
 				return ""
 			return BUTTON_PLACEHOLDER
 		}
-		return labelstring
 	}
 
-	_removeRemasterText(datastring) {
-		if(!REMOVE_REMASTER_TEXT)
-			return datastring
+	let labelstring = getMetadata(player.address);
 
-		let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
+	labelstring =
+		labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
 
-		if (!matchedSubString)
-			matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
+	if(labelstring.length == 0){
+		if (activePlayers.length == 0)
+			return ""
+		return BUTTON_PLACEHOLDER
+	}
+	return labelstring
+}
 
-		if (!matchedSubString)
-			return datastring //returns <datastring> unaltered if both matches were not successful
+function parseMetadataField(data) {
+	MAX_STRING_LENGTH = settings.get_int('max-string-length');
+	DIVIDER_STRING = settings.get_string('divider-string');
 
-		if(!matchedSubString[0].match(/Remaster/i))
-			return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
+	if (data.length == 0)
+		return ""
 
-		datastring = datastring.replace(matchedSubString[0],"");
+	if (data.includes("xesam:") || data.includes("mpris:"))
+		return ""
+	
+	//Replaces every instance of " | "
+	if(data.includes(" | "))
+		data = data.replace(/ \| /g, " / ");
 
-		if (datastring.charAt(datastring.length-1) == " ")
-			datastring = datastring.substring(0,datastring.length-1);
+	if(data.match(/Remaster/i))
+		data = removeRemasterText(data);
 
+	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
+	if (data.length > MAX_STRING_LENGTH){
+		data = data.substring(0, MAX_STRING_LENGTH);
+		let lastIndex = data.lastIndexOf(" ");
+		if(lastIndex == -1)
+			lastIndex = data.length;
+
+		data = data.substring(0, lastIndex) + "...";
+	}
+
+	data += DIVIDER_STRING;
+
+	return data
+}
+
+function removeRemasterText(datastring) {
+	if(!REMOVE_REMASTER_TEXT)
 		return datastring
-	}
 
-	removeTextPausedIsActive(player){
-		if (REMOVE_TEXT_PAUSED_DELAY <= 0){
-			return true
-		}
+	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
 
-		if (player.statusTimestamp != this.removeTextPlayerTimestamp && this.removeTextPausedDelayStamp == null){
-			this.removeTextPausedDelayStamp = new Date().getTime() / 1000;
-			return false
-		}
+	if (!matchedSubString)
+		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
 
-		let timeNow = new Date().getTime() / 1000;
-		if(this.removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
-			this.removeTextPausedDelayStamp = null;
-			this.removeTextPlayerTimestamp = player.statusTimestamp;
-			return true
-		}
-		return false
-	}
+	if (!matchedSubString)
+		return datastring //returns <datastring> unaltered if both matches were not successful
+
+	if(!matchedSubString[0].match(/Remaster/i))
+		return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
+
+	datastring = datastring.replace(matchedSubString[0],"");
+
+	if (datastring.charAt(datastring.length-1) == " ")
+		datastring = datastring.substring(0,datastring.length-1);
+
+	return datastring
 }
 
