@@ -5,8 +5,8 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const {getMetadata} = CurrentExtension.imports.dbus;
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
-	DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,LAST_FIELD,
-	REMOVE_TEXT_WHEN_PAUSED,REMOVE_TEXT_PAUSED_DELAY;
+	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
+	REMOVE_TEXT_PAUSED_DELAY;
 
 function getSettings(){
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
@@ -14,9 +14,6 @@ function getSettings(){
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
 	DIVIDER_STRING = settings.get_string('divider-string');
-	FIRST_FIELD = settings.get_string('first-field');
-	SECOND_FIELD = settings.get_string('second-field');
-	LAST_FIELD = settings.get_string('last-field');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
 }
@@ -38,10 +35,7 @@ var LabelBuilder = class LabelBuilder {
 			}
 		}
 
-		let labelstring =
-			getMetadata(player.address,FIRST_FIELD)+
-			getMetadata(player.address,SECOND_FIELD)+
-			getMetadata(player.address,LAST_FIELD);
+		let labelstring = getMetadata(player.address);
 
 		labelstring =
 			labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
