@@ -21,21 +21,98 @@ const dBusInterface = `
 	</interface>
 </node>`
 
-const entryInterface = `
-<node>
-        <interface name="org.mpris.MediaPlayer2">
-                <property name="DesktopEntry" type="s" access="read"/>
-        </interface>
-</node>`
-
-var getDesktopEntry = function getDesktopEntry(playerAddress){
-	try {
-		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
-		let entryProxy = entryWrapper(Gio.DBus.session,playerAddress,"/org/mpris/MediaPlayer2");
-		return entryProxy.DesktopEntry;
+var PlayersHandler = class PlayersHandler {
+	constructor(){
+		this.playerList = [];
 	}
-	catch {
-		return ""
+	updatePlayerList(){
+		let dBusList = getDBusList();
+
+		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
+
+		let addresses = [];
+		this.playerList.forEach(element => {
+			element.update();
+			addresses.push(element.address);
+		});
+
+		let newPlayers = dBusList.filter(element => !addresses.includes(element));
+		newPlayers.forEach(element => this.playerList.push(new Player(element)));
+
+		if(AUTO_SWITCH_TO_MOST_RECENT)
+			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
+	}
+	pickPlayer(){
+		if(this.playerList.length == 0){
+			this.player = null;
+			return;
+		}
+
+		if(this.playerList.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
+			return
+
+		let newestTimestamp = 0;
+		let bestChoice = this.playerList[0];
+		let list = this.playerList;
+
+		if(AUTO_SWITCH_TO_MOST_RECENT){
+			if(this.activePlayers.length == 0){
+				if(REMOVE_TEXT_WHEN_PAUSED)
+					this.player = null
+					
+				return;
+			}
+			list = this.activePlayers;
+		}
+
+		list.forEach(player => {
+			if(player.statusTimestamp > newestTimestamp){
+				newestTimestamp = player.statusTimestamp;
+				bestChoice = player;
+			}
+		});
+		this.player = bestChoice;
+	}
+	cyclePlayers(){
+		this._updatePlayerList();
+		let list = this.playerList;
+
+		if(AUTO_SWITCH_TO_MOST_RECENT)
+			list = this.activePlayers;
+
+		if(list < 2)
+			return
+
+		let newIndex = list.indexOf(this.player)+1;
+
+		if(this.player == list.at(-1))
+			newIndex = 0;
+
+		this.player = list[newIndex];
+
+		if(AUTO_SWITCH_TO_MOST_RECENT){
+			this.player.statusTimestamp = new Date().getTime();
+		}
+	}
+}
+
+class Player {
+	constructor(address){
+		this.address = address;
+		this.statusTimestamp = new Date().getTime();
+		this.icon = getIcon(address);
+		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT)
+			this.playbackStatus = getPlayerStatus(address)
+	}
+	update(){
+		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT){
+			let playbackStatus = getPlayerStatus(this.address);
+
+			if(this.playbackStatus != playbackStatus){
+				this.playbackStatus = playbackStatus;
+				this.statusTimestamp = new Date().getTime();
+			}
+		}
 	}
 }
 
@@ -113,3 +190,4 @@ function parseMetadataField(data) {
 
 	return data
 }
+
