@@ -19,10 +19,8 @@ Down below there's a list of stuff you can help me with, I'm not actively workin
 
 ## To do List / Help Wanted
 
-- Add a user definable filter list (regex) for mpris sources
+- Add a user definable filter list for mpris sources
 - Add an option to select active player by a dropdown menu
-- Add an option to pause a player by clicking the label when no other mpris player is avaliable
-- Make this extension refresh asynchronously
 
 ## Manual Installation
 Note: you can also [install it from extensions.gnome.org](https://extensions.gnome.org/extension/4928/mpris-label) with just one click. If this is your first time installing an extension perhaps you don't have the necessary software to do it though. Visit the page for further instructions
