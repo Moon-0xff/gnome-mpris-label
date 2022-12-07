@@ -1,8 +1,9 @@
 const {Gio,GObject} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-let FIRST_FIELD,SECOND_FIELD,LAST_FIELD,MAX_STRING_LENGTH,DIVIDER_STRING;
+const { getIcon } = CurrentExtension.imports.icons;
 
 const mprisInterface = `
 <node>
@@ -21,28 +22,19 @@ const dBusInterface = `
 	</interface>
 </node>`
 
+let REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
+let REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
+let AUTO_SWITCH_TO_MOST_RECENT = settings.get_boolean('auto-switch-to-most-recent');
+
 var PlayersHandler = class PlayersHandler {
 	constructor(){
 		this.playerList = [];
-	}
-	updatePlayerList(){
-		let dBusList = getDBusList();
-
-		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
-
-		let addresses = [];
-		this.playerList.forEach(element => {
-			element.update();
-			addresses.push(element.address);
-		});
-
-		let newPlayers = dBusList.filter(element => !addresses.includes(element));
-		newPlayers.forEach(element => this.playerList.push(new Player(element)));
-
-		if(AUTO_SWITCH_TO_MOST_RECENT)
-			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
+		this.removeTextPausedDelayStamp = null;
+		this.removeTextPlayerTimestamp = 0;
 	}
 	pickPlayer(){
+		this._updatePlayerList();
+
 		if(this.playerList.length == 0){
 			this.player = null;
 			return;
@@ -75,6 +67,7 @@ var PlayersHandler = class PlayersHandler {
 	}
 	cyclePlayers(){
 		this._updatePlayerList();
+
 		let list = this.playerList;
 
 		if(AUTO_SWITCH_TO_MOST_RECENT)
@@ -94,6 +87,44 @@ var PlayersHandler = class PlayersHandler {
 			this.player.statusTimestamp = new Date().getTime();
 		}
 	}
+	_updatePlayerList(){
+		let dBusList = getDBusList();
+
+		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
+
+		let addresses = [];
+		this.playerList.forEach(element => {
+			element.update();
+			addresses.push(element.address);
+		});
+
+		let newPlayers = dBusList.filter(element => !addresses.includes(element));
+		newPlayers.forEach(element => this.playerList.push(new Player(element)));
+
+		if(AUTO_SWITCH_TO_MOST_RECENT)
+			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
+	}
+	removeTextPausedIsActive(){
+		if (REMOVE_TEXT_PAUSED_DELAY <= 0){
+			this.player.removeTextIsActive = true;
+			return
+		}
+
+		if (this.player.statusTimestamp != this.removeTextPlayerTimestamp && this.removeTextPausedDelayStamp == null){
+			this.removeTextPausedDelayStamp = new Date().getTime() / 1000;
+			this.player.removeTextIsActive = false;
+			return
+		}
+
+		let timeNow = new Date().getTime() / 1000;
+		if(this.removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
+			this.removeTextPausedDelayStamp = null;
+			this.removeTextPlayerTimestamp = this.player.statusTimestamp;
+			this.player.removeTextIsActive = true;
+			return
+		}
+		this.player.removeTextIsActive = false;
+	}
 }
 
 class Player {
@@ -101,12 +132,16 @@ class Player {
 		this.address = address;
 		this.statusTimestamp = new Date().getTime();
 		this.icon = getIcon(address);
+
+		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
+		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2");
+
 		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT)
-			this.playbackStatus = getPlayerStatus(address)
+			this.playbackStatus = this.getStatus();
 	}
 	update(){
 		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT){
-			let playbackStatus = getPlayerStatus(this.address);
+			let playbackStatus = this.getStatus();
 
 			if(this.playbackStatus != playbackStatus){
 				this.playbackStatus = playbackStatus;
@@ -114,66 +149,26 @@ class Player {
 			}
 		}
 	}
+	getMetadata(){
+		let start_time = new Date().getTime();
+		let metadata = this.proxy.Metadata;
+		let end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - metadata ("+this.address.substring(23)+"):"+step+"ms");
+		return metadata
+	}
+	getStatus() {
+		let start_time = new Date().getTime();
+		let playbackStatus = this.proxy.PlaybackStatus
+		let end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - playbackStatus:("+this.address.substring(23)+"): "+step+"ms ("+playbackStatus+")");
+		return playbackStatus
+	}
 }
 
-var getDBusList = function getDBusList(){
+function getDBusList(){
 	let dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface); 
 	let start_time = new Date().getTime();
 	let dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
-	end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
 	let dBusList = dBusProxy.ListNamesSync()[0];
-	end_time = new Date().getTime();
+	end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
 	return dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 }
 
-var getPlayerStatus = function getPlayerStatus(playerAddress) {
-	let statusWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-	let start_time = new Date().getTime();
-	let statusProxy = statusWrapper(Gio.DBus.session,playerAddress, "/org/mpris/MediaPlayer2");
-	end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - playbackStatus:("+playerAddress.substring(23)+"): "+step+"ms ("+statusProxy.PlaybackStatus+")");
-	return statusProxy.PlaybackStatus;
-}
-
-var getMetadata = function getMetadata(address){
-		FIRST_FIELD = settings.get_string('first-field');
-		SECOND_FIELD = settings.get_string('second-field');
-		LAST_FIELD = settings.get_string('last-field');
-
-		let metadata = "";
-
-		let metadataWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-		let start_time = new Date().getTime();
-		let metadataProxy = metadataWrapper(Gio.DBus.session,address, "/org/mpris/MediaPlayer2");
-		end_time = new Date().getTime(); step = end_time - start_time; log("mpris-label - metadata ("+address.substring(23)+"):"+step+"ms");
-		try{
-			let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
-			fields.forEach(field => {
-				if(field == "xesam:artist")
-					metadata = metadata + parseMetadataField(metadataProxy.Metadata[field].get_strv()[0]);
-				else
-					metadata = metadata + parseMetadataField(metadataProxy.Metadata[field].get_string()[0]);
-			});
-		}
-		finally{
-			return metadata
-		}
-}
-
-removeTextPausedIsActive(player){
-	if (REMOVE_TEXT_PAUSED_DELAY <= 0){
-		return true
-	}
-
-	if (player.statusTimestamp != this.removeTextPlayerTimestamp && this.removeTextPausedDelayStamp == null){
-		this.removeTextPausedDelayStamp = new Date().getTime() / 1000;
-		return false
-	}
-
-	let timeNow = new Date().getTime() / 1000;
-	if(this.removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
-		this.removeTextPausedDelayStamp = null;
-		this.removeTextPlayerTimestamp = player.statusTimestamp;
-		return true
-	}
-	return false
-}

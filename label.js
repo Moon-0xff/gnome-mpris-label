@@ -2,11 +2,10 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-const {getMetadata} = CurrentExtension.imports.dbus;
-
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY;
+	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
+	MAX_STRING_LENGTH,DIVIDER_STRING;
 
 function getSettings(){
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
@@ -16,23 +15,25 @@ function getSettings(){
 	DIVIDER_STRING = settings.get_string('divider-string');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
+	FIRST_FIELD = settings.get_string('first-field');
+	SECOND_FIELD = settings.get_string('second-field');
+	LAST_FIELD = settings.get_string('last-field');
+	MAX_STRING_LENGTH = settings.get_int('max-string-length');
+	DIVIDER_STRING = settings.get_string('divider-string');
 }
 
-function buildLabel(player,activePlayers){
+var buildLabel = function buildLabel(player,activePlayers){
 	getSettings();
 
 	if(REMOVE_TEXT_WHEN_PAUSED && player.playbackStatus != "Playing"){
-		if(this.removeTextPausedIsActive(player)){
+		if(player.removeTextIsActive){
 			if(activePlayers.length == 0)
 				return ""
 			return BUTTON_PLACEHOLDER
 		}
 	}
 
-	let labelstring = getMetadata(player.address);
-
-	labelstring =
-		labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
+	let labelstring = getLabelString(player.getMetadata());
 
 	if(labelstring.length == 0){
 		if (activePlayers.length == 0)
@@ -42,16 +43,29 @@ function buildLabel(player,activePlayers){
 	return labelstring
 }
 
-function parseMetadataField(data) {
-	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	DIVIDER_STRING = settings.get_string('divider-string');
+function getLabelString(metadata){
+	let labelstring = "";
+	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
 
+	fields.forEach(field => {
+		try {
+			labelstring = labelstring + parseMetadataField(metadata[field].get_string()[0]);
+		}
+
+		catch {
+			labelstring = labelstring + parseMetadataField(metadata[field].get_strv()[0]);
+		}
+	});
+	return labelstring
+}
+
+function parseMetadataField(data) {
 	if (data.length == 0)
 		return ""
 
 	if (data.includes("xesam:") || data.includes("mpris:"))
 		return ""
-	
+
 	//Replaces every instance of " | "
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");

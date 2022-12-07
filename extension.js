@@ -6,9 +6,8 @@ const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-const {getDBusList,getPlayerStatus} = CurrentExtension.imports.dbus;
-const {LabelBuilder} = CurrentExtension.imports.label;
-const { getIcon } = CurrentExtension.imports.icons;
+const { PlayersHandler } = CurrentExtension.imports.players;
+const { buildLabel } = CurrentExtension.imports.label;
 
 let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,EXTENSION_PLACE,
 	REFRESH_RATE,AUTO_SWITCH_TO_MOST_RECENT,
@@ -51,17 +50,17 @@ class MprisLabel extends PanelMenu.Button {
 		});
 		this.box.add_child(this.buttonText);
 
-		this.connect('button-press-event',this._cyclePlayers.bind(this));
+		this.playersHandler = new PlayersHandler();
+
+		this.connect('button-press-event',this._onButtonPressed.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
-		this.settings.connect('changed::show-icon',this._updateSetIcon.bind(this));
+		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
-
-		this.labelBuilder = new LabelBuilder();
 
 		this._refresh();
 	}
@@ -98,14 +97,19 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
+	_onButtonPressed(){
+		this.playersHandler.cyclePlayers();
+		this.player = this.playersHandler.player;
+		this._setIcon();
+	}
 	_refresh() {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		log("mpris-label ------------------------------------------------------------");
 		let start_time = new Date().getTime();
-		this._updatePlayerList();
-		this._pickPlayer();
+		this.playersHandler.pickPlayer();
+		this.player = this.playersHandler.player;
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
@@ -115,6 +119,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_setIcon(){
+		SHOW_ICON = this.settings.get_boolean('show-icon');
+
 		if(this.icon){
 			this.box.remove_child(this.icon);
 			this.icon = null;
@@ -124,7 +130,7 @@ class MprisLabel extends PanelMenu.Button {
 			return
 
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-				if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
+				if(this.playersHandler.removeTextPausedIsActive() && this.icon){
 					this.box.remove_child(this.icon);
 					this.icon = null;
 				}
@@ -137,17 +143,12 @@ class MprisLabel extends PanelMenu.Button {
 			this.box.add_child(this.icon);
 	}
 
-	_updateSetIcon(){
-		SHOW_ICON = this.settings.get_boolean('show-icon');
-		this._setIcon();
-	}
-
 	_setText() {
 		try{
 			if(this.player == null || undefined)
 				this.buttonText.set_text("")
 			else
-				this.buttonText.set_text(this.labelBuilder.buildLabel(this.player,this.activePlayers));
+				this.buttonText.set_text(buildLabel(this.player,this.playersHandler.activePlayers));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -170,6 +171,5 @@ class MprisLabel extends PanelMenu.Button {
 		this.remove_child(this.box);
 		this._removeTimeout();
 	}
-}
-);
+});
 
