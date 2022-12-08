@@ -37,11 +37,11 @@ var Players = class Players {
 
 		if(this.list.length == 0){
 			this.selected = null;
-			return;
+			return this.selected
 		}
 
 		if(this.list.includes(this.selected) && !AUTO_SWITCH_TO_MOST_RECENT)
-			return
+			return this.selected
 
 		let newestTimestamp = 0;
 		let bestChoice = this.list[0];
@@ -52,7 +52,7 @@ var Players = class Players {
 				if(REMOVE_TEXT_WHEN_PAUSED)
 					this.selecte = null
 					
-				return;
+				return this.selected
 			}
 			list = this.activePlayers;
 		}
@@ -64,6 +64,7 @@ var Players = class Players {
 			}
 		});
 		this.selected = bestChoice;
+		return this.selected
 	}
 	next(){
 		this._updateList();
@@ -74,7 +75,7 @@ var Players = class Players {
 			list = this.activePlayers;
 
 		if(list < 2)
-			return
+			return this.selected
 
 		let newIndex = list.indexOf(this.selected)+1;
 
@@ -86,6 +87,8 @@ var Players = class Players {
 		if(AUTO_SWITCH_TO_MOST_RECENT){
 			this.selected.statusTimestamp = new Date().getTime();
 		}
+
+		return this.selected
 	}
 	_updateList(){
 		const start_time = new Date().getTime();
