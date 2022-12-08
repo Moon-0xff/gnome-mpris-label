@@ -36,11 +36,11 @@ var Players = class Players {
 		this._updateList();
 
 		if(this.list.length == 0){
-			this.player = null;
+			this.selected = null;
 			return;
 		}
 
-		if(this.list.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
+		if(this.list.includes(this.selected) && !AUTO_SWITCH_TO_MOST_RECENT)
 			return
 
 		let newestTimestamp = 0;
@@ -50,7 +50,7 @@ var Players = class Players {
 		if(AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0){
 				if(REMOVE_TEXT_WHEN_PAUSED)
-					this.player = null
+					this.selecte = null
 					
 				return;
 			}
@@ -63,7 +63,7 @@ var Players = class Players {
 				bestChoice = player;
 			}
 		});
-		this.player = bestChoice;
+		this.selected = bestChoice;
 	}
 	next(){
 		this._updateList();
@@ -76,15 +76,15 @@ var Players = class Players {
 		if(list < 2)
 			return
 
-		let newIndex = list.indexOf(this.player)+1;
+		let newIndex = list.indexOf(this.selected)+1;
 
-		if(this.player == list.at(-1))
+		if(this.selected == list.at(-1))
 			newIndex = 0;
 
-		this.player = list[newIndex];
+		this.selected = list[newIndex];
 
 		if(AUTO_SWITCH_TO_MOST_RECENT){
-			this.player.statusTimestamp = new Date().getTime();
+			this.selected.statusTimestamp = new Date().getTime();
 		}
 	}
 	_updateList(){
@@ -105,7 +105,7 @@ var Players = class Players {
 		newPlayers.forEach(element => this.list.push(new Player(element)));
 
 		if(AUTO_SWITCH_TO_MOST_RECENT)
-			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
+			this.activePlayers = this.list.filter(element => element.playbackStatus == "Playing")
 	}
 }
 
