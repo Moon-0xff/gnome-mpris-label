@@ -6,7 +6,7 @@ const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-const { PlayersHandler } = CurrentExtension.imports.players;
+const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
 
 let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,EXTENSION_PLACE,
@@ -50,7 +50,7 @@ class MprisLabel extends PanelMenu.Button {
 		});
 		this.box.add_child(this.buttonText);
 
-		this.playersHandler = new PlayersHandler();
+		this.players = new Players();
 
 		this.connect('button-press-event',this._onButtonPressed.bind(this));
 
@@ -98,8 +98,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onButtonPressed(){
-		this.playersHandler.cyclePlayers();
-		this.player = this.playersHandler.player;
+		this.players.next();
+		this.player = this.players.player;
 		this._setIcon();
 	}
 	_refresh() {
@@ -108,8 +108,8 @@ class MprisLabel extends PanelMenu.Button {
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		log("mpris-label ------------------------------------------------------------");
 		const start_time = new Date().getTime();
-		this.playersHandler.pickPlayer();
-		this.player = this.playersHandler.player;
+		this.players.pick();
+		this.player = this.players.player;
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
@@ -130,7 +130,7 @@ class MprisLabel extends PanelMenu.Button {
 			return
 
 		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-				if(this.playersHandler.removeTextPausedIsActive() && this.icon){
+				if(this.players.removeTextPausedIsActive() && this.icon){
 					this.box.remove_child(this.icon);
 					this.icon = null;
 				}
@@ -148,7 +148,7 @@ class MprisLabel extends PanelMenu.Button {
 			if(this.player == null || undefined)
 				this.buttonText.set_text("")
 			else
-				this.buttonText.set_text(buildLabel(this.player,this.playersHandler.activePlayers));
+				this.buttonText.set_text(buildLabel(this.player,this.players.activePlayers));
 		}
 		catch(err){
 			log("Mpris Label: " + err);

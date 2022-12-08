@@ -26,28 +26,26 @@ let REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 let REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
 let AUTO_SWITCH_TO_MOST_RECENT = settings.get_boolean('auto-switch-to-most-recent');
 
-var PlayersHandler = class PlayersHandler {
+var Players = class Players {
 	constructor(){
-		this.playerList = [];
-		this.removeTextPausedDelayStamp = null;
-		this.removeTextPlayerTimestamp = 0;
+		this.list = [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
 	}
-	pickPlayer(){
-		this._updatePlayerList();
+	pick(){
+		this._updateList();
 
-		if(this.playerList.length == 0){
+		if(this.list.length == 0){
 			this.player = null;
 			return;
 		}
 
-		if(this.playerList.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
+		if(this.list.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
 			return
 
 		let newestTimestamp = 0;
-		let bestChoice = this.playerList[0];
-		let list = this.playerList;
+		let bestChoice = this.list[0];
+		let list = this.list;
 
 		if(AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0){
@@ -67,10 +65,10 @@ var PlayersHandler = class PlayersHandler {
 		});
 		this.player = bestChoice;
 	}
-	cyclePlayers(){
-		this._updatePlayerList();
+	next(){
+		this._updateList();
 
-		let list = this.playerList;
+		let list = this.list;
 
 		if(AUTO_SWITCH_TO_MOST_RECENT)
 			list = this.activePlayers;
@@ -89,22 +87,22 @@ var PlayersHandler = class PlayersHandler {
 			this.player.statusTimestamp = new Date().getTime();
 		}
 	}
-	_updatePlayerList(){
+	_updateList(){
 		const start_time = new Date().getTime();
 		let dBusList = this.dBusProxy.ListNamesSync()[0];
 		const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
-		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
+		this.list = this.list.filter(element => dBusList.includes(element.address));
 
 		let addresses = [];
-		this.playerList.forEach(element => {
+		this.list.forEach(element => {
 			element.update();
 			addresses.push(element.address);
 		});
 
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
-		newPlayers.forEach(element => this.playerList.push(new Player(element)));
+		newPlayers.forEach(element => this.list.push(new Player(element)));
 
 		if(AUTO_SWITCH_TO_MOST_RECENT)
 			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
