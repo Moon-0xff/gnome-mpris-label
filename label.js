@@ -25,15 +25,11 @@ function getSettings(){
 var buildLabel = function buildLabel(player,activePlayers){
 	getSettings();
 
-	if(REMOVE_TEXT_WHEN_PAUSED && player.playbackStatus != "Playing"){
-		if(player.removeTextIsActive){
-			if(activePlayers.length == 0)
-				return ""
-			return BUTTON_PLACEHOLDER
-		}
-	}
-
 	let labelstring = getLabelString(player.getMetadata());
+
+	if(REMOVE_TEXT_WHEN_PAUSED && player.playbackStatus != "Playing"){
+		labelstring = removeTextWhenPaused(labelstring,player);
+	}
 
 	if(labelstring.length == 0){
 		if (activePlayers.length == 0)
@@ -41,6 +37,10 @@ var buildLabel = function buildLabel(player,activePlayers){
 		return BUTTON_PLACEHOLDER
 	}
 	return labelstring
+}
+
+function removeTextWhenPaused(labelstring,player){
+	return ""
 }
 
 function getLabelString(metadata){

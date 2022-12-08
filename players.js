@@ -109,27 +109,6 @@ var PlayersHandler = class PlayersHandler {
 		if(AUTO_SWITCH_TO_MOST_RECENT)
 			this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing")
 	}
-	removeTextPausedIsActive(){
-		if (REMOVE_TEXT_PAUSED_DELAY <= 0){
-			this.player.removeTextIsActive = true;
-			return
-		}
-
-		if (this.player.statusTimestamp != this.removeTextPlayerTimestamp && this.removeTextPausedDelayStamp == null){
-			this.removeTextPausedDelayStamp = new Date().getTime() / 1000;
-			this.player.removeTextIsActive = false;
-			return
-		}
-
-		let timeNow = new Date().getTime() / 1000;
-		if(this.removeTextPausedDelayStamp + REMOVE_TEXT_PAUSED_DELAY <= timeNow){
-			this.removeTextPausedDelayStamp = null;
-			this.removeTextPlayerTimestamp = this.player.statusTimestamp;
-			this.player.removeTextIsActive = true;
-			return
-		}
-		this.player.removeTextIsActive = false;
-	}
 }
 
 class Player {
