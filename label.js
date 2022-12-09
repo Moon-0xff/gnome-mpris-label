@@ -25,9 +25,16 @@ function getSettings(){
 var buildLabel = function buildLabel(players){
 	getSettings();
 
-	if(REMOVE_TEXT_WHEN_PAUSED && players.selected.playbackStatus != "Playing"){
-		if (removeTextWhenPaused())
-			return ""
+	// the placeholder string is a hint for the user to switch players
+	// it should appear if labelstring is empty and there's another player playing
+	// avoid returning empty strings directly, use "placeholder" instead
+	let placeholder = "";
+	if (players.activePlayers.length > 1 && players.selected.playbackStatus != "Playing")
+		placeholder = BUTTON_PLACEHOLDER;
+
+	if(REMOVE_TEXT_WHEN_PAUSED){
+		if(removeTextWhenPaused())
+			return placeholder
 	}
 
 	// metadata is a javascript object
@@ -53,11 +60,8 @@ var buildLabel = function buildLabel(players){
 
 	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
 
-	if(labelstring.length === 0){
-		if(players.activePlayers.length === 0)
-			return ""
-		return BUTTON_PLACEHOLDER
-	}
+	if(labelstring.length === 0)
+		return placeholder
 
 	return labelstring
 }
