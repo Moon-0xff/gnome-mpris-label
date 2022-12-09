@@ -127,16 +127,8 @@ class MprisLabel extends PanelMenu.Button {
 			this.icon = null;
 		}
 
-		if(!SHOW_ICON || !this.player)
+		if(!SHOW_ICON || !this.player || this.buttonText.get_text() == "")
 			return
-
-		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-				if(this.players.removeTextPausedIsActive() && this.icon){
-					this.box.remove_child(this.icon);
-					this.icon = null;
-				}
-				return
-		}
 
 		this.icon = this.player.icon
 
