@@ -22,41 +22,48 @@ function getSettings(){
 	DIVIDER_STRING = settings.get_string('divider-string');
 }
 
-var buildLabel = function buildLabel(player,activePlayers){
+var buildLabel = function buildLabel(players){
 	getSettings();
 
-	let labelstring = getLabelString(player.getMetadata());
-
-	if(REMOVE_TEXT_WHEN_PAUSED && player.playbackStatus != "Playing"){
-		labelstring = removeTextWhenPaused(labelstring,player);
+	if(REMOVE_TEXT_WHEN_PAUSED && players.selected.playbackStatus != "Playing"){
+		if (removeTextWhenPaused())
+			return ""
 	}
 
-	if(labelstring.length == 0){
-		if (activePlayers.length == 0)
+	// metadata is a javascript object
+	// "fields" are enumerable string-keyed properties
+	// each "field" is a GLib.Variant object
+	let metadata = players.selected.getMetadata();
+
+	let labelstring = "";
+	let variant;
+	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
+	fields.filter(field => field != "");
+
+	fields.forEach(field => {
+		if (Object.keys(metadata).includes(field)){
+			variant = metadata[field];
+
+			if(variant.get_type().is_array())
+				labelstring = labelstring + parseMetadataField(variant.get_strv()[0]);
+			else
+				labelstring = labelstring + parseMetadataField(variant.get_string()[0]);
+		}
+	});
+
+	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
+
+	if(labelstring.length === 0){
+		if(players.activePlayers.length === 0)
 			return ""
 		return BUTTON_PLACEHOLDER
 	}
+
 	return labelstring
 }
 
-function removeTextWhenPaused(labelstring,player){
-	return ""
-}
-
-function getLabelString(metadata){
-	let labelstring = "";
-	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
-
-	fields.forEach(field => {
-		try {
-			labelstring = labelstring + parseMetadataField(metadata[field].get_string()[0]);
-		}
-
-		catch {
-			labelstring = labelstring + parseMetadataField(metadata[field].get_strv()[0]);
-		}
-	});
-	return labelstring
+function removeTextWhenPaused(){
+	return false
 }
 
 function parseMetadataField(data) {

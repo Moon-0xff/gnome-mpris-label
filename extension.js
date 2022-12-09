@@ -106,15 +106,15 @@ class MprisLabel extends PanelMenu.Button {
 		REFRESH_RATE = this.settings.get_int('refresh-rate');
 		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
-		log("mpris-label ------------------------------------------------------------");
-		const start_time = new Date().getTime();
+		//log("mpris-label ------------------------------------------------------------");
+		//const start_time = new Date().getTime();
 
 		this.player = this.players.pick();
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
 
-		const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - total cycle time: "+step+"ms");
+		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - total cycle time: "+step+"ms");
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
 	}
@@ -149,7 +149,7 @@ class MprisLabel extends PanelMenu.Button {
 			if(this.player == null || undefined)
 				this.buttonText.set_text("")
 			else
-				this.buttonText.set_text(buildLabel(this.player,this.players.activePlayers));
+				this.buttonText.set_text(buildLabel(this.players));
 		}
 		catch(err){
 			log("Mpris Label: " + err);

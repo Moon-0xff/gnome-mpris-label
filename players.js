@@ -50,7 +50,7 @@ var Players = class Players {
 		if(AUTO_SWITCH_TO_MOST_RECENT){
 			if(this.activePlayers.length == 0){
 				if(REMOVE_TEXT_WHEN_PAUSED)
-					this.selecte = null
+					this.selected = null
 					
 				return this.selected
 			}
@@ -91,9 +91,9 @@ var Players = class Players {
 		return this.selected
 	}
 	_updateList(){
-		const start_time = new Date().getTime();
+		//const start_time = new Date().getTime();
 		let dBusList = this.dBusProxy.ListNamesSync()[0];
-		const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
+		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
 		this.list = this.list.filter(element => dBusList.includes(element.address));
@@ -107,7 +107,7 @@ var Players = class Players {
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
 		newPlayers.forEach(element => this.list.push(new Player(element)));
 
-		if(AUTO_SWITCH_TO_MOST_RECENT)
+		if(AUTO_SWITCH_TO_MOST_RECENT || REMOVE_TEXT_WHEN_PAUSED)
 			this.activePlayers = this.list.filter(element => element.playbackStatus == "Playing")
 	}
 }
@@ -135,15 +135,14 @@ class Player {
 		}
 	}
 	getMetadata(){
-		const start_time = new Date().getTime();
+		//const start_time = new Date().getTime();
 		let metadata = this.proxy.Metadata;
-		const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - metadata ("+this.address.substring(23)+"):"+step+"ms");
 		return metadata
 	}
 	getStatus() {
-		const start_time = new Date().getTime();
+		//const start_time = new Date().getTime();
 		let playbackStatus = this.proxy.PlaybackStatus
-		const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - playbackStatus:("+this.address.substring(23)+"): "+step+"ms ("+playbackStatus+")");
+		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - playbackStatus:("+this.address.substring(23)+"): "+step+"ms ("+playbackStatus+")");
 		return playbackStatus
 	}
 }
