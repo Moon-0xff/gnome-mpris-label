@@ -9,10 +9,6 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
 
-let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,EXTENSION_PLACE,
-	REFRESH_RATE,AUTO_SWITCH_TO_MOST_RECENT,
-	REMOVE_TEXT_WHEN_PAUSED,SHOW_ICON;
-
 let indicator = null;
 
 function enable(){
@@ -32,11 +28,12 @@ class MprisLabel extends PanelMenu.Button {
 		super._init(0.0,'Mpris Label',false);
 
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-		LEFT_PADDING = this.settings.get_int('left-padding');
-		RIGHT_PADDING = this.settings.get_int('right-padding');
-		EXTENSION_INDEX = this.settings.get_int('extension-index');
-		EXTENSION_PLACE = this.settings.get_string('extension-place');
-		SHOW_ICON = this.settings.get_boolean('show-icon');
+
+		const LEFT_PADDING = this.settings.get_int('left-padding');
+		const RIGHT_PADDING = this.settings.get_int('right-padding');
+		const EXTENSION_INDEX = this.settings.get_int('extension-index');
+		const EXTENSION_PLACE = this.settings.get_string('extension-place');
+		const SHOW_ICON = this.settings.get_boolean('show-icon');
 
 		this.box = new St.BoxLayout({
 			x_align: Clutter.ActorAlign.FILL
@@ -66,8 +63,9 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onPaddingChanged(){
-		LEFT_PADDING = this.settings.get_int('left-padding');
-		RIGHT_PADDING = this.settings.get_int('right-padding');
+		const LEFT_PADDING = this.settings.get_int('left-padding');
+		const RIGHT_PADDING = this.settings.get_int('right-padding');
+		const SHOW_ICON = this.settings.get_int('show-icon');
 
 		if(SHOW_ICON){
 			if (RIGHT_PADDING < 5)
@@ -81,8 +79,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_updateTrayPosition(){
-		EXTENSION_PLACE = this.settings.get_string('extension-place');
-		EXTENSION_INDEX = this.settings.get_int('extension-index');
+		const EXTENSION_PLACE = this.settings.get_string('extension-place');
+		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 
 		this.container.get_parent().remove_child(this.container);
 
@@ -103,9 +101,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_refresh() {
-		REFRESH_RATE = this.settings.get_int('refresh-rate');
-		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
-		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 		//log("mpris-label ------------------------------------------------------------");
 		//const start_time = new Date().getTime();
 
@@ -120,7 +116,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_setIcon(){
-		SHOW_ICON = this.settings.get_boolean('show-icon');
+		const SHOW_ICON = this.settings.get_boolean('show-icon');
 
 		if(this.icon){
 			this.box.remove_child(this.icon);
