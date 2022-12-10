@@ -41,11 +41,11 @@ class MprisLabel extends PanelMenu.Button {
 		this._onPaddingChanged();//apply padding
 		this.add_child(this.box);
 
-		this.buttonText = new St.Label({
+		this.label = new St.Label({
 			text: "",
 			y_align: Clutter.ActorAlign.CENTER
 		});
-		this.box.add_child(this.buttonText);
+		this.box.add_child(this.label);
 
 		this.players = new Players();
 
@@ -123,7 +123,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.icon = null;
 		}
 
-		if(!SHOW_ICON || !this.player || this.buttonText.get_text() == "")
+		if(!SHOW_ICON || !this.player || this.label.get_text() == "")
 			return
 
 		this.icon = this.player.icon
@@ -135,13 +135,13 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.buttonText.set_text("")
+				this.label.set_text("")
 			else
-				this.buttonText.set_text(buildLabel(this.players));
+				this.label.set_text(buildLabel(this.players));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
-			this.buttonText.set_text("");
+			this.label.set_text("");
 		}
 	}
 
@@ -156,7 +156,7 @@ class MprisLabel extends PanelMenu.Button {
 		if(this.icon)
 			this.box.remove_child(this.icon);
 
-		this.box.remove_child(this.buttonText);
+		this.box.remove_child(this.label);
 		this.remove_child(this.box);
 		this._removeTimeout();
 	}
