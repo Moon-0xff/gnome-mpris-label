@@ -29,7 +29,7 @@ var buildLabel = function buildLabel(players){
 	// it should appear if labelstring is empty and there's another player playing
 	// avoid returning empty strings directly, use "placeholder" instead
 	let placeholder = "";
-	if (players.activePlayers.length > 1 && players.selected.playbackStatus != "Playing")
+	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing")
 		placeholder = BUTTON_PLACEHOLDER;
 
 	if(REMOVE_TEXT_WHEN_PAUSED){

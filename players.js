@@ -107,8 +107,7 @@ var Players = class Players {
 		let newPlayers = dBusList.filter(element => !addresses.includes(element));
 		newPlayers.forEach(element => this.list.push(new Player(element)));
 
-		if(AUTO_SWITCH_TO_MOST_RECENT || REMOVE_TEXT_WHEN_PAUSED)
-			this.activePlayers = this.list.filter(element => element.playbackStatus == "Playing")
+		this.activePlayers = this.list.filter(element => element.playbackStatus == "Playing")
 	}
 }
 
