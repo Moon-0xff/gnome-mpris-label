@@ -6,13 +6,8 @@ const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-const {getDBusList,getPlayerStatus} = CurrentExtension.imports.dbus;
-const {LabelBuilder} = CurrentExtension.imports.label;
-const { getIcon } = CurrentExtension.imports.icons;
-
-let LEFT_PADDING,RIGHT_PADDING,EXTENSION_INDEX,EXTENSION_PLACE,
-	REFRESH_RATE,AUTO_SWITCH_TO_MOST_RECENT,
-	REMOVE_TEXT_WHEN_PAUSED,SHOW_ICON;
+const { Players } = CurrentExtension.imports.players;
+const { buildLabel } = CurrentExtension.imports.label;
 
 let indicator = null;
 
@@ -33,11 +28,12 @@ class MprisLabel extends PanelMenu.Button {
 		super._init(0.0,'Mpris Label',false);
 
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-		LEFT_PADDING = this.settings.get_int('left-padding');
-		RIGHT_PADDING = this.settings.get_int('right-padding');
-		EXTENSION_INDEX = this.settings.get_int('extension-index');
-		EXTENSION_PLACE = this.settings.get_string('extension-place');
-		SHOW_ICON = this.settings.get_boolean('show-icon');
+
+		const LEFT_PADDING = this.settings.get_int('left-padding');
+		const RIGHT_PADDING = this.settings.get_int('right-padding');
+		const EXTENSION_INDEX = this.settings.get_int('extension-index');
+		const EXTENSION_PLACE = this.settings.get_string('extension-place');
+		const SHOW_ICON = this.settings.get_boolean('show-icon');
 
 		this.box = new St.BoxLayout({
 			x_align: Clutter.ActorAlign.FILL
@@ -45,59 +41,33 @@ class MprisLabel extends PanelMenu.Button {
 		this._onPaddingChanged();//apply padding
 		this.add_child(this.box);
 
-		this.buttonText = new St.Label({
+		this.label = new St.Label({
 			text: "",
 			y_align: Clutter.ActorAlign.CENTER
 		});
-		this.box.add_child(this.buttonText);
+		this.box.add_child(this.label);
 
-		this.connect('button-press-event',this._cyclePlayers.bind(this));
+		this.players = new Players();
+
+		this.connect('button-press-event',this._onButtonPressed.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
-		this.settings.connect('changed::show-icon',this._updateSetIcon.bind(this));
+		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
-
-		this.labelBuilder = new LabelBuilder();
-
-		this.playerList = [];
 
 		this._refresh();
 	}
 
-	_cyclePlayers(){
-		this._updatePlayerList();
-		let list = this.playerList;
-
-		if(AUTO_SWITCH_TO_MOST_RECENT)
-			list = this.activePlayers;
-
-		if(list < 2)
-			return
-
-		let newIndex = list.indexOf(this.player)+1;
-
-		if(this.player == list.at(-1))
-			newIndex = 0;
-
-		this.player = list[newIndex];
-
-		if (AUTO_SWITCH_TO_MOST_RECENT){
-			this.player.statusTimestamp = new Date().getTime();
-		}
-
-		if (SHOW_ICON)
-			this._updateSetIcon()
-	}
-
 	_onPaddingChanged(){
-		LEFT_PADDING = this.settings.get_int('left-padding');
-		RIGHT_PADDING = this.settings.get_int('right-padding');
+		const LEFT_PADDING = this.settings.get_int('left-padding');
+		let RIGHT_PADDING = this.settings.get_int('right-padding');
+		const SHOW_ICON = this.settings.get_boolean('show-icon');
 
-		if (SHOW_ICON){
+		if(SHOW_ICON){
 			if (RIGHT_PADDING < 5)
 				RIGHT_PADDING = 0
 			else
@@ -109,8 +79,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_updateTrayPosition(){
-		EXTENSION_PLACE = this.settings.get_string('extension-place');
-		EXTENSION_INDEX = this.settings.get_int('extension-index');
+		const EXTENSION_PLACE = this.settings.get_string('extension-place');
+		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 
 		this.container.get_parent().remove_child(this.container);
 
@@ -125,48 +95,36 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
+	_onButtonPressed(){
+		this.player = this.players.next();
+		this._setIcon();
+	}
+
 	_refresh() {
-		REFRESH_RATE = this.settings.get_int('refresh-rate');
-		AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
-		REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+		const REFRESH_RATE = this.settings.get_int('refresh-rate');
+		//log("mpris-label ------------------------------------------------------------");
+		//const start_time = new Date().getTime();
 
-		let lastAddress = null;
-		if (this.player)
-			lastAddress = this.player.address
-
-		this._updatePlayerList();
-		this._pickPlayer();
+		this.player = this.players.pick();
 		this._setText();
-
-		let newAddress = null;
-		if (this.player)
-			newAddress = this.player.address
-
-		if ( newAddress != lastAddress )
-			this._updateSetIcon()
-
+		this._setIcon();
 		this._removeTimeout();
-		
+
+		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - total cycle time: "+step+"ms");
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
 		return true;
 	}
 
 	_setIcon(){
-		if (this.icon){
+		const SHOW_ICON = this.settings.get_boolean('show-icon');
+
+		if(this.icon){
 			this.box.remove_child(this.icon);
 			this.icon = null;
 		}
 
-		if (!this.player)
+		if(!SHOW_ICON || !this.player || this.label.get_text() == "")
 			return
-
-		if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus != "Playing"){
-			if(this.labelBuilder.removeTextPausedIsActive(this.player) && this.icon){
-				this.box.remove_child(this.icon);
-				this.icon = null;
-			}
-			return
-		}
 
 		this.icon = this.player.icon
 
@@ -174,75 +132,21 @@ class MprisLabel extends PanelMenu.Button {
 			this.box.add_child(this.icon);
 	}
 
-	_updateSetIcon(){
-		SHOW_ICON = this.settings.get_boolean('show-icon');
-
-		if (SHOW_ICON)
-			this._setIcon()
-	}
-
-	_updatePlayerList(){
-		let dBusList = getDBusList();
-
-		this.playerList = this.playerList.filter(element => dBusList.includes(element.address));
-
-		let addresses = [];
-		this.playerList.forEach(element => {
-			element.update();
-			addresses.push(element.address);
-		});
-
-		let newPlayers = dBusList.filter(element => !addresses.includes(element));
-		newPlayers.forEach(element => this.playerList.push(new Player(element)));
-
-		this.activePlayers = this.playerList.filter(element => element.playbackStatus == "Playing");
-        }
-
-	_pickPlayer(){
-		if(this.playerList.length == 0){
-			this.player = null;
-			return;
-		}
-
-		if(this.playerList.includes(this.player) && !AUTO_SWITCH_TO_MOST_RECENT)
-			return
-
-		let newestTimestamp = 0;
-		let bestChoice = this.playerList[0];
-		let list = this.playerList;
-
-		if (AUTO_SWITCH_TO_MOST_RECENT){
-			if(this.activePlayers.length == 0){
-				this.player = null;
-				return;
-			}
-			list = this.activePlayers;
-		}
-
-		list.forEach(player => {
-			if(player.statusTimestamp > newestTimestamp){
-				newestTimestamp = player.statusTimestamp;
-				bestChoice = player;
-			}
-		});
-		this.player = bestChoice;
-	}
-
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.buttonText.set_text("");
+				this.label.set_text("")
 			else
-				this.buttonText.set_text(this.labelBuilder.buildLabel(this.player,this.activePlayers));
+				this.label.set_text(buildLabel(this.players));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
-			this.buttonText.set_text("");
+			this.label.set_text("");
 		}
 	}
 
 	_removeTimeout() {
-		if (this._timeout) {
+		if(this._timeout) {
 			Mainloop.source_remove(this._timeout);
 			this._timeout = null;
 		}
@@ -252,27 +156,9 @@ class MprisLabel extends PanelMenu.Button {
 		if(this.icon)
 			this.box.remove_child(this.icon);
 
-		this.box.remove_child(this.buttonText);
+		this.box.remove_child(this.label);
 		this.remove_child(this.box);
 		this._removeTimeout();
 	}
-}
-);
-
-class Player {
-	constructor(address){
-		this.address = address;
-		this.playbackStatus = getPlayerStatus(address);
-		this.statusTimestamp = new Date().getTime();
-		this.icon = getIcon(address);
-	}
-	update(){
-		let playbackStatus = getPlayerStatus(this.address);
-
-		if(this.playbackStatus != playbackStatus){
-			this.playbackStatus = playbackStatus;
-			this.statusTimestamp = new Date().getTime();
-		}
-	}
-}
+});
 
