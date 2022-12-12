@@ -118,10 +118,7 @@ class Player {
 		this.icon = getIcon(address);
 
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
-		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2");
-
-		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT)
-			this.playbackStatus = this.getStatus();
+		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
 	}
 	update(){
 		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT){
