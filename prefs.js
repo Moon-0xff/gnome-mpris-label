@@ -227,12 +227,20 @@ function buildPrefsWidget() {
     });
     prefsWidget.attach(autoSwitchToMostRecentSwitch, 1, 13, 1, 1);
 
-    let showIconSwitch = new Gtk.Switch({
-        valign: Gtk.Align.END,
+    let showIconComboBox = new Gtk.ComboBoxText({
         halign: Gtk.Align.END,
         visible: true
     });
-    prefsWidget.attach(showIconSwitch, 1, 14, 1, 1);
+
+    let showIconOptions = {'off':'','left':'left','right':'right'};
+
+    for(let option in showIconOptions){
+        showIconComboBox.append(showIconOptions[option],option);
+    }
+
+    showIconComboBox.set_active(options.indexOf(settings.get_string('show-icon')));
+    showIconComboBox.connect('changed',comboBoxSetString.bind(this,'show-icon',showIconComboBox));
+    prefsWidget.attach(showIconComboBox, 1, 14, 1, 1);
 
     let resetButton = new Gtk.Button({
         label: 'Reset settings',
@@ -261,6 +269,7 @@ function buildPrefsWidget() {
         firstFieldComboBox.set_active_id(settings.get_string('first-field'));
         secondFieldComboBox.set_active_id(settings.get_string('second-field'));
         lastFieldComboBox.set_active_id(settings.get_string('last-field'));
+        showIconComboBox.set_active_id(settings.get_string('show-icon'));
     });
 
     settings.bind('left-padding',leftPaddingEntry,'value',Gio.SettingsBindFlags.DEFAULT);
@@ -274,6 +283,6 @@ function buildPrefsWidget() {
     settings.bind('remove-text-when-paused',removePausedTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-text-paused-delay',removePausedTextDelayEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('auto-switch-to-most-recent',autoSwitchToMostRecentSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('show-icon',showIconSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('show-icon',showIconComboBox,'active',Gio.SettingsBindFlags.DEFAULT);
     return prefsWidget;
 }

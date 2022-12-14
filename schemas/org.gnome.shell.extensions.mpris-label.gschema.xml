@@ -62,8 +62,8 @@
       <default>false</default>
     </key>
 
-    <key name="show-icon" type="b">
-      <default>true</default>
+    <key name="show-icon" type="s">
+      <default>"left"</default>
     </key>
 
   </schema>

@@ -116,20 +116,24 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_setIcon(){
-		const SHOW_ICON = this.settings.get_boolean('show-icon');
+		const ICON_PLACE = this.settings.get_string('show-icon');
 
 		if(this.icon){
 			this.box.remove_child(this.icon);
 			this.icon = null;
 		}
 
-		if(!SHOW_ICON || !this.player || this.label.get_text() == "")
+		if(!ICON_PLACE || !this.player || this.label.get_text() == "")
 			return
 
 		this.icon = this.player.icon
 
-		if (this.icon != null | undefined)
-			this.box.add_child(this.icon);
+		if (this.icon != null | undefined){
+			if (ICON_PLACE == "right")
+				this.box.add_child(this.icon);
+			else if (ICON_PLACE == "left")
+				this.box.insert_child_at_index(this.icon,0);
+		}
 	}
 
 	_setText() {
