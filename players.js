@@ -93,9 +93,7 @@ var Players = class Players {
 		return this.selected
 	}
 	_updateList(){
-		//const start_time = new Date().getTime();
 		let dBusList = this.dBusProxy.ListNamesSync()[0];
-		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - dBusList: "+step+"ms");
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
 		this.list = this.list.filter(element => dBusList.includes(element.address));
@@ -131,14 +129,11 @@ class Player {
 		}
 	}
 	getMetadata(){
-		//const start_time = new Date().getTime();
 		let metadata = this.proxy.Metadata;
 		return metadata
 	}
 	getStatus() {
-		//const start_time = new Date().getTime();
 		let playbackStatus = this.proxy.PlaybackStatus
-		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - playbackStatus:("+this.address.substring(23)+"): "+step+"ms ("+playbackStatus+")");
 		return playbackStatus
 	}
 }
