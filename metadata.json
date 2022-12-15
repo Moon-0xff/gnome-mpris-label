@@ -2,7 +2,7 @@
     "uuid": "mprisLabel@moon-0xff.github.com",
     "name": "Mpris Label",
     "description": "Displays a label in the top bar with metadata from an mpris compatible source",
-    "version": 5,
+    "version": 7,
     "shell-version": [ "3.36", "3.38", "40", "41", "42", "43" ],
     "url": "https://github.com/Moon-0xff/gnome-mpris-label"
 }
