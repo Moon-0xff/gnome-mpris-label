@@ -42,6 +42,9 @@ var buildLabel = function buildLabel(players){
 	// each "field" is a GLib.Variant object
 	let metadata = players.selected.getMetadata();
 
+	if(metadata == null)
+		return placeholder
+
 	let labelstring = "";
 	let variant;
 	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
