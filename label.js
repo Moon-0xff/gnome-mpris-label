@@ -1,5 +1,4 @@
 const ExtensionUtils = imports.misc.extensionUtils;
-const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
@@ -8,6 +7,7 @@ let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	MAX_STRING_LENGTH,DIVIDER_STRING;
 
 function getSettings(){
+	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');

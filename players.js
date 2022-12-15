@@ -1,6 +1,5 @@
 const {Gio,GObject} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
-const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 const { getIcon } = CurrentExtension.imports.icons;
@@ -22,17 +21,17 @@ const dBusInterface = `
 	</interface>
 </node>`
 
-let REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
-let REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
-let AUTO_SWITCH_TO_MOST_RECENT = settings.get_boolean('auto-switch-to-most-recent');
-
 var Players = class Players {
 	constructor(){
 		this.list = [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
+		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	}
 	pick(){
+		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+
 		this._updateList();
 
 		if(this.list.length == 0){
@@ -67,6 +66,9 @@ var Players = class Players {
 		return this.selected
 	}
 	next(){
+		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+
 		this._updateList();
 
 		let list = this.list;
@@ -121,13 +123,11 @@ class Player {
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
 	}
 	update(){
-		if(REMOVE_TEXT_WHEN_PAUSED || AUTO_SWITCH_TO_MOST_RECENT){
-			let playbackStatus = this.getStatus();
+		let playbackStatus = this.getStatus();
 
-			if(this.playbackStatus != playbackStatus){
-				this.playbackStatus = playbackStatus;
-				this.statusTimestamp = new Date().getTime();
-			}
+		if(this.playbackStatus != playbackStatus){
+			this.playbackStatus = playbackStatus;
+			this.statusTimestamp = new Date().getTime();
 		}
 	}
 	getMetadata(){
