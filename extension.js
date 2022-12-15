@@ -33,7 +33,7 @@ class MprisLabel extends PanelMenu.Button {
 		const RIGHT_PADDING = this.settings.get_int('right-padding');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
-		const SHOW_ICON = this.settings.get_boolean('show-icon');
+		const SHOW_ICON = this.settings.get_string('show-icon');
 
 		this.box = new St.BoxLayout({
 			x_align: Clutter.ActorAlign.FILL
@@ -65,7 +65,7 @@ class MprisLabel extends PanelMenu.Button {
 	_onPaddingChanged(){
 		const LEFT_PADDING = this.settings.get_int('left-padding');
 		let RIGHT_PADDING = this.settings.get_int('right-padding');
-		const SHOW_ICON = this.settings.get_boolean('show-icon');
+		const SHOW_ICON = this.settings.get_string('show-icon');
 
 		if(SHOW_ICON){
 			if (RIGHT_PADDING < 5)
