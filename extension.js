@@ -117,13 +117,14 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
+		const PLACEHOLDER = this.settings.get_string('button-placeholder');
 
 		if(this.icon){
 			this.box.remove_child(this.icon);
 			this.icon = null;
 		}
 
-		if(!ICON_PLACE || !this.player || this.label.get_text() == "")
+		if(!ICON_PLACE || !this.player || this.label.get_text() == "" || this.label.get_text() == PLACEHOLDER)
 			return
 
 		this.icon = this.player.icon
