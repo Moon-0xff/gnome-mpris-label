@@ -238,7 +238,7 @@ function buildPrefsWidget() {
         showIconComboBox.append(showIconOptions[option],option);
     }
 
-    showIconComboBox.set_active(options.indexOf(settings.get_string('show-icon')));
+    showIconComboBox.set_active_id(settings.get_string('show-icon'));
     showIconComboBox.connect('changed',comboBoxSetString.bind(this,'show-icon',showIconComboBox));
     prefsWidget.attach(showIconComboBox, 1, 14, 1, 1);
 
@@ -283,6 +283,6 @@ function buildPrefsWidget() {
     settings.bind('remove-text-when-paused',removePausedTextSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('remove-text-paused-delay',removePausedTextDelayEntry,'value',Gio.SettingsBindFlags.DEFAULT);
     settings.bind('auto-switch-to-most-recent',autoSwitchToMostRecentSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('show-icon',showIconComboBox,'active',Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('show-icon',showIconComboBox,'text',Gio.SettingsBindFlags.DEFAULT);
     return prefsWidget;
 }
