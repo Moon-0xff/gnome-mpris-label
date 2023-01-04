@@ -182,4 +182,3 @@ function buildStringComboBox(setting,options){
 
 	return thisComboBox
 }
-

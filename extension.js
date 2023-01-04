@@ -63,15 +63,16 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onPaddingChanged(){
-		const LEFT_PADDING = this.settings.get_int('left-padding');
+		const ICON_PLACE = this.settings.get_string('show-icon');
+		let LEFT_PADDING = this.settings.get_int('left-padding');
 		let RIGHT_PADDING = this.settings.get_int('right-padding');
 		const SHOW_ICON = this.settings.get_string('show-icon');
 
 		if(SHOW_ICON){
-			if (RIGHT_PADDING < 5)
-				RIGHT_PADDING = 0
+			if (ICON_PLACE == "right")
+				RIGHT_PADDING = Math.max(0,RIGHT_PADDING - 5)
 			else
-				RIGHT_PADDING = RIGHT_PADDING - 5
+				LEFT_PADDING = Math.max(0,LEFT_PADDING - 5)
 		}
 
 		this.box.set_style("padding-left: " + LEFT_PADDING + "px;"
