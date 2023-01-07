@@ -61,7 +61,7 @@ function getSuspectAppName(initialString){
 		return filteredElements[0]
 
 	if (filteredElements.length > 2 && elements.length > 2) 
-		return filteredElements.at(-1) //assume first elements are unrecognized domain names
+		return filteredElements[filteredElements.length-1] //assume first elements are unrecognized domain names
 
 	if (filteredElements.length > 0)
 		return filteredElements.join(".");

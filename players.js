@@ -81,7 +81,7 @@ var Players = class Players {
 
 		let newIndex = list.indexOf(this.selected)+1;
 
-		if(this.selected == list.at(-1))
+		if(this.selected == list[list.length-1] && list.length != 0)
 			newIndex = 0;
 
 		this.selected = list[newIndex];
