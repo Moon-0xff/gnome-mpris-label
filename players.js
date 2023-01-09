@@ -66,7 +66,6 @@ var Players = class Players {
 		return this.selected
 	}
 	next(){
-		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this._updateList();
@@ -76,12 +75,12 @@ var Players = class Players {
 		if(AUTO_SWITCH_TO_MOST_RECENT)
 			list = this.activePlayers;
 
-		if(list < 2)
+		if(list.length < 2)
 			return this.selected
 
 		let newIndex = list.indexOf(this.selected)+1;
 
-		if(this.selected == list[list.length-1] && list.length != 0)
+		if(this.selected == list[list.length-1])
 			newIndex = 0;
 
 		this.selected = list[newIndex];
