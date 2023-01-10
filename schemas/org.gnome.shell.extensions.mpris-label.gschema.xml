@@ -19,7 +19,7 @@
     </key>
 
     <key name="extension-place" type="s">
-      <default>"left"</default>
+      <default>"right"</default>
     </key>
 
     <key name="refresh-rate" type="i">
