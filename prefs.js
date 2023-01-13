@@ -3,15 +3,18 @@ const {Gio,Gtk} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;
 
-const [major] = Config.PACKAGE_VERSION.split('.');
-const shellVersion = Number.parseInt(major);
 let prefsWidget;
-let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+let settings;
 let position = 0;
 
 function init(){}
 
 function buildPrefsWidget(){
+	const [major] = Config.PACKAGE_VERSION.split('.');
+	const shellVersion = Number.parseInt(major);
+
+	settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+
 	if(shellVersion < 40){
 		prefsWidget = new Gtk.Grid({
 			margin: 18,

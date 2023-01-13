@@ -2,7 +2,6 @@ const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
-const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
@@ -112,7 +111,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._removeTimeout();
 
 		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - total cycle time: "+step+"ms");
-		this._timeout = Mainloop.timeout_add(REFRESH_RATE, Lang.bind(this, this._refresh));
+		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
 
