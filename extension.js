@@ -99,20 +99,18 @@ class MprisLabel extends PanelMenu.Button {
 		this.player = this.players.next();
 		this._setIcon();
 
+		log("["+Date().substring(16,24)+"] mpris-label - tray position update");
 		this._updateTrayPosition(); //force tray position update on button press
 	}
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
-		//log("mpris-label ------------------------------------------------------------");
-		//const start_time = new Date().getTime();
 
 		this.player = this.players.pick();
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
 
-		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - total cycle time: "+step+"ms");
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
