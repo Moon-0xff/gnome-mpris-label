@@ -9,6 +9,7 @@ const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
 
 let indicator = null;
+let tray_position_set = false;
 
 function enable(){
 	indicator = new MprisLabel();
@@ -81,7 +82,7 @@ class MprisLabel extends PanelMenu.Button {
 	_updateTrayPosition(){
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
-
+		
 		this.container.get_parent().remove_child(this.container);
 
 		if(EXTENSION_PLACE == "left"){
@@ -98,9 +99,6 @@ class MprisLabel extends PanelMenu.Button {
 	_onButtonPressed(){
 		this.player = this.players.next();
 		this._setIcon();
-
-		log("["+Date().substring(16,24)+"] mpris-label - tray position update");
-		this._updateTrayPosition(); //force tray position update on button press
 	}
 
 	_refresh() {
@@ -112,6 +110,15 @@ class MprisLabel extends PanelMenu.Button {
 		this._removeTimeout();
 
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
+
+		//force tray position refresh
+		log("["+Date().substring(16,24)+"] mpris-label - timeout: "+this._timeout);
+		if ( ! tray_position_set && this._timeout>5000 ){ 
+			log("["+Date().substring(16,24)+"] mpris-label - updating tray position");
+			this._updateTrayPosition();
+			tray_position_set=true;
+		}
+
 		return true;
 	}
 
