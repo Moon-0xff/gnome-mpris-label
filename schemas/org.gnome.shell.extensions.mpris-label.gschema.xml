@@ -66,5 +66,13 @@
       <default>"left"</default>
     </key>
 
+    <key name="reposition-delay" type="i">
+      <default>5</default>
+    </key>
+
+    <key name="reposition-on-button-press" type="b">
+      <default>false</default>
+    </key>
+
   </schema>
 </schemalist>

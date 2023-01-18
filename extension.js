@@ -9,7 +9,6 @@ const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
 
 let indicator = null;
-let tray_position_set = false;
 
 function enable(){
 	indicator = new MprisLabel();
@@ -34,6 +33,7 @@ class MprisLabel extends PanelMenu.Button {
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const SHOW_ICON = this.settings.get_string('show-icon');
+		const REPOSITION_DELAY = this.settings.get_int('reposition-delay');
 
 		this.box = new St.BoxLayout({
 			x_align: Clutter.ActorAlign.FILL
@@ -59,6 +59,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
+		const repositionTimeout = GLib.timeout_add(REPOSITION_DELAY,this._updateTrayPosition.bind(this));
+
 		this._refresh();
 	}
 
@@ -82,6 +84,7 @@ class MprisLabel extends PanelMenu.Button {
 	_updateTrayPosition(){
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
+
 		this.container.get_parent().remove_child(this.container);
 
 		if(EXTENSION_PLACE == "left"){
@@ -98,6 +101,11 @@ class MprisLabel extends PanelMenu.Button {
 	_onButtonPressed(){
 		this.player = this.players.next();
 		this._setIcon();
+
+		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+
+		if (REPOSITION_ON_BUTTON_PRESS)
+			this._updateTrayPosition(); //force tray position update on button press
 	}
 
 	_refresh() {
@@ -109,14 +117,6 @@ class MprisLabel extends PanelMenu.Button {
 		this._removeTimeout();
 
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
-
-		//force tray position refresh
-		if ( ! tray_position_set && this._timeout>5000 ){ 
-			//log("["+Date().substring(16,24)+"] mpris-label - updating tray position");
-			this._updateTrayPosition();
-			tray_position_set=true;
-		}
-
 		return true;
 	}
 
