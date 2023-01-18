@@ -112,9 +112,8 @@ class MprisLabel extends PanelMenu.Button {
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 
 		//force tray position refresh
-		log("["+Date().substring(16,24)+"] mpris-label - timeout: "+this._timeout);
 		if ( ! tray_position_set && this._timeout>5000 ){ 
-			log("["+Date().substring(16,24)+"] mpris-label - updating tray position");
+			//log("["+Date().substring(16,24)+"] mpris-label - updating tray position");
 			this._updateTrayPosition();
 			tray_position_set=true;
 		}
