@@ -98,6 +98,8 @@ class MprisLabel extends PanelMenu.Button {
 	_onButtonPressed(){
 		this.player = this.players.next();
 		this._setIcon();
+
+		this._updateTrayPosition(); //force tray position update on button press
 	}
 
 	_refresh() {
