@@ -59,7 +59,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
-		const repositionTimeout = GLib.timeout_add(REPOSITION_DELAY,this._updateTrayPosition.bind(this));
+		const repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
 		this._refresh();
 	}
