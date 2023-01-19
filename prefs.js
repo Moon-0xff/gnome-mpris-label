@@ -82,8 +82,8 @@ function buildPrefsWidget(){
 	addSpinButton(prefsWidget,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800);
 	addSwitch(prefsWidget,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
 	let showIconComboBox = addStringComboBox(prefsWidget,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
-	addSpinButton(prefsWidget,'reposition-delay','Top panel reposition at startup (delay in seconds):',0,300);
-	addSwitch(prefsWidget,'reposition-on-button-press','Update top panel position on every button press:');
+	addSpinButton(prefsWidget,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300);
+	addSwitch(prefsWidget,'reposition-on-button-press','Update panel position on every button press:');
 
 	let resetButton = new Gtk.Button({
 		label: 'Reset settings',

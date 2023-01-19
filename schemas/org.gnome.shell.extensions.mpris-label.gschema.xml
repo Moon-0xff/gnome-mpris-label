@@ -67,7 +67,7 @@
     </key>
 
     <key name="reposition-delay" type="i">
-      <default>5</default>
+      <default>2</default>
     </key>
 
     <key name="reposition-on-button-press" type="b">
