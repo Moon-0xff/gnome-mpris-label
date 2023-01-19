@@ -82,6 +82,8 @@ function buildPrefsWidget(){
 	addSpinButton(prefsWidget,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800);
 	addSwitch(prefsWidget,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
 	let showIconComboBox = addStringComboBox(prefsWidget,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
+	addSpinButton(prefsWidget,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300);
+	addSwitch(prefsWidget,'reposition-on-button-press','Update panel position on every button press:');
 
 	let resetButton = new Gtk.Button({
 		label: 'Reset settings',
@@ -106,6 +108,8 @@ function buildPrefsWidget(){
 		settings.reset('remove-text-paused-delay');
 		settings.reset('auto-switch-to-most-recent');
 		settings.reset('show-icon');
+		settings.reset('reposition-delay');
+		settings.reset('reposition-on-button-press');
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));

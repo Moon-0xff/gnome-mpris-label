@@ -33,6 +33,7 @@ class MprisLabel extends PanelMenu.Button {
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const SHOW_ICON = this.settings.get_string('show-icon');
+		const REPOSITION_DELAY = this.settings.get_int('reposition-delay');
 
 		this.box = new St.BoxLayout({
 			x_align: Clutter.ActorAlign.FILL
@@ -57,6 +58,8 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
+
+		const repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
 		this._refresh();
 	}
@@ -98,19 +101,21 @@ class MprisLabel extends PanelMenu.Button {
 	_onButtonPressed(){
 		this.player = this.players.next();
 		this._setIcon();
+
+		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+
+		if (REPOSITION_ON_BUTTON_PRESS)
+			this._updateTrayPosition(); //force tray position update on button press
 	}
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
-		//log("mpris-label ------------------------------------------------------------");
-		//const start_time = new Date().getTime();
 
 		this.player = this.players.pick();
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
 
-		//const end_time = new Date().getTime(); const step = end_time - start_time; log("mpris-label - total cycle time: "+step+"ms");
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
