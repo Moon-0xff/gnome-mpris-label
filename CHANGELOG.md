@@ -15,3 +15,6 @@ Aditionally:
 - Adds source icon alongside the label as an option
 - Big performance improvements
 - Prevents shell slowdowns or freezes when players respond slowly to D-Bus calls
+
+# Version 10
+- Fixes for GNOME 3.3x
