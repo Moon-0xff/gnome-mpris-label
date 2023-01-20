@@ -11,45 +11,46 @@ function buildPrefsWidget(){
 	const [major] = Config.PACKAGE_VERSION.split('.');
 	const shellVersion = Number.parseInt(major);
 
-	let prefsWidget;
-
-	if(shellVersion < 40){
-		prefsWidget = new Gtk.Grid({
-			margin: 18,
-			column_spacing: 12,
-			row_spacing: 12,
-			visible: true,
-			column_homogeneous: true
-		});
-	}
-	else {
-		prefsWidget = new Gtk.Grid({
-			margin_top: 10,
-			margin_bottom: 10,
-			margin_start: 10,
-			margin_end: 10,
-			column_spacing: 12,
-			row_spacing: 12,
-			visible: true,
-			column_homogeneous: true
-		});
-	}
-
+	let prefsWidget = new Gtk.Notebook({visible: true});
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-	prefsWidget._settings = settings;
+	let panelPage = buildGrid(shellVersion,settings);
+	let labelPage = buildGrid(shellVersion,settings);
 
-	addSpinButton(prefsWidget,'left-padding','Left padding:',0,500);
-	addSpinButton(prefsWidget,'right-padding','Right padding:',0,500);
-	addSpinButton(prefsWidget,'max-string-length','Max string length (each field):',1,150);
-	addSpinButton(prefsWidget,'extension-index','Extension index:',0,20);
-	let extensionPlaceComboBox = addStringComboBox(prefsWidget,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'});
-	addSpinButton(prefsWidget,'refresh-rate','Refresh rate:',30,3000);
-	addEntry(prefsWidget,'button-placeholder','Button placeholder (can be left empty):');
-	addSwitch(prefsWidget,'remove-remaster-text','Remove remaster text:');
-	addEntry(prefsWidget,'divider-string','Divider string (you can use spaces):');
+//panel page:
+	addSpinButton(panelPage,'left-padding','Left padding:',0,500);
+	addSpinButton(panelPage,'right-padding','Right padding:',0,500);
+	addSpinButton(panelPage,'extension-index','Extension index:',0,20);
+	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'});
+	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300);
+	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:');
+
+	let resetButton = new Gtk.Button({
+		label: 'Reset settings',
+		visible: true
+	});
+	panelPage.attach(resetButton,0,position,1,1);
+
+	resetButton.connect('clicked',() => {
+		settings.reset('left-padding');
+		settings.reset('right-padding');
+		settings.reset('extension-index');
+		settings.reset('extension-place');
+		settings.reset('reposition-delay');
+		settings.reset('reposition-on-button-press');
+		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
+	});
+
+//label page:
+	position = 0; //this line this line seems to be unnecessary
+
+	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150);
+	addSpinButton(labelPage,'refresh-rate','Refresh rate:',30,3000);
+	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):');
+	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:');
+	addEntry(labelPage,'divider-string','Divider string (you can use spaces):');
 
 	//visible fields is a bit more complex
-	addLabel(prefsWidget,'Visible fields and order:');
+	addLabel(labelPage,'Visible fields and order:');
 
 	let visibleFieldsBox = new Gtk.Box({
 		spacing: 12,
@@ -75,28 +76,22 @@ function buildPrefsWidget(){
 		visibleFieldsBox.append(secondFieldComboBox,true,true,0);
 		visibleFieldsBox.append(lastFieldComboBox,true,true,0);
 	}
-	prefsWidget.attach(visibleFieldsBox,1,position,1,1);
+	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	addSwitch(prefsWidget,'remove-text-when-paused','Hide when paused:');
-	addSpinButton(prefsWidget,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800);
-	addSwitch(prefsWidget,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
-	let showIconComboBox = addStringComboBox(prefsWidget,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
-	addSpinButton(prefsWidget,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300);
-	addSwitch(prefsWidget,'reposition-on-button-press','Update panel position on every button press:');
+	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:');
+	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800);
+	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
+	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
 
-	let resetButton = new Gtk.Button({
+	resetButton = new Gtk.Button({
 		label: 'Reset settings',
 		visible: true
 	});
-	prefsWidget.attach(resetButton,0,position,1,1);
+	labelPage.attach(resetButton,0,position,1,1);
 
 	resetButton.connect('clicked',() => {
-		settings.reset('left-padding');
-		settings.reset('right-padding');
 		settings.reset('max-string-length');
-		settings.reset('extension-index');
-		settings.reset('extension-place');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
 		settings.reset('remove-remaster-text');
@@ -108,15 +103,14 @@ function buildPrefsWidget(){
 		settings.reset('remove-text-paused-delay');
 		settings.reset('auto-switch-to-most-recent');
 		settings.reset('show-icon');
-		settings.reset('reposition-delay');
-		settings.reset('reposition-on-button-press');
-		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
+	prefsWidget.append_page(panelPage, new Gtk.Label({ label: "Panel", halign: Gtk.Align.START, visible: true }));
+	prefsWidget.append_page(labelPage, new Gtk.Label({ label: "Label", halign: Gtk.Align.START, visible: true }));
 	return prefsWidget
 }
 
@@ -189,4 +183,30 @@ function buildStringComboBox(settings,setting,options){
 	});
 
 	return thisComboBox
+}
+
+function buildGrid(shellVersion,settings){
+	if(shellVersion < 40){
+		widget = new Gtk.Grid({
+			margin: 18,
+			column_spacing: 12,
+			row_spacing: 12,
+			visible: true,
+			column_homogeneous: true
+		});
+	}
+	else {
+		widget = new Gtk.Grid({
+			margin_top: 10,
+			margin_bottom: 10,
+			margin_start: 10,
+			margin_end: 10,
+			column_spacing: 12,
+			row_spacing: 12,
+			visible: true,
+			column_homogeneous: true
+		});
+	}
+	widget._settings = settings;
+	return widget
 }
