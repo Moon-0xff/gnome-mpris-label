@@ -39,9 +39,4 @@ Feel free to submit an issue if you have encountered a bug, want to ask somethin
 
 Feel free to submit a pull request for a bug you squashed, a feature you added, or anything you want merged to this repo.
 
-Down below there's a list of stuff you can help me with, I'm not actively working in any of them (unless stated) so any contribution it's a great contribution.
-
-## To do List / Help Wanted
-
-- Add a user definable filter list for mpris sources
-- Add an option to select active player by a dropdown menu
+If you want to help with the development of this extension then check out the [issues marked with the development tag](https://github.com/Moon-0xff/gnome-mpris-label/issues?q=is%3Aissue+is%3Aopen+label%3A%22development%22)
