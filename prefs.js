@@ -103,10 +103,13 @@ function buildPrefsWidget(){
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
-	prefsWidget.append_page(panelPage, new Gtk.Label({ label: "Panel", halign: Gtk.Align.START, visible: true }));
-	prefsWidget.append_page(labelPage, new Gtk.Label({ label: "Label", halign: Gtk.Align.START, visible: true }));
+	prefsWidget.append_page(panelPage, buildLabel('Panel'));
+	prefsWidget.append_page(labelPage, buildLabel('Label'));
 	return prefsWidget
 }
+
+//functions starting with 'add' adds a widget to the selected grid(or widget)
+//functions starting with 'build' creates the "generic" widget and returns it
 
 function addSpinButton(widget,setting,labelstring,lower,upper){
 	addLabel(widget,labelstring);
@@ -155,11 +158,7 @@ function addEntry(widget,setting,labelstring){
 }
 
 function addLabel(widget,labelstring){
-	let thisLabel = new Gtk.Label({
-		label: labelstring,
-		halign: Gtk.Align.START,
-		visible: true
-	});
+	let thisLabel = buildLabel(labelstring);
 	widget.attach(thisLabel,0,position,1,1);
 }
 
@@ -215,12 +214,18 @@ function addButton(widget,labelstring,callback){
 }
 
 function addSubcategoryLabel(widget,labelstring){
-	let thisLabel = new Gtk.Label({
-		label: '<u> ' + labelstring + ' </u>',
-		halign: Gtk.Align.START,
-		visible: true
-	});
+	labelstring = '<u> ' + labelstring + ' </u>';
+	let thisLabel = buildLabel(labelstring);
 	widget.attach(thisLabel,0,position,1,1);
 	thisLabel.use_markup = true;
 	position++;
+}
+
+function buildLabel(labelstring){ //don't confuse with label.js buildLabel
+	let thisLabel = new Gtk.Label({
+		label: labelstring,
+		halign: Gtk.Align.START,
+		visible: true
+	});
+	return thisLabel
 }
