@@ -24,13 +24,7 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300);
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:');
 
-	let resetButton = new Gtk.Button({
-		label: 'Reset settings',
-		visible: true
-	});
-	panelPage.attach(resetButton,0,position,1,1);
-
-	resetButton.connect('clicked',() => {
+	addButton(panelPage,'Reset settings', () => {
 		settings.reset('left-padding');
 		settings.reset('right-padding');
 		settings.reset('extension-index');
@@ -84,13 +78,7 @@ function buildPrefsWidget(){
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
 
-	resetButton = new Gtk.Button({
-		label: 'Reset settings',
-		visible: true
-	});
-	labelPage.attach(resetButton,0,position,1,1);
-
-	resetButton.connect('clicked',() => {
+	addButton(labelPage,'Reset settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
@@ -209,4 +197,13 @@ function buildGrid(shellVersion,settings){
 	}
 	widget._settings = settings;
 	return widget
+}
+
+function addButton(widget,labelstring,callback){
+	button = new Gtk.Button({
+		label: labelstring,
+		visible: true
+	});
+	widget.attach(button,0,position,1,1);
+	button.connect('clicked',callback);
 }
