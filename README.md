@@ -20,9 +20,10 @@ If this is your first time installing an extension perhaps you don't have the ne
     `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git -b stable ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
 
 * Install the latest development version with:  
-    `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
+    `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`  
+    **Warning:** the latest development version could be broken or buggy
 
-**Warning:** the latest development version could be broken or buggy
+* Finally log out from GNOME and log in again. It should be enabled by default, check tweaks or extensions if it's not.
 
 ### Using Git and the installation script
 1. Clone this repository: `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git`
