@@ -3,8 +3,6 @@
 # About
 This GNOME extension reads metadata information from an mpris compatible player and displays it on the top bar. It works with Spotify, Vlc, Rhythmbox, Chromium based browsers and (probably) any mpris compatible player.
 
-### History
-
 This extension was originally a fork for [mheine's gnome spotify label](https://github.com/mheine/gnome-shell-spotify-label). It quickly spiraled out of control and i ended up replacing or reverting all but a hint of the original code, so i decided to start this repository from scratch.
 
 The idea of supporting all mpris compatible players (and how to do it) comes from this [pull request](https://github.com/mheine/gnome-shell-spotify-label/pull/21) in mheine's extension.
