@@ -17,10 +17,13 @@ function buildPrefsWidget(){
 	let labelPage = buildGrid(shellVersion,settings);
 
 //panel page:
+	addSubcategoryLabel(panelPage,'Position');
 	addSpinButton(panelPage,'left-padding','Left padding:',0,500);
 	addSpinButton(panelPage,'right-padding','Right padding:',0,500);
 	addSpinButton(panelPage,'extension-index','Extension index:',0,20);
 	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'});
+
+	addSubcategoryLabel(panelPage,'Wrong index at loadup mitigations');
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300);
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:');
 
@@ -37,10 +40,16 @@ function buildPrefsWidget(){
 //label page:
 	position = 0; //this line this line seems to be unnecessary
 
-	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150);
-	addSpinButton(labelPage,'refresh-rate','Refresh rate:',30,3000);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):');
+	addSubcategoryLabel(labelPage,'Behaviour');
+	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
 	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:');
+	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:');
+	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800);
+	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000);
+
+	addSubcategoryLabel(labelPage,'Appearance');
+	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150);
+	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):');
 	addEntry(labelPage,'divider-string','Divider string (you can use spaces):');
 
 	//visible fields is a bit more complex
@@ -73,9 +82,6 @@ function buildPrefsWidget(){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:');
-	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800);
-	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
 
 	addButton(labelPage,'Reset settings', () => {
@@ -206,4 +212,15 @@ function addButton(widget,labelstring,callback){
 	});
 	widget.attach(button,0,position,1,1);
 	button.connect('clicked',callback);
+}
+
+function addSubcategoryLabel(widget,labelstring){
+	let thisLabel = new Gtk.Label({
+		label: '<u> ' + labelstring + ' </u>',
+		halign: Gtk.Align.START,
+		visible: true
+	});
+	widget.attach(thisLabel,0,position,1,1);
+	thisLabel.use_markup = true;
+	position++;
 }
