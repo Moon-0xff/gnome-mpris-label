@@ -16,6 +16,14 @@ function buildPrefsWidget(){
 	let panelPage = buildGrid(shellVersion,settings);
 	let labelPage = buildGrid(shellVersion,settings);
 
+	if(shellVersion >= 40){
+		prefsWidget.connect('realize', () => {
+		    let window = prefsWidget.get_root();
+		    window.default_width = 600;
+		    window.default_height = 700;
+		});
+	}
+
 //panel page:
 	addSubcategoryLabel(panelPage,'Position');
 	addSpinButton(panelPage,'left-padding','Left padding:',0,500);
@@ -83,6 +91,8 @@ function buildPrefsWidget(){
 	position++;
 
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
+	if (shellVersion >= 40)
+		showIconComboBox.margin_end = 36;
 
 	addButton(labelPage,'Reset settings', () => {
 		settings.reset('max-string-length');
