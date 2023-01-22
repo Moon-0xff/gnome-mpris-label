@@ -15,8 +15,9 @@ function buildPrefsWidget(){
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	let panelPage = buildGrid(shellVersion,settings);
 	let labelPage = buildGrid(shellVersion,settings);
+	let filtersPage = buildGrid(shellVersion,settings);
 
-	if(shellVersion >= 40){
+	if(shellVersion >= 40){ //workaround taken directly from gjs.guide
 		prefsWidget.connect('realize', () => {
 		    let window = prefsWidget.get_root();
 		    window.default_width = 600;
@@ -113,8 +114,37 @@ function buildPrefsWidget(){
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
+//filters page:
+	position = 0;
+
+	let sourcesListEntry = new Gtk.Entry({
+		visible: true,
+		editable: false
+	});
+	filtersPage.attach(sourcesListEntry,0,position,1,1);
+	position++;
+
+	addButton(filtersPage,'Show available MPRIS sources', () => {
+		sourcesListEntry.set_text(playersToString());
+	});
+
+	addSubcategoryLabel(filtersPage,'Sources blacklist:');
+	let blacklistEntry = new Gtk.Entry({ visible: true });
+	filtersPage.attach(blacklistEntry,0,position,1,1);
+	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	blacklistEntry.set_placeholder_text('Separate entries with commas');
+	position++;
+
+	addSubcategoryLabel(filtersPage,'Sources whitelist:');
+	let whitelistEntry = new Gtk.Entry({ visible: true });
+	filtersPage.attach(whitelistEntry,0,position,1,1);
+	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	whitelistEntry.set_placeholder_text('Separate entries with commas');
+	position++;
+
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
 	prefsWidget.append_page(labelPage, buildLabel('Label'));
+	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
 	return prefsWidget
 }
 
@@ -221,6 +251,7 @@ function addButton(widget,labelstring,callback){
 	});
 	widget.attach(button,0,position,1,1);
 	button.connect('clicked',callback);
+	position++;
 }
 
 function addSubcategoryLabel(widget,labelstring){
@@ -239,3 +270,30 @@ function buildLabel(labelstring){ //don't confuse with label.js buildLabel
 	});
 	return thisLabel
 }
+
+function playersToString(){
+	const dBusInterface = `
+		<node>
+			<interface name="org.freedesktop.DBus">
+				<method name="ListNames">
+					<arg direction="out" type="as"/>
+				</method>
+			</interface>
+		</node>`
+
+	const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
+	const dBusProxy = dBusProxyWrapper(Gio.DBus.session,'org.freedesktop.DBus','/org/freedesktop/DBus');
+
+	let list = dBusProxy.ListNamesSync()[0];
+	list = list.filter(element => element.startsWith('org.mpris.MediaPlayer2'));
+
+	let newList = [];
+	list.forEach(element => {
+		element = element.replace('org.mpris.MediaPlayer2.','');
+		element = element.replace(/\.instance.*/g,'');
+		newList.push(element);
+	});
+
+	return newList.toString()
+}
+

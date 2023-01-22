@@ -74,5 +74,13 @@
       <default>false</default>
     </key>
 
+    <key name="mpris-sources-blacklist" type="s">
+      <default>""</default>
+    </key>
+
+    <key name="mpris-sources-whitelist" type="s">
+      <default>""</default>
+    </key>
+
   </schema>
 </schemalist>
