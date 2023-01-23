@@ -82,5 +82,9 @@
       <default>""</default>
     </key>
 
+    <key name="use-whitelist" type="b">
+      <default>false</default>
+    </key>
+
   </schema>
 </schemalist>

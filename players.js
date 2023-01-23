@@ -97,11 +97,14 @@ var Players = class Players {
 
 		this.list = this.list.filter(element => dBusList.includes(element.address));
 
-		let SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
+		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
+		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
+		const USE_WHITELIST = this.settings.get_boolean('use-whitelist');
+
 		this.list = this.list.filter(function(element){
 			let source_name = element.address.replace('org.mpris.MediaPlayer2.','');
 			source_name = source_name.replace(/\.instance.*/g,'');
-			if (SOURCES_BLACKLIST.includes(source_name))
+			if (SOURCES_BLACKLIST.includes(source_name) || (!SOURCES_WHITELIST.includes(source_name) && USE_WHITELIST))
 				return false
 
 			return true

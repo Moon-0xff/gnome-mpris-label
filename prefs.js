@@ -142,6 +142,18 @@ function buildPrefsWidget(){
 	whitelistEntry.set_placeholder_text('Separate entries with commas');
 	position++;
 
+	//using addSwitch messes up the layout for the other widgets in the page
+	let whitelistLabel = buildLabel('Blacklist all sources except whitelisted ones:');
+	filtersPage.attach(whitelistLabel,0,position,1,1);
+	let whitelistSwitch = new Gtk.Switch({
+		valign: Gtk.Align.END,
+		halign: Gtk.Align.END,
+		visible: true
+	});
+	filtersPage.attach(whitelistSwitch,0,position,1,1);
+	filtersPage._settings.bind('use-whitelist',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+	position++;
+
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
 	prefsWidget.append_page(labelPage, buildLabel('Label'));
 	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
