@@ -96,10 +96,10 @@ var Players = class Players {
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
 		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
-		const USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
+		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
 
-		if(SOURCES_BLACKLIST || USE_WHITELIST){
-			const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
+		if(SOURCES_BLACKLIST || SOURCES_WHITELIST){
+			const USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
 			const blacklist = SOURCES_BLACKLIST.replaceAll(' ','').split(',');
 			const whitelist = SOURCES_WHITELIST.replaceAll(' ','').split(',');
 
