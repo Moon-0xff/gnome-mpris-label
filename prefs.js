@@ -121,6 +121,7 @@ function buildPrefsWidget(){
 		visible: true,
 		editable: false
 	});
+	sourcesListEntry.set_tooltip_text('Press Button below to list sources currently active');
 	filtersPage.attach(sourcesListEntry,0,position,1,1);
 	position++;
 
@@ -141,11 +142,12 @@ function buildPrefsWidget(){
 	filtersPage.attach(whitelistEntry,0,position,1,1);
 	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	whitelistEntry.set_placeholder_text('Separate entries with commas');
-	whitelistEntry.set_tooltip_text('Only the sources listed here will be used');
+	whitelistEntry.set_tooltip_text('The sources listed here will not be used');
 	position++;
 
 	//using addSwitch messes up the layout for the other widgets in the page
 	let whitelistLabel = buildLabel('Ignore all sources except allowed ones:');
+	whitelistLabel.set_tooltip_text('Only the sources listed in the whitelist will be used');
 	filtersPage.attach(whitelistLabel,0,position,1,1);
 	let whitelistSwitch = new Gtk.Switch({
 		valign: Gtk.Align.END,
