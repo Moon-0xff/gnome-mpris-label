@@ -99,7 +99,10 @@ var Players = class Players {
 		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
 
 		if(SOURCES_BLACKLIST || SOURCES_WHITELIST){
-			const USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
+			let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
+			if(SOURCES_BLACKLIST && USE_BLACKLIST && !SOURCES_WHITELIST)
+				USE_WHITELIST = false;
+
 			const blacklist = SOURCES_BLACKLIST.replaceAll(' ','').split(',');
 			const whitelist = SOURCES_WHITELIST.replaceAll(' ','').split(',');
 
