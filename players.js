@@ -99,7 +99,7 @@ var Players = class Players {
 
 		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
 		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
-		const USE_WHITELIST = this.settings.get_boolean('use-whitelist');
+		const USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
 
 		this.list = this.list.filter(function(element){
 			let source_name = element.address.replace('org.mpris.MediaPlayer2.','');

@@ -82,7 +82,7 @@
       <default>""</default>
     </key>
 
-    <key name="use-whitelist" type="b">
+    <key name="use-whitelisted-sources-only" type="b">
       <default>false</default>
     </key>
 

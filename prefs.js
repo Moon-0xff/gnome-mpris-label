@@ -151,7 +151,7 @@ function buildPrefsWidget(){
 		visible: true
 	});
 	filtersPage.attach(whitelistSwitch,0,position,1,1);
-	filtersPage._settings.bind('use-whitelist',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
