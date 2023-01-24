@@ -100,7 +100,7 @@ var Players = class Players {
 
 		if(SOURCES_BLACKLIST || SOURCES_WHITELIST){
 			let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
-			if(SOURCES_BLACKLIST && USE_BLACKLIST && !SOURCES_WHITELIST)
+			if(SOURCES_BLACKLIST && USE_WHITELIST && !SOURCES_WHITELIST)
 				USE_WHITELIST = false;
 
 			const blacklist = SOURCES_BLACKLIST.replaceAll(' ','').split(',');
