@@ -128,14 +128,14 @@ function buildPrefsWidget(){
 		sourcesListEntry.set_text(playersToString());
 	});
 
-	addSubcategoryLabel(filtersPage,'Sources blacklist:');
+	addSubcategoryLabel(filtersPage,'Ignore list:');
 	let blacklistEntry = new Gtk.Entry({ visible: true });
 	filtersPage.attach(blacklistEntry,0,position,1,1);
 	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	blacklistEntry.set_placeholder_text('Separate entries with commas');
 	position++;
 
-	addSubcategoryLabel(filtersPage,'Sources whitelist:');
+	addSubcategoryLabel(filtersPage,'Allow list:');
 	let whitelistEntry = new Gtk.Entry({ visible: true });
 	filtersPage.attach(whitelistEntry,0,position,1,1);
 	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
