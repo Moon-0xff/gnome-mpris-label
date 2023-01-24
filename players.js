@@ -95,6 +95,27 @@ var Players = class Players {
 		let dBusList = this.dBusProxy.ListNamesSync()[0];
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
+		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
+		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
+
+		if(SOURCES_BLACKLIST || SOURCES_WHITELIST){
+			let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
+			if(SOURCES_BLACKLIST && USE_WHITELIST && !SOURCES_WHITELIST)
+				USE_WHITELIST = false;
+
+			const blacklist = SOURCES_BLACKLIST.replaceAll(' ','').split(',');
+			const whitelist = SOURCES_WHITELIST.replaceAll(' ','').split(',');
+
+			dBusList = dBusList.filter(function(element){
+				let source_name = element.replace('org.mpris.MediaPlayer2.','');
+				source_name = source_name.replace(/\.instance.*/g,'');
+				if (blacklist.includes(source_name) || (!whitelist.includes(source_name) && USE_WHITELIST))
+					return false
+
+				return true
+			});
+		}
+
 		this.list = this.list.filter(element => dBusList.includes(element.address));
 
 		let addresses = [];
