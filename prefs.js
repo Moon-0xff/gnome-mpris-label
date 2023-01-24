@@ -143,7 +143,7 @@ function buildPrefsWidget(){
 	position++;
 
 	//using addSwitch messes up the layout for the other widgets in the page
-	let whitelistLabel = buildLabel('Blacklist all sources except whitelisted ones:');
+	let whitelistLabel = buildLabel('Ignore all sources except allowed ones:');
 	filtersPage.attach(whitelistLabel,0,position,1,1);
 	let whitelistSwitch = new Gtk.Switch({
 		valign: Gtk.Align.END,
