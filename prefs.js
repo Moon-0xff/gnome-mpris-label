@@ -33,8 +33,8 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'extension-index','Extension index:',0,20,"Set widget location within panel section");
 
 	addSubcategoryLabel(panelPage,'Wrong index at loadup mitigations');
-	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,undefined);
-	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
+	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Time delay after extension loading for widget position to be reapplied");
+	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',"Reposition the widget in specified location when clicked on");
 
 	addButton(panelPage,'Reset settings', () => {
 		settings.reset('left-padding');
@@ -50,19 +50,19 @@ function buildPrefsWidget(){
 	position = 0; //this line this line seems to be unnecessary
 
 	addSubcategoryLabel(labelPage,'Behaviour');
-	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',undefined);
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',undefined);
-	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
-	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
-	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
+	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"Automatically switch to last playing source");
+	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Remove text \"Remaster\" from metadata fields");
+	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',"Hide text (and icon) when the source is paused");
+	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,"Time lag before hiding the text after the source is paused");
+	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,"Frequency at which the metadata is updated");
 
 	addSubcategoryLabel(labelPage,'Appearance');
-	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',undefined);
-	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
+	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,"Max number of characters to be displayed for each field");
+	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"Text to be displayed in case of metadata error");
+	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',"Separator between metadata fields displayed");
 
 	//visible fields is a bit more complex
-	addLabel(labelPage,'Visible fields and order:',undefined);
+	addLabel(labelPage,'Visible fields and order:',"Fields to be shown in the widget");
 
 	let visibleFieldsBox = new Gtk.Box({
 		spacing: 12,
@@ -91,7 +91,7 @@ function buildPrefsWidget(){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},"Show icon next to text");
 	if (shellVersion >= 40)
 		showIconComboBox.margin_end = 36;
 
