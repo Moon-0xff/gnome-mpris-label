@@ -49,13 +49,6 @@ function buildPrefsWidget(){
 //label page:
 	position = 0; //this line this line seems to be unnecessary
 
-	addSubcategoryLabel(labelPage,'Behaviour');
-	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"Automatically switch to last playing source");
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Remove text \"Remaster\" from metadata fields");
-	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',"Hide text (and icon) when the source is paused");
-	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,"Time lag before hiding the text after the source is paused");
-	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,"Frequency at which the metadata is updated");
-
 	addSubcategoryLabel(labelPage,'Appearance');
 	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,"Max number of characters to be displayed for each field");
 	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"Text to be displayed in case of metadata error");
@@ -94,6 +87,13 @@ function buildPrefsWidget(){
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},"Show icon next to text");
 	if (shellVersion >= 40)
 		showIconComboBox.margin_end = 36;
+
+	addSubcategoryLabel(labelPage,'Behaviour');
+	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"Automatically switch to last playing source");
+	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Remove text \"Remaster\" from metadata fields");
+	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',"Hide text (and icon) when the source is paused");
+	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,"Time lag before hiding the text after the source is paused");
+	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,"Frequency at which the metadata is updated");
 
 	addButton(labelPage,'Reset settings', () => {
 		settings.reset('max-string-length');
