@@ -29,11 +29,11 @@ function buildPrefsWidget(){
 	addSubcategoryLabel(panelPage,'Position');
 	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(panelPage,'extension-index','Extension index:',0,20,"Set widget location within with respect to other adjacent widgets");
-	addSpinButton(panelPage,'left-padding','Left padding:',0,500,"Set spacing to the left of the widget");
-	addSpinButton(panelPage,'right-padding','Right padding:',0,500,"Set spacing to the right of the widget");
+	addSpinButton(panelPage,'left-padding','Left padding:',0,500,undefined);
+	addSpinButton(panelPage,'right-padding','Right padding:',0,500,undefined);
 
 	addSubcategoryLabel(panelPage,'Wrong index at loadup mitigations');
-	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,undefined);
+	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
 	addButton(panelPage,'Reset panel settings', () => {
@@ -50,15 +50,15 @@ function buildPrefsWidget(){
 	position = 0; //this line this line seems to be unnecessary
 
 	addSubcategoryLabel(labelPage,'Behaviour');
-	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',undefined);
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',undefined);
+	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
+	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
 	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
 	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
 
 	addSubcategoryLabel(labelPage,'Appearance');
 	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',undefined);
+	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
 	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
 
 	//visible fields is a bit more complex
@@ -92,7 +92,7 @@ function buildPrefsWidget(){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},"Show icon next to text");
+	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
