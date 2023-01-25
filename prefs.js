@@ -83,12 +83,13 @@ function buildPrefsWidget(){
 		visibleFieldsBox.append(secondFieldComboBox,true,true,0);
 		visibleFieldsBox.append(lastFieldComboBox,true,true,0);
 	}
+	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},"Show icon next to text");
-	if (shellVersion >= 40)
-		showIconComboBox.margin_end = 36;
+	//if (shellVersion >= 40)
+	//	showIconComboBox.margin_end = 36;
 
 	addSubcategoryLabel(labelPage,'Behaviour');
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"Automatically switch to last playing source");
