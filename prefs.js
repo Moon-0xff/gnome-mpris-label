@@ -116,16 +116,17 @@ function buildPrefsWidget(){
 //filters page:
 	position = 0;
 
-	addButton(filtersPage,'Show available MPRIS sources', () => {
-		sourcesListEntry.set_text(playersToString());
-	});
-
 	let sourcesListEntry = new Gtk.Entry({
 		visible: true,
 		editable: false
 	});
 	filtersPage.attach(sourcesListEntry,0,position,1,1);
+	sourcesListEntry.set_text(playersToString());
 	position++;
+
+	addButton(filtersPage,'Update list of available MPRIS sources', () => {
+		sourcesListEntry.set_text(playersToString());
+	});
 
 	addSubcategoryLabel(filtersPage,'Ignore list:');
 	let blacklistEntry = new Gtk.Entry({ visible: true });
@@ -171,7 +172,6 @@ function buildPrefsWidget(){
 //functions starting with 'build' creates the "generic" widget and returns it
 
 function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
-	log("addSpinButton: "+labeltooltip);
 	addLabel(widget,labelstring,labeltooltip);
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
