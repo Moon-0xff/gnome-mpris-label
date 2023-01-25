@@ -36,6 +36,8 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Time delay after extension loading for widget position to be reapplied");
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',"Reposition the widget in specified location when clicked on");
 
+	addLabel(panelPage,'',undefined);//blank space
+	position++;
 	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
 		settings.reset('right-padding');
@@ -95,6 +97,8 @@ function buildPrefsWidget(){
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,"Time lag before hiding the text after the source is paused");
 	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,"Frequency at which the metadata is updated");
 
+	addLabel(labelPage,'',undefined);//blank space
+	position++;
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
@@ -117,6 +121,7 @@ function buildPrefsWidget(){
 //filters page:
 	position = 0;
 
+	addSubcategoryLabel(filtersPage,'Find available sources');
 	addButton(filtersPage,'Show available MPRIS sources', () => {
 		sourcesListEntry.set_text(playersToString());
 	});
@@ -125,24 +130,24 @@ function buildPrefsWidget(){
 		visible: true,
 		editable: false
 	});
+	sourcesListEntry.set_placeholder_text('Press button to show active sources');
 	sourcesListEntry.set_tooltip_text('Press Button below to list sources currently active');
-	filtersPage.attach(sourcesListEntry,0,position,1,1);
+	filtersPage.attach(sourcesListEntry,1,position,1,1);
 	position++;
 
-	addSubcategoryLabel(filtersPage,'Ignore list:');
+	addSubcategoryLabel(filtersPage,'Define active source filters');
+	addLabel(filtersPage,'Ignore list:','The sources listed here will not be used');
 	let blacklistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(blacklistEntry,0,position,1,1);
+	filtersPage.attach(blacklistEntry,1,position,1,1);
 	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	blacklistEntry.set_placeholder_text('Separate entries with commas');
-	blacklistEntry.set_tooltip_text('The sources listed here will not be used');
 	position++;
 
-	addSubcategoryLabel(filtersPage,'Allow list:');
+	addLabel(filtersPage,'Allow list:','The sources listed here will not be used');
 	let whitelistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(whitelistEntry,0,position,1,1);
+	filtersPage.attach(whitelistEntry,1,position,1,1);
 	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	whitelistEntry.set_placeholder_text('Separate entries with commas');
-	whitelistEntry.set_tooltip_text('The sources listed here will not be used');
 	position++;
 
 	//using addSwitch messes up the layout for the other widgets in the page
@@ -154,11 +159,14 @@ function buildPrefsWidget(){
 		halign: Gtk.Align.END,
 		visible: true
 	});
-	filtersPage.attach(whitelistSwitch,0,position,1,1);
+	filtersPage.attach(whitelistSwitch,1,position,1,1);
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
+	addLabel(filtersPage,'',undefined);//blank space
+	position++;
 	addButton(filtersPage,'Reset filters settings', () => {
+		sourcesListEntry.set_text("");
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
@@ -277,7 +285,6 @@ function addButton(widget,labelstring,callback){
 	});
 	widget.attach(button,0,position,1,1);
 	button.connect('clicked',callback);
-	position++;
 }
 
 function addSubcategoryLabel(widget,labelstring){
