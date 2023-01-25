@@ -27,7 +27,7 @@ function buildPrefsWidget(){
 
 //panel page:
 	addSubcategoryLabel(panelPage,'Position');
-	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},"Define if the widget should be located in the Left, Center or right of the panel");
+	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(panelPage,'extension-index','Extension index:',0,20,"Set widget location within with respect to other adjacent widgets");
 	addSpinButton(panelPage,'left-padding','Left padding:',0,500,"Set spacing to the left of the widget");
 	addSpinButton(panelPage,'right-padding','Right padding:',0,500,"Set spacing to the right of the widget");
