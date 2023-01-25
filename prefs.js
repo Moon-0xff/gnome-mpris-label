@@ -122,7 +122,7 @@ function buildPrefsWidget(){
 	position = 0;
 
 	addSubcategoryLabel(filtersPage,'Find available sources');
-	addButton(filtersPage,'Show available MPRIS sources', () => {
+	addButton(filtersPage,'Update available MPRIS sources', () => {
 		sourcesListEntry.set_text(playersToString());
 	});
 
@@ -130,8 +130,7 @@ function buildPrefsWidget(){
 		visible: true,
 		editable: false
 	});
-	sourcesListEntry.set_placeholder_text('Press button to show active sources');
-	sourcesListEntry.set_tooltip_text('Press Button below to list sources currently active');
+	sourcesListEntry.set_text(playersToString());
 	filtersPage.attach(sourcesListEntry,1,position,1,1);
 	position++;
 
@@ -166,7 +165,7 @@ function buildPrefsWidget(){
 	addLabel(filtersPage,'',undefined);//blank space
 	position++;
 	addButton(filtersPage,'Reset filters settings', () => {
-		sourcesListEntry.set_text("");
+		sourcesListEntry.set_text(playersToString());
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
