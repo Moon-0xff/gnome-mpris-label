@@ -36,7 +36,7 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,undefined);
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
-	addButton(panelPage,'Reset settings', () => {
+	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
 		settings.reset('right-padding');
 		settings.reset('extension-index');
@@ -95,7 +95,7 @@ function buildPrefsWidget(){
 	if (shellVersion >= 40)
 		showIconComboBox.margin_end = 36;
 
-	addButton(labelPage,'Reset settings', () => {
+	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
@@ -117,16 +117,16 @@ function buildPrefsWidget(){
 //filters page:
 	position = 0;
 
+	addButton(filtersPage,'Show available MPRIS sources', () => {
+		sourcesListEntry.set_text(playersToString());
+	});
+
 	let sourcesListEntry = new Gtk.Entry({
 		visible: true,
 		editable: false
 	});
 	filtersPage.attach(sourcesListEntry,0,position,1,1);
 	position++;
-
-	addButton(filtersPage,'Show available MPRIS sources', () => {
-		sourcesListEntry.set_text(playersToString());
-	});
 
 	addSubcategoryLabel(filtersPage,'Ignore list:');
 	let blacklistEntry = new Gtk.Entry({ visible: true });
@@ -155,6 +155,12 @@ function buildPrefsWidget(){
 	filtersPage.attach(whitelistSwitch,0,position,1,1);
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
+
+	addButton(filtersPage,'Reset filters settings', () => {
+		settings.reset('mpris-sources-blacklist');
+		settings.reset('mpris-sources-whitelist');
+		settings.reset('use-whitelisted-sources-only');
+	});
 
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
 	prefsWidget.append_page(labelPage, buildLabel('Label'));
