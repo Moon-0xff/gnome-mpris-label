@@ -1,7 +1,7 @@
 {
     "uuid": "mprisLabel@moon-0xff.github.com",
     "name": "Mpris Label",
-    "description": "Displays a label in the top bar with metadata from an mpris compatible source",
+    "description": "Display a customizable label in the top bar with the available artist, (song) title and/or album information from your media player. It works with Spotify, Vlc, Rhythmbox, Firefox, Chromium based browsers and (probably) any mpris compatible player.",
     "version": 11,
     "shell-version": [ "3.36", "3.38", "40", "41", "42", "43" ],
     "url": "https://github.com/Moon-0xff/gnome-mpris-label"
