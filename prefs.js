@@ -163,11 +163,26 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
-	addButton(filtersPage,'Reset filters settings', () => {
+	let filtersPageSubGrid = buildGrid(shellVersion,settings);
+	if(shellVersion < 40){
+		filtersPageSubGrid.margin = 0;
+	}
+	else {
+		filtersPageSubGrid.margin_top = 0,
+		filtersPageSubGrid.margin_bottom = 0,
+		filtersPageSubGrid.margin_start = 0,
+		filtersPageSubGrid.margin_end = 0
+	}
+	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
+
+	addButton(filtersPageSubGrid,'Reset filters settings', () => {
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
 	});
+
+	let placeholderLabel = buildLabel('')//for alignment
+	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
 
 	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
 
