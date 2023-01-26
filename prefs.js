@@ -13,9 +13,6 @@ function buildPrefsWidget(){
 
 	let prefsWidget = new Gtk.Notebook({visible: true});
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-	let panelPage = buildGrid(shellVersion,settings);
-	let labelPage = buildGrid(shellVersion,settings);
-	let filtersPage = buildGrid(shellVersion,settings);
 
 	if(shellVersion >= 40){ //workaround taken directly from gjs.guide
 		prefsWidget.connect('realize', () => {
@@ -26,17 +23,19 @@ function buildPrefsWidget(){
 	}
 
 //panel page:
+	let panelPage = buildGrid(shellVersion,settings);
+
 	addSubcategoryLabel(panelPage,'Position');
-	addSpinButton(panelPage,'left-padding','Left padding:',0,500);
-	addSpinButton(panelPage,'right-padding','Right padding:',0,500);
-	addSpinButton(panelPage,'extension-index','Extension index:',0,20);
-	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'});
+	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
+	addSpinButton(panelPage,'extension-index','Extension index:',0,20,"Set widget location within with respect to other adjacent widgets");
+	addSpinButton(panelPage,'left-padding','Left padding:',0,500,undefined);
+	addSpinButton(panelPage,'right-padding','Right padding:',0,500,undefined);
 
 	addSubcategoryLabel(panelPage,'Wrong index at loadup mitigations');
-	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300);
-	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:');
+	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
+	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
-	addButton(panelPage,'Reset settings', () => {
+	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
 		settings.reset('right-padding');
 		settings.reset('extension-index');
@@ -46,23 +45,27 @@ function buildPrefsWidget(){
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 	});
 
+	prefsWidget.append_page(panelPage, buildLabel('Panel'));
+
 //label page:
+	let labelPage = buildGrid(shellVersion,settings);
+
 	position = 0; //this line this line seems to be unnecessary
 
 	addSubcategoryLabel(labelPage,'Behaviour');
-	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:');
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:');
-	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:');
-	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800);
-	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000);
+	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
+	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
+	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
+	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
+	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
 
 	addSubcategoryLabel(labelPage,'Appearance');
-	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):');
-	addEntry(labelPage,'divider-string','Divider string (you can use spaces):');
+	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
+	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
 
 	//visible fields is a bit more complex
-	addLabel(labelPage,'Visible fields and order:');
+	addLabel(labelPage,'Visible fields and order:',undefined);
 
 	let visibleFieldsBox = new Gtk.Box({
 		spacing: 12,
@@ -88,14 +91,13 @@ function buildPrefsWidget(){
 		visibleFieldsBox.append(secondFieldComboBox,true,true,0);
 		visibleFieldsBox.append(lastFieldComboBox,true,true,0);
 	}
+	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'});
-	if (shellVersion >= 40)
-		showIconComboBox.margin_end = 36;
+	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
-	addButton(labelPage,'Reset settings', () => {
+	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
@@ -114,7 +116,11 @@ function buildPrefsWidget(){
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
+	prefsWidget.append_page(labelPage, buildLabel('Label'));
+
 //filters page:
+	let filtersPage = buildGrid(shellVersion,settings);
+
 	position = 0;
 
 	let sourcesListEntry = new Gtk.Entry({
@@ -122,9 +128,10 @@ function buildPrefsWidget(){
 		editable: false
 	});
 	filtersPage.attach(sourcesListEntry,0,position,1,1);
+	sourcesListEntry.set_text(playersToString());
 	position++;
 
-	addButton(filtersPage,'Show available MPRIS sources', () => {
+	addButton(filtersPage,'Update list of available MPRIS sources', () => {
 		sourcesListEntry.set_text(playersToString());
 	});
 
@@ -133,6 +140,7 @@ function buildPrefsWidget(){
 	filtersPage.attach(blacklistEntry,0,position,1,1);
 	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	blacklistEntry.set_placeholder_text('Separate entries with commas');
+	blacklistEntry.set_tooltip_text('The sources listed here will not be used');
 	position++;
 
 	addSubcategoryLabel(filtersPage,'Allow list:');
@@ -140,6 +148,7 @@ function buildPrefsWidget(){
 	filtersPage.attach(whitelistEntry,0,position,1,1);
 	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	whitelistEntry.set_placeholder_text('Separate entries with commas');
+	whitelistEntry.set_tooltip_text('Only the sources listed here will be used');
 	position++;
 
 	//using addSwitch messes up the layout for the other widgets in the page
@@ -154,17 +163,37 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
-	prefsWidget.append_page(panelPage, buildLabel('Panel'));
-	prefsWidget.append_page(labelPage, buildLabel('Label'));
+	let filtersPageSubGrid = buildGrid(shellVersion,settings);
+	if(shellVersion < 40){
+		filtersPageSubGrid.margin = 0;
+	}
+	else {
+		filtersPageSubGrid.margin_top = 0,
+		filtersPageSubGrid.margin_bottom = 0,
+		filtersPageSubGrid.margin_start = 0,
+		filtersPageSubGrid.margin_end = 0
+	}
+	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
+
+	addButton(filtersPageSubGrid,'Reset filters settings', () => {
+		settings.reset('mpris-sources-blacklist');
+		settings.reset('mpris-sources-whitelist');
+		settings.reset('use-whitelisted-sources-only');
+	});
+
+	let placeholderLabel = buildLabel('')//for alignment
+	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
+
 	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
+
 	return prefsWidget
 }
 
 //functions starting with 'add' adds a widget to the selected grid(or widget)
 //functions starting with 'build' creates the "generic" widget and returns it
 
-function addSpinButton(widget,setting,labelstring,lower,upper){
-	addLabel(widget,labelstring);
+function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
+	addLabel(widget,labelstring,labeltooltip);
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
 			lower: lower,
@@ -178,8 +207,8 @@ function addSpinButton(widget,setting,labelstring,lower,upper){
 	position++;
 }
 
-function addStringComboBox(widget,setting,labelstring,options){
-	addLabel(widget,labelstring);
+function addStringComboBox(widget,setting,labelstring,options,labeltooltip){
+	addLabel(widget,labelstring,labeltooltip);
 	thisComboBox = buildStringComboBox(widget._settings,setting,options);
 	widget.attach(thisComboBox,1,position,1,1);
 	position++;
@@ -187,8 +216,8 @@ function addStringComboBox(widget,setting,labelstring,options){
 	return thisComboBox //necessary to reset position when the reset button is clicked
 }
 
-function addSwitch(widget,setting,labelstring){
-	addLabel(widget,labelstring);
+function addSwitch(widget,setting,labelstring,labeltooltip){
+	addLabel(widget,labelstring,labeltooltip);
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.END,
 		halign: Gtk.Align.END,
@@ -199,8 +228,8 @@ function addSwitch(widget,setting,labelstring){
 	position++;
 }
 
-function addEntry(widget,setting,labelstring){
-	addLabel(widget,labelstring);
+function addEntry(widget,setting,labelstring,labeltooltip){
+	addLabel(widget,labelstring,labeltooltip);
 	let thisEntry = new Gtk.Entry({
 		visible: true
 	});
@@ -209,8 +238,11 @@ function addEntry(widget,setting,labelstring){
 	position++;
 }
 
-function addLabel(widget,labelstring){
+function addLabel(widget,labelstring,labeltooltip){
 	let thisLabel = buildLabel(labelstring);
+	if ( labeltooltip )
+		thisLabel.set_tooltip_text(labeltooltip)
+
 	widget.attach(thisLabel,0,position,1,1);
 }
 

@@ -18,3 +18,8 @@ Aditionally:
 
 # Version 10
 - Fixes for GNOME 3.3x
+
+# Upcoming Version
+- Fixes issues with the panel position being "stolen" by other extensions
+- Adds filters to allow/disallow specified mpris sources
+- Adds tooltips(hints) for various options
