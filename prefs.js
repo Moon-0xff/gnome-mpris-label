@@ -13,9 +13,6 @@ function buildPrefsWidget(){
 
 	let prefsWidget = new Gtk.Notebook({visible: true});
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-	let panelPage = buildGrid(shellVersion,settings);
-	let labelPage = buildGrid(shellVersion,settings);
-	let filtersPage = buildGrid(shellVersion,settings);
 
 	if(shellVersion >= 40){ //workaround taken directly from gjs.guide
 		prefsWidget.connect('realize', () => {
@@ -26,6 +23,8 @@ function buildPrefsWidget(){
 	}
 
 //panel page:
+	let panelPage = buildGrid(shellVersion,settings);
+
 	addSubcategoryLabel(panelPage,'Position');
 	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(panelPage,'extension-index','Extension index:',0,20,"Set widget location within with respect to other adjacent widgets");
@@ -46,7 +45,11 @@ function buildPrefsWidget(){
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 	});
 
+	prefsWidget.append_page(panelPage, buildLabel('Panel'));
+
 //label page:
+	let labelPage = buildGrid(shellVersion,settings);
+
 	position = 0; //this line this line seems to be unnecessary
 
 	addSubcategoryLabel(labelPage,'Behaviour');
@@ -113,7 +116,11 @@ function buildPrefsWidget(){
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
+	prefsWidget.append_page(labelPage, buildLabel('Label'));
+
 //filters page:
+	let filtersPage = buildGrid(shellVersion,settings);
+
 	position = 0;
 
 	let sourcesListEntry = new Gtk.Entry({
@@ -162,9 +169,8 @@ function buildPrefsWidget(){
 		settings.reset('use-whitelisted-sources-only');
 	});
 
-	prefsWidget.append_page(panelPage, buildLabel('Panel'));
-	prefsWidget.append_page(labelPage, buildLabel('Label'));
 	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
+
 	return prefsWidget
 }
 
