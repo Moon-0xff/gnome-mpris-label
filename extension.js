@@ -59,7 +59,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
-		const repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
+		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
 		this._refresh();
 	}
@@ -169,6 +169,11 @@ class MprisLabel extends PanelMenu.Button {
 		this.box.remove_child(this.label);
 		this.remove_child(this.box);
 		this._removeTimeout();
+
+		if (this._repositionTimeout){
+			GLib.Source.remove(this._repositionTimeout);
+			this._repositionTimeout = null;
+		}
 	}
 });
 
