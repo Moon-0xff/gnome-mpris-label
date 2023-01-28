@@ -86,14 +86,11 @@ class MprisLabel extends PanelMenu.Button {
 
 		// Select Player selection Menu
 		list.forEach((player,index)=>{
-			let source_name = list[index].address.replace('org.mpris.MediaPlayer2.','');
-			source_name = source_name.replace(/\.instance.*/g,'');
-			source_name = source_name.charAt(0).toUpperCase() + source_name.slice(1);//Capitalise first letter
-			//log(Date().substring(16,24)+' gnome-mpris-label/extension.js: '+index+': '+list[index].address+' / pretty name: '+source_name);
-			
+			let source_name = list[index].name;
+		
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(source_name);
+			//include check to see if item is active player and include DOT if applicable (Auto mode) or CHECK (Manual mode)
 			if (AUTO_SWITCH_TO_MOST_RECENT) settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE);
-			//include check to see if item is active player and include DOT if applicable
 
 			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerManual)); //works - replaced with version below
 			settingsMenuItem.connect('activate', (item, event) => {
@@ -108,7 +105,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (this.players.list.length>0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Auto');
-			if (AUTO_SWITCH_TO_MOST_RECENT) settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT);
+			if (AUTO_SWITCH_TO_MOST_RECENT) settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);//Ornaments: NONE: 0, DOT: 1, CHECK: 2, HIDDEN: 3
+		
 			this.menu.addMenuItem(settingsMenuItem);
 			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerAuto));  //works - replaced with version below
 			settingsMenuItem.connect('activate', () =>{
