@@ -65,11 +65,22 @@ var Players = class Players {
 		this.selected = bestChoice;
 		return this.selected
 	}
-	list(){
+	select(index){
 		let list = this.list;
+
+		if(list.length < index || AUTO_SWITCH_TO_MOST_RECENT) {
+			return this.selected
+		}
+
+		this.selected = list[index];
+
+		return this.selected
+	}
+	list(){
+		let list = this.list
 	}
 	selected(){
-		let selected = this.selected;
+		let selected = this.selected
 	}
 	next(){
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
