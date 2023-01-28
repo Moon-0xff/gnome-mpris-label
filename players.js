@@ -68,6 +68,9 @@ var Players = class Players {
 	list(){
 		let list = this.list;
 	}
+	selected(){
+		let selected = this.selected;
+	}
 	next(){
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
@@ -143,10 +146,10 @@ class Player {
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
 		
-		let name = address.replace('org.mpris.MediaPlayer2.','');
-		name = name.replace(/\.instance.*/g,'');
-		name = name.charAt(0).toUpperCase() + name.slice(1);//Capitalise first letter
-		this.name = name;
+		let shortname = address.replace('org.mpris.MediaPlayer2.','');
+		shortname = shortname.replace(/\.instance.*/g,'');
+		shortname = shortname.charAt(0).toUpperCase() + shortname.slice(1);//Capitalise first letter
+		this.shortname = shortname;
 	}
 	update(){
 		let playbackStatus = this.getStatus();

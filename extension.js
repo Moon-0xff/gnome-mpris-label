@@ -51,8 +51,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
-		log("\n----------------------------------------");log(Date().substring(16,24)+" mpris label: buiding menu");
-
 		//this.connect('button-press-event',this._onButtonPressed.bind(this)); //replaced by menu
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
@@ -76,21 +74,31 @@ class MprisLabel extends PanelMenu.Button {
 		//start by deleting everything if required
 		this.menu.removeAll();//works
 
-		//loking for a way to get info on current active player
-		//let this.current_player = this.players.pick();
-		//log(Date().substring(16,24)+' gnome-mpris-label/extension.js: current player - '+this.current_player.address);
+		//get info on current active player
+		let selected_player = this.players.selected;
 
 		//get list of sources
 		let list = this.players.list;
-		//log(Date().substring(16,24)+' gnome-mpris-label/extension.js: list length - '+list.length);
 
 		// Select Player selection Menu
 		list.forEach((player,index)=>{
-			let source_name = list[index].name;
+			let source_name = list[index].shortname;
 		
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(source_name);
 			//include check to see if item is active player and include DOT if applicable (Auto mode) or CHECK (Manual mode)
-			if (AUTO_SWITCH_TO_MOST_RECENT) settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE);
+			if (AUTO_SWITCH_TO_MOST_RECENT)
+				settingsMenuItem.label.set_style('font-style:italic')
+
+			if (selected_player.address ==  list[index].address) {
+				if (AUTO_SWITCH_TO_MOST_RECENT){
+					settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT)
+					
+				}
+				else {
+					settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK)
+					settingsMenuItem.label.set_style('font-weight:bold');
+				}
+			}
 
 			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerManual)); //works - replaced with version below
 			settingsMenuItem.connect('activate', (item, event) => {
@@ -103,10 +111,14 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(settingsMenuItem);
 		});
 
+		//Add entry to Auto mode at bottom
 		if (this.players.list.length>0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Auto');
-			if (AUTO_SWITCH_TO_MOST_RECENT) settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);//Ornaments: NONE: 0, DOT: 1, CHECK: 2, HIDDEN: 3
-		
+			if (AUTO_SWITCH_TO_MOST_RECENT) {
+				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);//Ornaments: NONE: 0, DOT: 1, CHECK: 2, HIDDEN: 3
+				settingsMenuItem.label.set_style('font-weight:bold');
+			}
+
 			this.menu.addMenuItem(settingsMenuItem);
 			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerAuto));  //works - replaced with version below
 			settingsMenuItem.connect('activate', () =>{
@@ -120,16 +132,6 @@ class MprisLabel extends PanelMenu.Button {
 		//settings shortcut
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
 	}
-
-	// _selectPlayerManual(){
-	// 	//this.settings.set_boolean('auto-switch-to-most-recent') = false; //doesnt' work
-	// 	log("mpris label - selecting player manually");
-	// }
-
-	// _selectPlayerAuto(){
-	// 	//this.settings.set_boolean('auto-switch-to-most-recent') = true; //doesnt' work
-	// 	log("mpris label - selecting player automatically");
-	// }
 
 	_onPaddingChanged(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
