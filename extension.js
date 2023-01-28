@@ -5,7 +5,6 @@ const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
-const Lang = imports.lang;
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -185,7 +184,6 @@ class MprisLabel extends PanelMenu.Button {
 		this.player = this.players.pick();
 		this._setText();
 		this._setIcon();
-		//this._build_menu();
 		this._removeTimeout();
 
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
