@@ -66,11 +66,8 @@ var Players = class Players {
 		return this.selected
 	}
 	select(index){
-		let list = this.list;
-
-		if(list.length < index || AUTO_SWITCH_TO_MOST_RECENT) {
+		if(list.length < index || AUTO_SWITCH_TO_MOST_RECENT)
 			return this.selected
-		}
 
 		this.selected = list[index];
 
