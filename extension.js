@@ -113,18 +113,20 @@ class MprisLabel extends PanelMenu.Button {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.shortname);
 
 			//if item is active player, include DOT if auto mode, CHECK if manual mode
-			if (this.player.address ==  player.address) {
-				if (AUTO_SWITCH_TO_MOST_RECENT){
-					settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT)
-					settingsMenuItem.label.set_style('font-style:italic')
-				}
-				else {
-					settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK)
-					settingsMenuItem.label.set_style('font-weight:bold');
+			if (this.player) {
+				if (this.player.address ==  player.address) {
+					if (AUTO_SWITCH_TO_MOST_RECENT){
+						settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT);
+						settingsMenuItem.label.set_style('font-style:italic');
+					}
+					else {
+						settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);
+						settingsMenuItem.label.set_style('font-weight:bold');
+					}
 				}
 			}
 
-			settingsMenuItem.connect('activate', (item, event) => {
+			settingsMenuItem.connect('activate', () => {
 				this.players.selected = player; //this.player should sync with this on the next refresh
 				this._refresh();                //so let's refresh right away
 
@@ -136,15 +138,13 @@ class MprisLabel extends PanelMenu.Button {
 		if (this.players.list.length > 0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
-				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);//Ornaments: NONE: 0, DOT: 1, CHECK: 2, HIDDEN: 3
+				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);// Ornaments: NONE,DOT,CHECK,HIDDEN
 				settingsMenuItem.label.set_style('font-weight:bold');
 			}
 
 			this.menu.addMenuItem(settingsMenuItem);
-			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerAuto));  //works - replaced with version below
 			settingsMenuItem.connect('activate', () =>{
-				log("mpris label - selecting player automatically");
-				//set 'auto-switch-to-most-recent' to true
+				this.settings.set_boolean('auto-switch-to-most-recent',!AUTO_SWITCH_TO_MOST_RECENT);
 			});
 			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem()); //add separator
 		}
