@@ -99,7 +99,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_buildMenu(){ //https://gjs.guide/extensions/topics/popup-menu.html#popupmenubase
+	_buildMenu(){
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
@@ -138,7 +138,7 @@ class MprisLabel extends PanelMenu.Button {
 		if (this.players.list.length > 0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
-				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);// Ornaments: NONE,DOT,CHECK,HIDDEN
+				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);
 				settingsMenuItem.label.set_style('font-weight:bold');
 			}
 
