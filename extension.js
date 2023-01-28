@@ -72,20 +72,17 @@ class MprisLabel extends PanelMenu.Button {
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition() //force tray position update on button press
 
-		this.menu.removeAll(); //start by deleting everything if required
+		this.menu.removeAll(); //start by deleting everything
 
-		// Select Player selection Menu
+	//player selection submenu:
 		this.players.list.forEach(player => {
-			let source_name = player.shortname;
-		
-			let settingsMenuItem = new PopupMenu.PopupMenuItem(source_name);
-			//include check to see if item is active player and include DOT if applicable (Auto mode) or CHECK (Manual mode)
-			if (AUTO_SWITCH_TO_MOST_RECENT)
-				settingsMenuItem.label.set_style('font-style:italic')
+			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.shortname);
 
+			//if item is active player, include DOT if auto mode, CHECK if manual mode
 			if (this.player.address ==  player.address) {
 				if (AUTO_SWITCH_TO_MOST_RECENT){
 					settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT)
+					settingsMenuItem.label.set_style('font-style:italic')
 				}
 				else {
 					settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK)
@@ -93,12 +90,7 @@ class MprisLabel extends PanelMenu.Button {
 				}
 			}
 
-			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerManual)); //works - replaced with version below
 			settingsMenuItem.connect('activate', (item, event) => {
-				//item.destroy();//works (for info) - not needed
-				//item.label.clutter_text.set_text("Clicked"); //works - not used but kept for future reference
-				// insert code to swith to set 'auto-switch-to-most-recent' to false
-
 				this.players.selected = player; //this.player should sync with this on the next refresh
 				this._refresh();                //so let's refresh right away
 
@@ -106,8 +98,8 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(settingsMenuItem);
 		});
 
-		//Add entry to Auto mode at bottom
-		if (this.players.list.length>0){
+	//automode entry:
+		if (this.players.list.length > 0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
 				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);//Ornaments: NONE: 0, DOT: 1, CHECK: 2, HIDDEN: 3
@@ -120,11 +112,10 @@ class MprisLabel extends PanelMenu.Button {
 				log("mpris label - selecting player automatically");
 				//set 'auto-switch-to-most-recent' to true
 			});
-			//separator
-			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem()); //add separator
 		}
 
-		//settings shortcut
+	//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
 	}
 
