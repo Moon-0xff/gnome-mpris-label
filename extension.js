@@ -65,6 +65,40 @@ class MprisLabel extends PanelMenu.Button {
 		this._refresh();
 	}
 
+	_onPaddingChanged(){
+		const ICON_PLACE = this.settings.get_string('show-icon');
+		let LEFT_PADDING = this.settings.get_int('left-padding');
+		let RIGHT_PADDING = this.settings.get_int('right-padding');
+		const SHOW_ICON = this.settings.get_string('show-icon');
+
+		if(SHOW_ICON){
+			if (ICON_PLACE == "right")
+				RIGHT_PADDING = Math.max(0,RIGHT_PADDING - 5)
+			else
+				LEFT_PADDING = Math.max(0,LEFT_PADDING - 5)
+		}
+
+		this.box.set_style("padding-left: " + LEFT_PADDING + "px;"
+			+ "padding-right: " + RIGHT_PADDING  + "px; ");
+	}
+
+	_updateTrayPosition(){
+		const EXTENSION_PLACE = this.settings.get_string('extension-place');
+		const EXTENSION_INDEX = this.settings.get_int('extension-index');
+
+		this.container.get_parent().remove_child(this.container);
+
+		if(EXTENSION_PLACE == "left"){
+			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
+		}
+		else if(EXTENSION_PLACE == "center"){
+			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
+		}
+		else if(EXTENSION_PLACE == "right"){
+			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
+		}
+	}
+
 	_buildMenu(){ //https://gjs.guide/extensions/topics/popup-menu.html#popupmenubase
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
@@ -117,40 +151,6 @@ class MprisLabel extends PanelMenu.Button {
 
 	//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
-	}
-
-	_onPaddingChanged(){
-		const ICON_PLACE = this.settings.get_string('show-icon');
-		let LEFT_PADDING = this.settings.get_int('left-padding');
-		let RIGHT_PADDING = this.settings.get_int('right-padding');
-		const SHOW_ICON = this.settings.get_string('show-icon');
-
-		if(SHOW_ICON){
-			if (ICON_PLACE == "right")
-				RIGHT_PADDING = Math.max(0,RIGHT_PADDING - 5)
-			else
-				LEFT_PADDING = Math.max(0,LEFT_PADDING - 5)
-		}
-
-		this.box.set_style("padding-left: " + LEFT_PADDING + "px;"
-			+ "padding-right: " + RIGHT_PADDING  + "px; ");
-	}
-
-	_updateTrayPosition(){
-		const EXTENSION_PLACE = this.settings.get_string('extension-place');
-		const EXTENSION_INDEX = this.settings.get_int('extension-index');
-
-		this.container.get_parent().remove_child(this.container);
-
-		if(EXTENSION_PLACE == "left"){
-			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
-		else if(EXTENSION_PLACE == "center"){
-			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
-		else if(EXTENSION_PLACE == "right"){
-			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
 	}
 
 	_refresh() {
