@@ -67,6 +67,10 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_build_menu(){
+		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+		if (REPOSITION_ON_BUTTON_PRESS)
+			this._updateTrayPosition() //force tray position update on button press
+
 		//https://gjs.guide/extensions/topics/popup-menu.html#popupmenubase
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
@@ -92,7 +96,6 @@ class MprisLabel extends PanelMenu.Button {
 			if (selected_player.address ==  list[index].address) {
 				if (AUTO_SWITCH_TO_MOST_RECENT){
 					settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT)
-					
 				}
 				else {
 					settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK)
@@ -102,11 +105,15 @@ class MprisLabel extends PanelMenu.Button {
 
 			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerManual)); //works - replaced with version below
 			settingsMenuItem.connect('activate', (item, event) => {
-				log(Date().substring(16,24)+' gnome-mpris-label/extension.js: Item was pressed! ');
+				log(Date().substring(16,24)+' gnome-mpris-label/extension.js: Item '+index+' was pressed! ');
 				//item.destroy();//works (for info) - not needed
-				item.label.clutter_text.set_text("Clicked"); //works - change Label text but will be overwritten on next refresh
+				//item.label.clutter_text.set_text("Clicked"); //works - not used but kept for future reference
 				// insert code to swith to set 'auto-switch-to-most-recent' to false
+
 				// insert code to make selected player the active one
+				if (! AUTO_SWITCH_TO_MOST_RECENT)
+					this._onButtonPressed(index)
+
 			});
 			this.menu.addMenuItem(settingsMenuItem);
 		});
@@ -167,14 +174,9 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_onButtonPressed(){
+	_onButtonPressed(index){
 		this.player = this.players.next();
-		this._setIcon();
-
-		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
-
-		if (REPOSITION_ON_BUTTON_PRESS)
-			this._updateTrayPosition(); //force tray position update on button press
+		this.refresh();
 	}
 
 	_refresh() {
