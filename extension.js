@@ -120,7 +120,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		//Add entry to Auto mode at bottom
 		if (this.players.list.length>0){
-			let settingsMenuItem = new PopupMenu.PopupMenuItem('Auto');
+			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
 				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);//Ornaments: NONE: 0, DOT: 1, CHECK: 2, HIDDEN: 3
 				settingsMenuItem.label.set_style('font-weight:bold');
