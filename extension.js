@@ -1,9 +1,11 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
+const PopupMenu = imports.ui.popupMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const Lang = imports.lang;
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -49,7 +51,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
-		this.connect('button-press-event',this._onButtonPressed.bind(this));
+		log("\n----------------------------------------");log(Date().substring(16,24)+" mpris label: buiding menu");
+
+		//this.connect('button-press-event',this._onButtonPressed.bind(this)); //replaced by menu
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -63,6 +67,71 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._refresh();
 	}
+
+	_build_menu(){
+		//https://gjs.guide/extensions/topics/popup-menu.html#popupmenubase
+		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+
+		//start by deleting everything if required
+		this.menu.removeAll();//works
+
+		//loking for a way to get info on current active player
+		//let this.current_player = this.players.pick();
+		//log(Date().substring(16,24)+' gnome-mpris-label/extension.js: current player - '+this.current_player.address);
+
+		//get list of sources
+		let list = this.players.list;
+		//log(Date().substring(16,24)+' gnome-mpris-label/extension.js: list length - '+list.length);
+
+		// Select Player selection Menu
+		list.forEach((player,index)=>{
+			let source_name = list[index].address.replace('org.mpris.MediaPlayer2.','');
+			source_name = source_name.replace(/\.instance.*/g,'');
+			source_name = source_name.charAt(0).toUpperCase() + source_name.slice(1);//Capitalise first letter
+			//log(Date().substring(16,24)+' gnome-mpris-label/extension.js: '+index+': '+list[index].address+' / pretty name: '+source_name);
+			
+			let settingsMenuItem = new PopupMenu.PopupMenuItem(source_name);
+			if (AUTO_SWITCH_TO_MOST_RECENT) settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE);
+			//include check to see if item is active player and include DOT if applicable
+
+			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerManual)); //works - replaced with version below
+			settingsMenuItem.connect('activate', (item, event) => {
+				log(Date().substring(16,24)+' gnome-mpris-label/extension.js: Item was pressed! ');
+				//item.destroy();//works (for info) - not needed
+				item.label.clutter_text.set_text("Clicked"); //works - change Label text but will be overwritten on next refresh
+				// insert code to swith to set 'auto-switch-to-most-recent' to false
+				// insert code to make selected player the active one
+			});
+			this.menu.addMenuItem(settingsMenuItem);
+		});
+
+		if (this.players.list.length>0){
+			let settingsMenuItem = new PopupMenu.PopupMenuItem('Auto');
+			if (AUTO_SWITCH_TO_MOST_RECENT) settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT);
+			this.menu.addMenuItem(settingsMenuItem);
+			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerAuto));  //works - replaced with version below
+			settingsMenuItem.connect('activate', () =>{
+				log("mpris label - selecting player automatically");
+				//set 'auto-switch-to-most-recent' to true
+			});
+			//separator
+			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+		}
+
+		//settings shortcut
+		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
+	}
+
+	// _selectPlayerManual(){
+	// 	//this.settings.set_boolean('auto-switch-to-most-recent') = false; //doesnt' work
+	// 	log("mpris label - selecting player manually");
+	// }
+
+	// _selectPlayerAuto(){
+	// 	//this.settings.set_boolean('auto-switch-to-most-recent') = true; //doesnt' work
+	// 	log("mpris label - selecting player automatically");
+	// }
 
 	_onPaddingChanged(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
@@ -114,6 +183,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.player = this.players.pick();
 		this._setText();
 		this._setIcon();
+		this._build_menu();
 		this._removeTimeout();
 
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
