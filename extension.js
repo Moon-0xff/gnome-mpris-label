@@ -65,34 +65,25 @@ class MprisLabel extends PanelMenu.Button {
 		this._refresh();
 	}
 
-	_buildMenu(){
+	_buildMenu(){ //https://gjs.guide/extensions/topics/popup-menu.html#popupmenubase
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition() //force tray position update on button press
 
-		//https://gjs.guide/extensions/topics/popup-menu.html#popupmenubase
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
-
-		//start by deleting everything if required
-		this.menu.removeAll();//works
-
-		//get info on current active player
-		let selected_player = this.players.selected;
-
-		//get list of sources
-		let list = this.players.list;
+		this.menu.removeAll(); //start by deleting everything if required
 
 		// Select Player selection Menu
-		list.forEach((player,index)=>{
-			let source_name = list[index].shortname;
+		this.players.list.forEach(player => {
+			let source_name = player.shortname;
 		
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(source_name);
 			//include check to see if item is active player and include DOT if applicable (Auto mode) or CHECK (Manual mode)
 			if (AUTO_SWITCH_TO_MOST_RECENT)
 				settingsMenuItem.label.set_style('font-style:italic')
 
-			if (selected_player.address ==  list[index].address) {
+			if (this.player.address ==  player.address) {
 				if (AUTO_SWITCH_TO_MOST_RECENT){
 					settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT)
 				}
@@ -104,14 +95,12 @@ class MprisLabel extends PanelMenu.Button {
 
 			//settingsMenuItem.connect('activate', Lang.bind(this, this._selectPlayerManual)); //works - replaced with version below
 			settingsMenuItem.connect('activate', (item, event) => {
-				log(Date().substring(16,24)+' gnome-mpris-label/extension.js: Item '+index+' was pressed! ');
 				//item.destroy();//works (for info) - not needed
 				//item.label.clutter_text.set_text("Clicked"); //works - not used but kept for future reference
 				// insert code to swith to set 'auto-switch-to-most-recent' to false
 
-				// insert code to make selected player the active one
-				if (! AUTO_SWITCH_TO_MOST_RECENT)
-					this._onButtonPressed(index)
+				this.players.selected = player; //this.player should sync with this on the next refresh
+				this._refresh();                //so let's refresh right away
 
 			});
 			this.menu.addMenuItem(settingsMenuItem);
@@ -171,11 +160,6 @@ class MprisLabel extends PanelMenu.Button {
 		else if(EXTENSION_PLACE == "right"){
 			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 		}
-	}
-
-	_onButtonPressed(index){
-		this.player = this.players.next();
-		this.refresh();
 	}
 
 	_refresh() {
