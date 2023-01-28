@@ -50,7 +50,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
-		this.connect('button-press-event',this._build_menu.bind(this));
+		this.connect('button-press-event',this._buildMenu.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -65,7 +65,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._refresh();
 	}
 
-	_build_menu(){
+	_buildMenu(){
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition() //force tray position update on button press
