@@ -114,14 +114,17 @@ class MprisLabel extends PanelMenu.Button {
 
 			//if item is active player, include DOT if auto mode, CHECK if manual mode
 			if (this.player) {
+				if (AUTO_SWITCH_TO_MOST_RECENT){
+					settingsMenuItem.label.set_style('font-style:italic');
+					settingsMenuItem.set_style('color:#7f7f7f')
+				}
+
 				if (this.player.address ==  player.address) {
-					if (AUTO_SWITCH_TO_MOST_RECENT){
-						settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT);
-						settingsMenuItem.label.set_style('font-style:italic');
-					}
+					if (AUTO_SWITCH_TO_MOST_RECENT)
+						settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT)
 					else {
 						settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);
-						settingsMenuItem.label.set_style('font-weight:bold');
+						settingsMenuItem.label.set_style('font-weight:bold')
 					}
 				}
 			}
@@ -132,6 +135,11 @@ class MprisLabel extends PanelMenu.Button {
 
 				this.players.selected = player; //this.player should sync with this on the next refresh
 				this._refresh();                //so let's refresh right away
+				if (AUTO_SWITCH_TO_MOST_RECENT)
+					this.settings.set_boolean('auto-switch-to-most-recent',false);
+
+				this.players.selected = player;	//this.player should sync with this on the next refresh
+				this._refresh()					//so let's refresh right away
 			});
 
 			this.menu.addMenuItem(settingsMenuItem);
