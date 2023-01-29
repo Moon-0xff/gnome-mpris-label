@@ -112,13 +112,13 @@ class MprisLabel extends PanelMenu.Button {
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.shortname);
 
+			if (AUTO_SWITCH_TO_MOST_RECENT){
+				settingsMenuItem.label.set_style('font-style:italic');
+				settingsMenuItem.set_style('color:#7f7f7f')
+			}
+
 			//if item is active player, include DOT if auto mode, CHECK if manual mode
 			if (this.player) {
-				if (AUTO_SWITCH_TO_MOST_RECENT){
-					settingsMenuItem.label.set_style('font-style:italic');
-					settingsMenuItem.set_style('color:#7f7f7f')
-				}
-
 				if (this.player.address ==  player.address) {
 					if (AUTO_SWITCH_TO_MOST_RECENT)
 						settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT)
