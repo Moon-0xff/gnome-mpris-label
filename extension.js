@@ -82,6 +82,24 @@ class MprisLabel extends PanelMenu.Button {
 			+ "padding-right: " + RIGHT_PADDING  + "px; ");
 	}
 
+	_determineColors(){
+		let themeNode = this.get_theme_node();
+		let fg = themeNode.get_foreground_color();
+		let bg = themeNode.get_background_color();
+
+		//Clutter.Color doesn't have a method for average mixing
+		const channels = [[fg.red,bg.red],[fg.green,bg.green],[fg.blue,bg.blue],[fg.alpha,bg.alpha]];
+		let new_channels = [];
+		channels.forEach(channel => {
+			new_channels.push(Math.round((channel[0] + channel[1]) / 2));
+		});
+
+		log(new_channels);
+		let mixedColor = Clutter.Color.new(new_channels[0],new_channels[1],new_channels[2],new_channels[3]);
+		let color_str = mixedColor.to_string();
+		this.unfocusColor = color_str.substring(0,7); //ignore alpha channel
+	}
+
 	_updateTrayPosition(){
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
@@ -113,14 +131,11 @@ class MprisLabel extends PanelMenu.Button {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.shortname);
 
 			if (AUTO_SWITCH_TO_MOST_RECENT){
-				let themeNode = this.get_theme_node();
-				let fg = themeNode.get_foreground_color();
-				let bg = themeNode.get_background_color();
-				let color_str = mix(fg,bg).to_string();
-				color_str = color_str.substring(0,7); //ignore alpha channel
+				if(!this.unfocusColor)
+					this._determineColors();
 
 				settingsMenuItem.label.set_style('font-style:italic');
-				settingsMenuItem.set_style('color:' + color_str);
+				settingsMenuItem.set_style('color:' + this.unfocusColor);
 			}
 
 			//if item is active player, include DOT if auto mode, CHECK if manual mode
@@ -233,20 +248,4 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 });
-
-function mix(c1,c2) {
-	//Clutter.Color doesn't have a method for average mixing
-	const reds = [c1.red,c2.red];
-	const greens = [c1.green,c2.green];
-	const blues = [c1.blue,c2.blue];
-	const alpha = [c1.alpha,c2.alpha];
-	const channels = [reds,greens,blues,alpha];
-
-	let new_channels = [];
-	channels.forEach(channel => {
-		new_channels.push(Math.round((channel[0] + channel[1]) / 2));
-	});
-
-	return Clutter.Color.new(new_channels[0],new_channels[1],new_channels[2],new_channels[3])
-}
 
