@@ -118,7 +118,6 @@ class MprisLabel extends PanelMenu.Button {
 				let bg = themeNode.get_background_color();
 				let color_str = mix(fg,bg).to_string();
 				color_str = color_str.substring(0,7); //ignore alpha channel
-				log(color_str);
 
 				settingsMenuItem.label.set_style('font-style:italic');
 				settingsMenuItem.set_style('color:' + color_str);
