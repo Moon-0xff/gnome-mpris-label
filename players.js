@@ -139,6 +139,11 @@ class Player {
 
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
+		
+		let shortname = address.replace('org.mpris.MediaPlayer2.','');
+		shortname = shortname.replace(/\.instance.*/g,'');
+		shortname = shortname.charAt(0).toUpperCase() + shortname.slice(1);//Capitalise first letter
+		this.shortname = shortname;
 	}
 	update(){
 		let playbackStatus = this.getStatus();

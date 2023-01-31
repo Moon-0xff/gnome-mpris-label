@@ -1,5 +1,6 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
+const PopupMenu = imports.ui.popupMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -49,7 +50,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
-		this.connect('button-press-event',this._onButtonPressed.bind(this));
+		this.connect('button-press-event',this._buildMenu.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -81,6 +82,23 @@ class MprisLabel extends PanelMenu.Button {
 			+ "padding-right: " + RIGHT_PADDING  + "px; ");
 	}
 
+	_determineColors(){
+		let themeNode = this.get_theme_node();
+		let fg = themeNode.get_foreground_color();
+		let bg = themeNode.get_background_color();
+
+		//Clutter.Color doesn't have a method for average mixing
+		const channels = [[fg.red,bg.red],[fg.green,bg.green],[fg.blue,bg.blue],[fg.alpha,bg.alpha]];
+		let new_channels = [];
+		channels.forEach(channel => {
+			new_channels.push(Math.round((channel[0] + channel[1]) / 2));
+		});
+
+		let mixedColor = Clutter.Color.new(new_channels[0],new_channels[1],new_channels[2],new_channels[3]);
+		let color_str = mixedColor.to_string();
+		this.unfocusColor = color_str.substring(0,7); //ignore alpha channel
+	}
+
 	_updateTrayPosition(){
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
@@ -98,14 +116,67 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_onButtonPressed(){
-		this.player = this.players.next();
-		this._setIcon();
-
+	_buildMenu(){
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition(); //force tray position update on button press
+
+		this.menu.removeAll(); //start by deleting everything
+
+	//player selection submenu:
+		this.players.list.forEach(player => {
+			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.shortname);
+
+			if (AUTO_SWITCH_TO_MOST_RECENT){
+				if(!this.unfocusColor)
+					this._determineColors();
+
+				settingsMenuItem.label.set_style('font-style:italic');
+				settingsMenuItem.set_style('color:' + this.unfocusColor);
+			}
+
+			//if item is active player, include DOT if auto mode, CHECK if manual mode
+			if (this.player) {
+				if (this.player.address ==  player.address) {
+					if (AUTO_SWITCH_TO_MOST_RECENT)
+						settingsMenuItem.setOrnament(PopupMenu.Ornament.DOT);
+					else {
+						settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);
+						settingsMenuItem.label.set_style('font-weight:bold');
+					}
+				}
+			}
+
+			settingsMenuItem.connect('activate', () => {
+				if (AUTO_SWITCH_TO_MOST_RECENT)
+					this.settings.set_boolean('auto-switch-to-most-recent',false);
+
+				this.players.selected = player; //this.player should sync with this on the next refresh
+				this._refresh();                //so let's refresh right away
+			});
+
+			this.menu.addMenuItem(settingsMenuItem);
+		});
+
+	//automode entry:
+		if (this.players.list.length > 0){
+			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
+			if (AUTO_SWITCH_TO_MOST_RECENT) {
+				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);
+				settingsMenuItem.label.set_style('font-weight:bold');
+			}
+
+			this.menu.addMenuItem(settingsMenuItem);
+			settingsMenuItem.connect('activate', () =>{
+				this.settings.set_boolean('auto-switch-to-most-recent',!AUTO_SWITCH_TO_MOST_RECENT);
+			});
+			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem()); //add separator
+		}
+
+	//settings shortcut:
+		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
 	}
 
 	_refresh() {
