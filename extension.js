@@ -94,7 +94,6 @@ class MprisLabel extends PanelMenu.Button {
 			new_channels.push(Math.round((channel[0] + channel[1]) / 2));
 		});
 
-		log(new_channels);
 		let mixedColor = Clutter.Color.new(new_channels[0],new_channels[1],new_channels[2],new_channels[3]);
 		let color_str = mixedColor.to_string();
 		this.unfocusColor = color_str.substring(0,7); //ignore alpha channel
