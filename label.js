@@ -91,10 +91,13 @@ function parseMetadataField(data) {
 		data = data.replace(/ \| /g, " / ");
 
 	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
+		data = removeTextSegment(data,/Remaster/i,REMOVE_REMASTER_TEXT);
 
-	if(data.match(/feat./i) || data.match(/featuring/i))
-		data = removeFeaturingText(data);
+	if(data.match(/Feat\./i))
+		data = removeTextSegment(data,/Feat\./i,REMOVE_FEATURING_TEXT);
+
+	if(data.match(/Featuring/i))
+		data = removeTextSegment(data,/Featuring/i,REMOVE_FEATURING_TEXT);
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -111,8 +114,8 @@ function parseMetadataField(data) {
 	return data
 }
 
-function removeRemasterText(datastring) {
-	if(!REMOVE_REMASTER_TEXT)
+function removeTextSegment(datastring,regex,option) {
+	if(!option)
 		return datastring
 
 	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
@@ -123,8 +126,8 @@ function removeRemasterText(datastring) {
 	if (!matchedSubString)
 		return datastring //returns <datastring> unaltered if both matches were not successful
 
-	if(!matchedSubString[0].match(/Remaster/i))
-		return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
+	if(!matchedSubString[0].match(regex))
+		return datastring //returns <datastring> unaltered if our match doesn't match with <regex> too
 
 	datastring = datastring.replace(matchedSubString[0],"");
 
@@ -134,25 +137,3 @@ function removeRemasterText(datastring) {
 	return datastring
 }
 
-function removeFeaturingText(datastring) {
-	if(!REMOVE_FEATURING_TEXT)
-		return datastring
-
-	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
-
-	if (!matchedSubString)
-		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
-
-	if (!matchedSubString)
-	return datastring //returns <datastring> unaltered if both matches were not successful (e.g. song title is "Featuring")
-
-	if(!matchedSubString[0].match(/feat./i) && !matchedSubString[0].match(/featuring/i))
-	return datastring //returns <datastring> unaltered if our match doesn't contain 'feat. or featuring'
-
-	datastring = datastring.replace(matchedSubString[0],"");
-
-	if (datastring.charAt(datastring.length-1) == " ")
-		datastring = datastring.substring(0,datastring.length-1);
-
-	return datastring
-}
