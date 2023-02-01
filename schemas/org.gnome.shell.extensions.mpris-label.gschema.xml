@@ -34,9 +34,6 @@
       <default>true</default>
     </key>
 
-    <key name="remove-featuring-text" type="b">
-      <default>true</default>
-    </key>
     <key name="divider-string" type="s">
       <default>" | "</default>
     </key>
@@ -87,6 +84,14 @@
 
     <key name="use-whitelisted-sources-only" type="b">
       <default>false</default>
+    </key>
+
+    <key name="remove-featuring-text" type="b">
+      <default>true</default>
+    </key>
+
+    <key name="remove-mix-text" type="b">
+      <default>true</default>
     </key>
 
   </schema>

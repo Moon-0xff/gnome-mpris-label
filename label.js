@@ -13,6 +13,7 @@ function getSettings(){
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
 	REMOVE_FEATURING_TEXT = settings.get_boolean('remove-featuring-text');
+	REMOVE_MIX_TEXT = settings.get_boolean('remove-mix-text');
 	DIVIDER_STRING = settings.get_string('divider-string');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
@@ -98,6 +99,9 @@ function parseMetadataField(data) {
 
 	if(data.match(/Featuring/i))
 		data = removeTextSegment(data,/Featuring/i,REMOVE_FEATURING_TEXT);
+
+	if(data.match(/Mix/i))
+		data = removeTextSegment(data,/Mix/i,REMOVE_MIX_TEXT);
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
