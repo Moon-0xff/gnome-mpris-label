@@ -198,7 +198,19 @@ function buildPrefsWidget(){
 	filtersPageSubGrid._settings.bind('remove-remaster-text',remasterSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
-	addButton(filtersPageSubGrid,'Reset filters', () => {
+	let filtersPageButtonGrid = buildGrid(shellVersion,settings);
+	if(shellVersion < 40){
+		filtersPageButtonGrid.margin = 0;
+	}
+	else {
+		filtersPageButtonGrid.margin_top = 0;
+		filtersPageButtonGrid.margin_bottom = 0;
+		filtersPageButtonGrid.margin_start = 0;
+		filtersPageButtonGrid.margin_end = 0;
+	}
+	filtersPage.attach(filtersPageButtonGrid,0,position,1,1);
+
+	addButton(filtersPageButtonGrid,'Reset filters', () => {
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
@@ -206,9 +218,8 @@ function buildPrefsWidget(){
 		settings.reset('remove-mix-text');
 		settings.reset('remove-remaster-text');
 	});
-
 	let placeholderLabel = buildLabel('')//for alignment
-	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
+	filtersPageButtonGrid.attach(placeholderLabel,1,position,1,1);
 
 	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
 
