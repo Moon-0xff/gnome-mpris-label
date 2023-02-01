@@ -54,9 +54,6 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(labelPage,'Behaviour');
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(labelPage,'remove-remaster-text','Remove \'Remaster\' text:',"Removes the two most common formats of \'Remastered\' text such as:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
-	addSwitch(labelPage,'remove-featuring-text','Remove \'Featuring\' text:',"Removes the most common formats of \'Featuring\' text such as:\n\tExample - Featuring ...\n\tExample (feat. ...)");
-	addSwitch(labelPage,'remove-mix-text','Remove \'Mix\' text:',"Removes the most common formats of \'Mix\' text such as:\n\tExample - Mix 2023\n\tExample (Mix 2023)");
 	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
 	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
@@ -103,9 +100,6 @@ function buildPrefsWidget(){
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
-		settings.reset('remove-remaster-text');
-		settings.reset('remove-featuring-text');
-		settings.reset('remove-mix-text');
 		settings.reset('divider-string');
 		settings.reset('first-field');
 		settings.reset('second-field');
@@ -171,17 +165,46 @@ function buildPrefsWidget(){
 		filtersPageSubGrid.margin = 0;
 	}
 	else {
-		filtersPageSubGrid.margin_top = 0,
-		filtersPageSubGrid.margin_bottom = 0,
-		filtersPageSubGrid.margin_start = 0,
-		filtersPageSubGrid.margin_end = 0
+		filtersPageSubGrid.margin_top = 0;
+		filtersPageSubGrid.margin_bottom = 0;
+		filtersPageSubGrid.margin_start = 0;
+		filtersPageSubGrid.margin_end = 0;
 	}
 	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
 
-	addButton(filtersPageSubGrid,'Reset filters settings', () => {
+	addSubcategoryLabel(filtersPageSubGrid,'Label text segments filters:');
+
+	addLabel(filtersPageSubGrid,'Filter "Featuring" segment',undefined);
+	let featuringExample = buildLabel('Example (feat. SomeArtist)');
+	filtersPageSubGrid.attach(featuringExample,1,position,1,1);
+	let featuringSwitch = buildSwitch();
+	filtersPageSubGrid.attach(featuringSwitch,2,position,1,1);
+	filtersPageSubGrid._settings.bind('remove-featuring-text',featuringSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+	position++;
+
+	addLabel(filtersPageSubGrid,'Filter "Mix" segment',undefined);
+	let mixExample = buildLabel('Example (2023 Mix)');
+	filtersPageSubGrid.attach(mixExample,1,position,1,1);
+	let mixSwitch = buildSwitch();
+	filtersPageSubGrid.attach(mixSwitch,2,position,1,1);
+	filtersPageSubGrid._settings.bind('remove-mix-text',mixSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+	position++;
+
+	addLabel(filtersPageSubGrid,'Filter "Remaster" segment',undefined);
+	let remasterExample = buildLabel('Example - 2023 Remastered');
+	filtersPageSubGrid.attach(remasterExample,1,position,1,1);
+	let remasterSwitch = buildSwitch();
+	filtersPageSubGrid.attach(remasterSwitch,2,position,1,1);
+	filtersPageSubGrid._settings.bind('remove-remaster-text',remasterSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+	position++;
+
+	addButton(filtersPageSubGrid,'Reset filters', () => {
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
+		settings.reset('remove-featuring-text');
+		settings.reset('remove-mix-text');
+		settings.reset('remove-remaster-text');
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment
@@ -221,11 +244,7 @@ function addStringComboBox(widget,setting,labelstring,options,labeltooltip){
 
 function addSwitch(widget,setting,labelstring,labeltooltip){
 	addLabel(widget,labelstring,labeltooltip);
-	let thisSwitch = new Gtk.Switch({
-		valign: Gtk.Align.END,
-		halign: Gtk.Align.END,
-		visible: true
-	});
+	let thisSwitch = buildSwitch();
 	widget.attach(thisSwitch,1,position,1,1);
 	widget._settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
@@ -316,6 +335,15 @@ function buildLabel(labelstring){ //don't confuse with label.js buildLabel
 		visible: true
 	});
 	return thisLabel
+}
+
+function buildSwitch(){
+	let thisSwitch = new Gtk.Switch({
+		valign: Gtk.Align.END,
+		halign: Gtk.Align.END,
+		visible: true
+	});
+	return thisSwitch
 }
 
 function playersToString(){
