@@ -210,7 +210,7 @@ function buildPrefsWidget(){
 	}
 	filtersPage.attach(filtersPageButtonGrid,0,position,1,1);
 
-	addButton(filtersPageButtonGrid,'Reset filters', () => {
+	addButton(filtersPageButtonGrid,'Reset all filters', () => {
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
