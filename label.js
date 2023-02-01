@@ -92,6 +92,9 @@ function parseMetadataField(data) {
 	if(data.match(/Remaster/i))
 		data = removeRemasterText(data);
 
+	if(data.match(/feat./i) || data.match(/featuring/i))
+		data = removeFeaturingText(data);
+
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
 		data = data.substring(0, MAX_STRING_LENGTH);
@@ -130,3 +133,25 @@ function removeRemasterText(datastring) {
 	return datastring
 }
 
+function removeFeaturingText(datastring) {
+	// if(!REMOVE_FEAT_TEXT)
+	// 	return datastring
+
+	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
+
+	if (!matchedSubString)
+		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
+
+	if (!matchedSubString)
+	return datastring //returns <datastring> unaltered if both matches were not successful (e.g. song title is "Featuring")
+
+	if(!matchedSubString[0].match(/feat./i) && !matchedSubString[0].match(/featuring/i))
+	return datastring //returns <datastring> unaltered if our match doesn't contain 'feat. or featuring'
+
+	datastring = datastring.replace(matchedSubString[0],"");
+
+	if (datastring.charAt(datastring.length-1) == " ")
+		datastring = datastring.substring(0,datastring.length-1);
+
+	return datastring
+}
