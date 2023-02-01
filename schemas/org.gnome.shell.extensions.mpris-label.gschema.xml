@@ -34,6 +34,9 @@
       <default>true</default>
     </key>
 
+    <key name="remove-featuring-text" type="b">
+      <default>true</default>
+    </key>
     <key name="divider-string" type="s">
       <default>" | "</default>
     </key>

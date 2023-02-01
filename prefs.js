@@ -54,7 +54,8 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(labelPage,'Behaviour');
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
+	addSwitch(labelPage,'remove-remaster-text','Remove \'Remaster\' text:',"Removes the two most common formats of \'Remastered\' text such as:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
+	addSwitch(labelPage,'remove-featuring-text','Remove \'Featuring\' text:',"Removes the most common formats of \'Featuring\' text such as:\n\tExample - Featuring ...\n\tExample (feat. ...)");
 	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
 	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
@@ -102,6 +103,7 @@ function buildPrefsWidget(){
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
 		settings.reset('remove-remaster-text');
+		settings.reset('remove-featuring-text');
 		settings.reset('divider-string');
 		settings.reset('first-field');
 		settings.reset('second-field');

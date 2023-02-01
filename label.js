@@ -12,6 +12,7 @@ function getSettings(){
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
+	REMOVE_FEATURING_TEXT = settings.get_boolean('remove-featuring-text');
 	DIVIDER_STRING = settings.get_string('divider-string');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
@@ -134,8 +135,8 @@ function removeRemasterText(datastring) {
 }
 
 function removeFeaturingText(datastring) {
-	// if(!REMOVE_FEAT_TEXT)
-	// 	return datastring
+	if(!REMOVE_FEATURING_TEXT)
+		return datastring
 
 	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
 
