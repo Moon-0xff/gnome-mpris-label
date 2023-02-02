@@ -121,6 +121,7 @@ function removeRemasterText(datastring) {
 	const filterlist = LABEL_FILTERED_LIST.toLowerCase().split(',');
 
 	filterlist.forEach(filter => { //go through each filter to look for a match
+		filter = new RegExp(`${filter}`, "i");
 		if(matchedSubString[0].toLowerCase().match(filter)){
 			datastring = datastring.replace(matchedSubString[0],"");
 		}
