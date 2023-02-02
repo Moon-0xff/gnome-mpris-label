@@ -179,6 +179,10 @@ function buildPrefsWidget(){
 	filtersPage.attach(regexFilterEntry,0,position,1,1);
 	position++;
 
+	let warning = addLabel(filtersPage,"<u><b>Warning:</b></u> badly or maliciously formed regexes can seriously mess with your system");
+	warning.use_markup = true;
+	position++;
+
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
 		filtersPageSubGrid.margin = 0;
@@ -261,6 +265,7 @@ function addLabel(widget,labelstring,labeltooltip){
 		thisLabel.set_tooltip_text(labeltooltip)
 
 	widget.attach(thisLabel,0,position,1,1);
+	return thisLabel
 }
 
 function buildStringComboBox(settings,setting,options){
