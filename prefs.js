@@ -161,9 +161,13 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
-	addSubcategoryLabel(filtersPage,'Label text segments filters:');
+	addSubcategoryLabel(filtersPage,'Filter "Additional information" label segments:');
 	let labelfilterlistEntry = new Gtk.Entry({ visible: true });
-	labelfilterlistEntry.set_tooltip_text("Remove sections including the filtered text.\nNote that this is not case sensitive:\n\tExample - 2023 filtered_text\n\tExample (2023 Filtered_Text)");
+	const presentTheExamples = "Examples of \"Additional information\" segments, also the ones filtered by default:\n"; //splitted this lengthy explanation in multiple lines
+	const theDefaultExamples = "\tExample - 2023 Remastered\n\tExample - Featuring SomeArtist\n\tExample (feat. SomeArtist)\n\tExample (2023 Mix)\n";
+	const moreExplanation = "\nThe targeted segments are defined in code as:\n\t \"a substring enclosed by parentheses or between the end of the string and a hyphen\"\n";
+	const addMore = "\nDepending on your taste, you might want to add more filters to this list, like \"Live\" or \"Recorded\"";
+	labelfilterlistEntry.set_tooltip_text(presentTheExamples + theDefaultExamples + moreExplanation + addMore);
 	filtersPage.attach(labelfilterlistEntry,0,position,1,1);
 	filtersPage._settings.bind('label-filtered-list',labelfilterlistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	labelfilterlistEntry.set_placeholder_text('Separate entries with commas');
