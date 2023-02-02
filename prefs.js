@@ -163,6 +163,7 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(filtersPage,'Label text segments filters:');
 	let labelfilterlistEntry = new Gtk.Entry({ visible: true });
+	labelfilterlistEntry.set_tooltip_text("Remove sections including the filtered text.\nNote that this is not case sensitive:\n\tExample - 2023 filtered_text\n\tExample (2023 Filtered_Text)");
 	filtersPage.attach(labelfilterlistEntry,0,position,1,1);
 	filtersPage._settings.bind('label-filtered-list',labelfilterlistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	labelfilterlistEntry.set_placeholder_text('Separate entries with commas');

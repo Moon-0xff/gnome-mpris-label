@@ -83,7 +83,7 @@
     </key>
 
     <key name="label-filtered-list" type="s">
-      <default>"remaster,mix ,featuring,feat"</default>
+      <default>"remaster,mix,featuring,feat."</default>
     </key>
 
   </schema>

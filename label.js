@@ -19,6 +19,7 @@ function getSettings(){
 	LAST_FIELD = settings.get_string('last-field');
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	DIVIDER_STRING = settings.get_string('divider-string');
+	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 }
 
 var buildLabel = function buildLabel(players){
@@ -88,8 +89,7 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
+	data = removeRemasterText(data);
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -107,8 +107,8 @@ function parseMetadataField(data) {
 }
 
 function removeRemasterText(datastring) {
-	// if(!REMOVE_REMASTER_TEXT)
-	// 	return datastring
+	if(LABEL_FILTERED_LIST == "")
+		return datastring
 
 	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
 
@@ -118,10 +118,13 @@ function removeRemasterText(datastring) {
 	if (!matchedSubString)
 		return datastring //returns <datastring> unaltered if both matches were not successful
 
-	if(!matchedSubString[0].match(/Remaster/i))
-		return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
+	const filterlist = LABEL_FILTERED_LIST.toLowerCase().split(',');
 
-	datastring = datastring.replace(matchedSubString[0],"");
+	filterlist.forEach(filter => { //go through each filter to look for a match
+		if(matchedSubString[0].toLowerCase().includes(filter)){
+			datastring = datastring.replace(matchedSubString[0],"");
+		}
+	});
 
 	if (datastring.charAt(datastring.length-1) == " ")
 		datastring = datastring.substring(0,datastring.length-1);
