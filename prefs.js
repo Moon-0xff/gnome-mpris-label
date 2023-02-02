@@ -54,7 +54,6 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(labelPage,'Behaviour');
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
 	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
 	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
@@ -101,7 +100,7 @@ function buildPrefsWidget(){
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
-		settings.reset('remove-remaster-text');
+		settings.reset('remove-filtered-text');
 		settings.reset('divider-string');
 		settings.reset('first-field');
 		settings.reset('second-field');
@@ -162,6 +161,13 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
+	addSubcategoryLabel(filtersPage,'Label text segments filters:');
+	let labelfilterlistEntry = new Gtk.Entry({ visible: true });
+	filtersPage.attach(labelfilterlistEntry,0,position,1,1);
+	filtersPage._settings.bind('label-filtered-list',labelfilterlistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	labelfilterlistEntry.set_placeholder_text('Separate entries with commas');
+	position++;
+
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
 		filtersPageSubGrid.margin = 0;
@@ -178,6 +184,7 @@ function buildPrefsWidget(){
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
+		settings.reset('label-filtered-list');
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment
