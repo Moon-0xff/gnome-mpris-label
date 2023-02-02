@@ -173,6 +173,12 @@ function buildPrefsWidget(){
 	labelfilterlistEntry.set_placeholder_text('Separate entries with commas');
 	position++;
 
+	addSubcategoryLabel(filtersPage,"Regex filter (for each field):");
+	let regexFilterEntry = new Gtk.Entry({ visible: true });
+	regexFilterEntry.set_placeholder_text('Separate entries with commas');
+	filtersPage.attach(regexFilterEntry,0,position,1,1);
+	position++;
+
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
 		filtersPageSubGrid.margin = 0;

@@ -118,12 +118,10 @@ function removeRemasterText(datastring) {
 	if (!matchedSubString)
 		return datastring //returns <datastring> unaltered if both matches were not successful
 
-	const filterlist = LABEL_FILTERED_LIST.split(',');
+	const filterlist = LABEL_FILTERED_LIST.toLowerCase().split(',');
 
 	filterlist.forEach(filter => { //go through each filter to look for a match
-		filter = new RegExp(`${filter}`, "i");
-		// log(Date().substring(16,24)+' gnome-mpris-label/label.js: '+matchedSubString[0]+' - '+filter);
-		if(matchedSubString[0].match(filter)){
+		if(matchedSubString[0].toLowerCase().includes(filter)){
 			datastring = datastring.replace(matchedSubString[0],"");
 		}
 	});
