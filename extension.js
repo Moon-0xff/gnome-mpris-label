@@ -51,6 +51,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.players = new Players();
 
 		this.connect('button-press-event',this._buildMenu.bind(this));
+		this.connect('scroll-event', (_a, event) => this.scroll(event));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -114,6 +115,22 @@ class MprisLabel extends PanelMenu.Button {
 		else if(EXTENSION_PLACE == "right"){
 			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 		}
+	}
+
+	scroll(event) {
+		if(event.is_pointer_emulated()) return Clutter.EVENT_PROPAGATE;
+			let delta = (direction => {
+				switch(direction) {
+				case Clutter.ScrollDirection.UP: return 1;
+				case Clutter.ScrollDirection.DOWN: return -1;
+				case Clutter.ScrollDirection.SMOOTH: return -event.get_scroll_delta()[1];
+				default: return 0;
+			}
+		})(event.get_scroll_direction());
+		log(Date().substring(16,24)+' gnome-mpris-label/extension.js - volume change: '+delta/10);
+		//read current volume
+		//apply delta with 0 floor and 1 ceiling
+		return Clutter.EVENT_STOP;
 	}
 
 	_buildMenu(){
