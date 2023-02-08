@@ -135,7 +135,8 @@ class MprisLabel extends PanelMenu.Button {
 			this.player.setVolume(new_volume);
 
 			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(new_volume));
-			Main.osdWindowManager.show('0', icon, this.player.shortname, new_volume); //-1 to show on all monitors
+			let monitor = global.display.get_current_monitor();
+			Main.osdWindowManager.show(monitor, icon, this.player.shortname, new_volume) //-1 to show on all monitors
 		}
 
 		return Clutter.EVENT_STOP;
