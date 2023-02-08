@@ -130,7 +130,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(this.player){
 			let volume = this.player.getVolume();
-			delta = Math.clamp(-0.25,delta,0.25)/50; //scale and apply cap to rate of change to avoid sudden changes
+			delta = Math.clamp(-0.5,delta,0.5)/40; //scale and apply cap to rate of change to avoid sudden changes
 			let new_volume = Math.clamp(0,volume+delta,1);//apply delta with 0 floor and 1 ceiling
 			this.player.setVolume(new_volume);
 
