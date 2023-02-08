@@ -9,6 +9,7 @@ const mprisInterface = `
 	<interface name="org.mpris.MediaPlayer2.Player">
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
+		<property name="Volume" type="d" access="readwrite"/>
 	</interface>
 </node>`
 
@@ -158,8 +159,15 @@ class Player {
 		return metadata
 	}
 	getStatus() {
-		let playbackStatus = this.proxy.PlaybackStatus
+		let playbackStatus = this.proxy.PlaybackStatus;
 		return playbackStatus
+	}
+	getVolume() {
+		let volume = this.proxy.Volume;
+		return volume
+	}
+	setVolume(volume){
+		this.proxy.Volume = volume;
 	}
 }
 
