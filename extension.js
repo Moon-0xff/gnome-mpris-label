@@ -130,9 +130,12 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(this.player){
 			let volume = this.player.getVolume();
-			delta = Math.clamp(-0.25,delta,0.25)/100; //scale and apply cap to rate of change to avoid sudden changes
+			delta = Math.clamp(-0.25,delta,0.25)/50; //scale and apply cap to rate of change to avoid sudden changes
 			let new_volume = Math.clamp(0,volume+delta,1);//apply delta with 0 floor and 1 ceiling
 			this.player.setVolume(new_volume);
+
+			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(new_volume));
+			Main.osdWindowManager.show('0', icon, this.player.shortname, new_volume); //-1 to show on all monitors
 		}
 
 		return Clutter.EVENT_STOP;
@@ -199,6 +202,22 @@ class MprisLabel extends PanelMenu.Button {
 
 	//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
+	}
+
+	_setVolumeIcon(volume) {
+		let volume_icon = 'audio-volume-high-symbolic';
+		switch (true) {
+			case (volume == 0):
+				volume_icon = 'audio-volume-muted-symbolic';
+				break
+			case (volume < 0.33):
+				volume_icon = 'audio-volume-low-symbolic';
+				break
+			case (volume < 0.67):
+				volume_icon = 'audio-volume-medium-symbolic';
+				break
+		}
+		return volume_icon
 	}
 
 	_refresh() {
