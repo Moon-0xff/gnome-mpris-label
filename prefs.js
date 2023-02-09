@@ -35,6 +35,9 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
+	addSubcategoryLabel(panelPage,'Mouse Controls:');
+	let volumeControlComboBox = addStringComboBox(panelPage,'volume-control','Mouse scroll controls:',{'Active Source Volume':'Source','Global Volume':'Global','Nothing (disabled)':'Off'},undefined);
+
 	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
 		settings.reset('right-padding');
@@ -42,7 +45,9 @@ function buildPrefsWidget(){
 		settings.reset('extension-place');
 		settings.reset('reposition-delay');
 		settings.reset('reposition-on-button-press');
+		settings.reset('volume-control');
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
+		volumeControlComboBox.set_active_id(settings.get_string('volume-control'));
 	});
 
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));

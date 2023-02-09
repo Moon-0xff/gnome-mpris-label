@@ -5,6 +5,7 @@ const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const Volume = imports.ui.status.volume;
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -118,25 +119,54 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onScroll(event) {
+		const VOLUME_CONTROL = this.settings.get_string('volume-control');
+
+		if (VOLUME_CONTROL != 'Source' && VOLUME_CONTROL != 'Global')
+			return
+
 		if(event.is_pointer_emulated()) return Clutter.EVENT_PROPAGATE;
-			let delta = (direction => {
-				switch(direction) {
+		let delta = (direction => {
+			switch(direction) {
 				case Clutter.ScrollDirection.UP: return 1;
 				case Clutter.ScrollDirection.DOWN: return -1;
 				case Clutter.ScrollDirection.SMOOTH: return -event.get_scroll_delta()[1];
 				default: return 0;
 			}
 		})(event.get_scroll_direction());
+		delta = Math.clamp(-0.5,delta,0.5)/0.125; //scale and apply cap to rate of change to avoid sudden changes
 
-		if(this.player){
-			let volume = this.player.getVolume();
-			delta = Math.clamp(-0.5,delta,0.5)/40; //scale and apply cap to rate of change to avoid sudden changes
-			let new_volume = Math.clamp(0,volume+delta,1);//apply delta with 0 floor and 1 ceiling
-			this.player.setVolume(new_volume);
+		let monitor = global.display.get_current_monitor();
+		switch (VOLUME_CONTROL) {
+			case 'Global':
+				let volumeControl = Volume.getMixerControl();
+				let volume = volumeControl.get_default_sink().volume;
+				let volumeMax = volumeControl.get_vol_max_norm(); 
+				let volumeStep = volumeMax / 250;
+				let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
 
-			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(new_volume));
-			let monitor = global.display.get_current_monitor();
-			Main.osdWindowManager.show(monitor, icon, this.player.shortname, new_volume) //-1 to show on all monitors
+				volumeControl.get_default_sink().volume = newVolume;
+				volumeControl.get_default_sink().push_volume();
+
+				const icon = Gio.Icon.new_for_string(this._setVolumeIcon(newVolume));
+				let volumeRatio = newVolume/volumeMax
+				//leave player undefined for Global sound
+				Main.osdWindowManager.show(monitor, icon, undefined, volumeRatio);
+				break;
+			case 'Source':
+				if(this.player){
+					let volume = this.player.getVolume();
+					let VolumeMax = 1;
+					let VolumeStep = VolumeMax / 250;
+					let newVolume = Math.clamp(0,volume+VolumeStep*delta,VolumeMax);
+
+					this.player.setVolume(newVolume);
+
+					const icon = Gio.Icon.new_for_string(this._setVolumeIcon(newVolume));
+					let volumeRatio = newVolume/VolumeMax
+					let playerName = this.player.shortname;
+					Main.osdWindowManager.show(monitor, icon, playerName, volumeRatio);
+				}
+				break;
 		}
 
 		return Clutter.EVENT_STOP;
