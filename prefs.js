@@ -334,6 +334,8 @@ function playersToString(){
 	list.forEach(element => {
 		element = element.replace('org.mpris.MediaPlayer2.','');
 		element = element.replace(/\.instance.*/g,'');
+		element = element.substr(element.lastIndexOf(".") + 1);
+		element = element.toLowerCase();
 		newList.push(element);
 	});
 

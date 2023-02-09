@@ -103,12 +103,14 @@ var Players = class Players {
 			if(SOURCES_BLACKLIST && USE_WHITELIST && !SOURCES_WHITELIST)
 				USE_WHITELIST = false;
 
-			const blacklist = SOURCES_BLACKLIST.replaceAll(' ','').split(',');
-			const whitelist = SOURCES_WHITELIST.replaceAll(' ','').split(',');
+			const blacklist = SOURCES_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
+			const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
 
 			dBusList = dBusList.filter(function(element){
 				let source_name = element.replace('org.mpris.MediaPlayer2.','');
 				source_name = source_name.replace(/\.instance.*/g,'');
+				source_name = source_name.substr(source_name.lastIndexOf(".") + 1);
+				source_name = source_name.toLowerCase();
 				if (blacklist.includes(source_name) || (!whitelist.includes(source_name) && USE_WHITELIST))
 					return false
 
@@ -142,6 +144,7 @@ class Player {
 		
 		let shortname = address.replace('org.mpris.MediaPlayer2.','');
 		shortname = shortname.replace(/\.instance.*/g,'');
+		shortname = shortname.substr(shortname.lastIndexOf(".") + 1);
 		shortname = shortname.charAt(0).toUpperCase() + shortname.slice(1);//Capitalise first letter
 		this.shortname = shortname;
 	}
