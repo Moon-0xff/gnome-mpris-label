@@ -36,7 +36,7 @@ function buildPrefsWidget(){
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
 	addSubcategoryLabel(panelPage,'Mouse Controls:');
-	let volumeControlComboBox = addStringComboBox(panelPage,'volume-control','Mouse scroll controls:',{'Active Source Volume':'Source','Global Volume':'Global','Nothing (disabled)':'Off'},undefined);
+	let volumeControlComboBox = addStringComboBox(panelPage,'volume-control','Mouse scroll volume controls:',{'Global System':'Global','Active Source, System Fallback':'Source_Fallback','Active Source Only':'Source','Disabled':'Off'},undefined);
 
 	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');

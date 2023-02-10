@@ -121,52 +121,76 @@ class MprisLabel extends PanelMenu.Button {
 	_onScroll(event) {
 		const VOLUME_CONTROL = this.settings.get_string('volume-control');
 
-		if (VOLUME_CONTROL != 'Source' && VOLUME_CONTROL != 'Global')
+		if (VOLUME_CONTROL == 'Off')
 			return
 
-		if(event.is_pointer_emulated()) return Clutter.EVENT_PROPAGATE;
-		let delta = (direction => {
-			switch(direction) {
-				case Clutter.ScrollDirection.UP: return 1;
-				case Clutter.ScrollDirection.DOWN: return -1;
-				case Clutter.ScrollDirection.SMOOTH: return -event.get_scroll_delta()[1];
-				default: return 0;
-			}
-		})(event.get_scroll_direction());
+		if (event.is_pointer_emulated())
+			return Clutter.EVENT_PROPAGATE;
+
+		let delta = 0;
+		switch(event.get_scroll_direction()) {
+			case Clutter.ScrollDirection.UP: 
+				delta = 1;
+				break;
+			case Clutter.ScrollDirection.DOWN: 
+				delta = -1;
+				break;
+			case Clutter.ScrollDirection.SMOOTH: 
+				delta =  -event.get_scroll_delta()[1];
+				break;
+		}
+
 		delta = Math.clamp(-0.5,delta,0.5)/0.125; //scale and apply cap to rate of change to avoid sudden changes
 
 		let monitor = global.display.get_current_monitor();
-		switch (VOLUME_CONTROL) {
-			case 'Global':
-				let volumeControl = Volume.getMixerControl();
-				let volume = volumeControl.get_default_sink().volume;
-				let volumeMax = volumeControl.get_vol_max_norm(); 
-				let volumeStep = volumeMax / 250;
-				let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
 
-				volumeControl.get_default_sink().volume = newVolume;
-				volumeControl.get_default_sink().push_volume();
+		let volumeControlMode = VOLUME_CONTROL;
+
+		if ( volumeControlMode == 'Source_Fallback' ){
+			volumeControlMode = 'Source'
+			if (! this.player ) //fallback to global volume
+				volumeControlMode = 'Global'
+			else {
+				if (! this.player.getVolumeEnabled() )
+					volumeControlMode = 'Global'
+			}
+		}
+
+		if ( volumeControlMode == 'Source' && this.player ){
+			if (this.player.getVolumeEnabled() ) {
+				let volume = this.player.getVolume();
+				let VolumeMax = 1;
+				let VolumeStep = VolumeMax / 250;
+				let newVolume = Math.clamp(0,volume+VolumeStep*delta,VolumeMax);
+
+				this.player.setVolume(newVolume);
 
 				const icon = Gio.Icon.new_for_string(this._setVolumeIcon(newVolume));
-				let volumeRatio = newVolume/volumeMax
-				//leave player undefined for Global sound
-				Main.osdWindowManager.show(monitor, icon, undefined, volumeRatio);
-				break;
-			case 'Source':
-				if(this.player){
-					let volume = this.player.getVolume();
-					let VolumeMax = 1;
-					let VolumeStep = VolumeMax / 250;
-					let newVolume = Math.clamp(0,volume+VolumeStep*delta,VolumeMax);
+				let volumeRatio = newVolume/VolumeMax
+				let playerName = this.player.shortname;
+				Main.osdWindowManager.show(monitor, icon, playerName, volumeRatio);
+			}
+			else {
+				const icon = Gio.Icon.new_for_string('audio-volume-muted-symbolic');
+				let displayText = this.player.shortname + ' - Mpris volume not supported'
+				Main.osdWindowManager.show(monitor, icon, displayText, '0');
+			}
+		}
 
-					this.player.setVolume(newVolume);
+		if (volumeControlMode == 'Global'){
+			let volumeControl = Volume.getMixerControl();
+			let volume = volumeControl.get_default_sink().volume;
+			let volumeMax = volumeControl.get_vol_max_norm(); 
+			let volumeStep = volumeMax / 250;
+			let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
 
-					const icon = Gio.Icon.new_for_string(this._setVolumeIcon(newVolume));
-					let volumeRatio = newVolume/VolumeMax
-					let playerName = this.player.shortname;
-					Main.osdWindowManager.show(monitor, icon, playerName, volumeRatio);
-				}
-				break;
+			volumeControl.get_default_sink().volume = newVolume;
+			volumeControl.get_default_sink().push_volume();
+
+			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(newVolume));
+			let volumeRatio = newVolume/volumeMax
+			//leave player undefined for Global sound
+			Main.osdWindowManager.show(monitor, icon, undefined, volumeRatio);
 		}
 
 		return Clutter.EVENT_STOP;

@@ -145,6 +145,16 @@ class Player {
 		shortname = shortname.replace(/\.instance.*/g,'');
 		shortname = shortname.charAt(0).toUpperCase() + shortname.slice(1);//Capitalise first letter
 		this.shortname = shortname;
+
+		setTimeout(() => { //some players returns null if probed too quickly
+			let volume = this.proxy.Volume;
+			this.volumeEnabled = true;
+			if ( volume == null ) //exclude firefox
+				this.volumeEnabled = false
+
+			if ( volume == 1 && address.includes('chromium') ) //exclude chrome
+				this.volumeEnabled = false
+		}, 2000);
 	}
 	update(){
 		let playbackStatus = this.getStatus();
@@ -163,11 +173,14 @@ class Player {
 		return playbackStatus
 	}
 	getVolume() {
-		let volume = this.proxy.Volume;
+		let volume = this.proxy.Volume;log(Date().substring(16,24)+' gnome-mpris-label/players.js - volume: '+volume);
 		return volume
 	}
 	setVolume(volume){
 		this.proxy.Volume = volume;
+	}
+	getVolumeEnabled(){
+		return this.volumeEnabled
 	}
 }
 
