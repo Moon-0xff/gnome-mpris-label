@@ -142,8 +142,8 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		let monitor = global.display.get_current_monitor();
-		let volumeControlMode = VOLUME_CONTROL;
 
+		let volumeControlMode = VOLUME_CONTROL;
 		if ( volumeControlMode == 'Source_Fallback' ){
 			volumeControlMode = 'Source'
 			if (! this.player ) //fallback to global volume
