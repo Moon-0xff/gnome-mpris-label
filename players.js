@@ -173,7 +173,7 @@ class Player {
 		return playbackStatus
 	}
 	getVolume() {
-		return volume
+		return this.proxy.Volume
 	}
 	setVolume(volume){
 		this.proxy.Volume = volume;
