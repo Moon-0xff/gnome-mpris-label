@@ -141,10 +141,7 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 		}
 
-		log(Date().substring(16,24)+' gnome-mpris-label/extension.js: '+delta);
-
 		let monitor = global.display.get_current_monitor();
-
 		let volumeControlMode = VOLUME_CONTROL;
 
 		if ( volumeControlMode == 'Source_Fallback' ){

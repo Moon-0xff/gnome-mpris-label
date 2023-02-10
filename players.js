@@ -173,7 +173,6 @@ class Player {
 		return playbackStatus
 	}
 	getVolume() {
-		let volume = this.proxy.Volume;log(Date().substring(16,24)+' gnome-mpris-label/players.js - volume: '+volume);
 		return volume
 	}
 	setVolume(volume){
