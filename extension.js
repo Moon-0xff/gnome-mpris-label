@@ -137,10 +137,11 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 			case Clutter.ScrollDirection.SMOOTH: 
 				delta =  -event.get_scroll_delta()[1];
+				delta = Math.clamp(-1,delta,1);
 				break;
 		}
 
-		delta = Math.clamp(-0.5,delta,0.5)/0.125; //scale and apply cap to rate of change to avoid sudden changes
+		log(Date().substring(16,24)+' gnome-mpris-label/extension.js: '+delta);
 
 		let monitor = global.display.get_current_monitor();
 
@@ -160,7 +161,7 @@ class MprisLabel extends PanelMenu.Button {
 			if (this.player.getVolumeEnabled() ) {
 				let volume = this.player.getVolume();
 				let VolumeMax = 1;
-				let VolumeStep = VolumeMax / 250;
+				let VolumeStep = VolumeMax / 30;
 				let newVolume = Math.clamp(0,volume+VolumeStep*delta,VolumeMax);
 
 				this.player.setVolume(newVolume);
@@ -181,7 +182,7 @@ class MprisLabel extends PanelMenu.Button {
 			let volumeControl = Volume.getMixerControl();
 			let volume = volumeControl.get_default_sink().volume;
 			let volumeMax = volumeControl.get_vol_max_norm(); 
-			let volumeStep = volumeMax / 250;
+			let volumeStep = volumeMax / 30;
 			let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
 
 			volumeControl.get_default_sink().volume = newVolume;
