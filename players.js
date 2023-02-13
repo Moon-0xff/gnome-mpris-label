@@ -113,12 +113,11 @@ var Players = class Players {
 			const blacklist = SOURCES_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
 
+			let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 			dBusList = dBusList.filter(function(element){
-				let source_name = element.replace('org.mpris.MediaPlayer2.','');
-				source_name = source_name.replace(/\.instance.*/g,'');
-				source_name = source_name.substr(source_name.lastIndexOf(".") + 1);
-				source_name = source_name.toLowerCase();
-				if (blacklist.includes(source_name) || (!whitelist.includes(source_name) && USE_WHITELIST))
+				let entryProxy = entryWrapper(Gio.DBus.session,element,"/org/mpris/MediaPlayer2");
+				let identity = entryProxy.Identity.replace(' ','').toLowerCase();
+				if (blacklist.includes(identity) || (!whitelist.includes(identity) && USE_WHITELIST))
 					return false
 
 				return true
