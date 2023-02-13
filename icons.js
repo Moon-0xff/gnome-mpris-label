@@ -2,7 +2,7 @@ const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 
-var getIcon = function getIcon(playerAddress){
+var getIcon = function getIcon(playerIdentity){
 	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	const ICON_PLACE = settings.get_string('show-icon');
 
@@ -20,15 +20,10 @@ var getIcon = function getIcon(playerAddress){
 		style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 	});
 
-	if(playerAddress == null | undefined)
+	if(playerIdentity == null | undefined)
 		return icon
 
-	let addressWithoutMPRIS = playerAddress.substring(23);
-	let addressSuspectName = getSuspectAppName(addressWithoutMPRIS);
-
-	//log("mpris-label: " + "addressSuspectName=(" + addressSuspectName + ")");
-
-	let suspectMatch = searchInDesktopEntries(addressSuspectName);
+	let suspectMatch = searchInDesktopEntries(playerIdentity.toString());
 
 	if(suspectMatch == null)
 		return icon
@@ -37,36 +32,6 @@ var getIcon = function getIcon(playerAddress){
 	let gioIcon = entry.get_icon();
 	icon.set_gicon(gioIcon);
 	return icon
-}
-
-function getSuspectAppName(initialString){
-	if (!initialString)
-		return null
-
-	if (!initialString.includes("."))
-		return initialString
-
-	let elements = initialString.split(".");
-	let filteredElements = [];
-
-	elements.forEach(element => {
-		if(!element.match(/desktop|Client|device|org|com|net|instance.*/gi))
-			filteredElements.push(element);
-	});
-
-	//log("mpris-label: " + "initialString=(" + initialString +
-	//	") elements=(" + elements + ") filteredElements=(" + filteredElements + ")");
-
-	if (filteredElements.length == 1)
-		return filteredElements[0]
-
-	if (filteredElements.length > 2 && elements.length > 2) 
-		return filteredElements[filteredElements.length-1] //assume first elements are unrecognized domain names
-
-	if (filteredElements.length > 0)
-		return filteredElements.join(".");
-
-	return initialString
 }
 
 function searchInDesktopEntries(suspectAppName){
@@ -78,8 +43,8 @@ function searchInDesktopEntries(suspectAppName){
 	if(!matchedEntries.length === 0)
 		return matchedEntries[0][0]
 
-	if (suspectAppName == "chromium" && matchedEntries.length === 0) //retry with the name google-chrome if as both browsers identify as chromium
-		matchedEntries = Gio.DesktopAppInfo.search("google-chrome")
+	if (suspectAppName == "Mozilla Firefox" && matchedEntries.length === 0) //retry with the name Firefox as Mozilla Firefox doesn't seem to work
+		matchedEntries = Gio.DesktopAppInfo.search("Firefox")
 	
 	if(matchedEntries.length === 0)
 		return null

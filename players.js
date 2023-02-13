@@ -143,7 +143,6 @@ class Player {
 	constructor(address){
 		this.address = address;
 		this.statusTimestamp = new Date().getTime();
-		this.icon = getIcon(address);
 
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
@@ -151,6 +150,8 @@ class Player {
 		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 		let entryProxy = entryWrapper(Gio.DBus.session,this.address,"/org/mpris/MediaPlayer2");
 		this.shortname = entryProxy.Identity;
+
+		this.icon = getIcon(this.shortname);
 	}
 	update(){
 		let playbackStatus = this.getStatus();
