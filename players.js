@@ -12,6 +12,13 @@ const mprisInterface = `
 	</interface>
 </node>`
 
+const entryInterface = `
+<node>
+	<interface name="org.mpris.MediaPlayer2">
+		<property name="Identity" type="s" access="read"/>
+	</interface>
+</node>`
+
 const dBusInterface = `
 <node>
 	<interface name="org.freedesktop.DBus">
@@ -141,12 +148,10 @@ class Player {
 
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
-		
-		let shortname = address.replace('org.mpris.MediaPlayer2.','');
-		shortname = shortname.replace(/\.instance.*/g,'');
-		shortname = shortname.substr(shortname.lastIndexOf(".") + 1);
-		shortname = shortname.charAt(0).toUpperCase() + shortname.slice(1);//Capitalise first letter
-		this.shortname = shortname;
+
+		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
+		let entryProxy = entryWrapper(Gio.DBus.session,this.address,"/org/mpris/MediaPlayer2");
+		this.shortname = entryProxy.Identity;
 	}
 	update(){
 		let playbackStatus = this.getStatus();
