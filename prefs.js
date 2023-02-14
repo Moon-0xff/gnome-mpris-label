@@ -342,7 +342,9 @@ function playersToString(){
 	let newList = [];
 	list.forEach(element => {
 		entryProxy = entryWrapper(Gio.DBus.session,element,"/org/mpris/MediaPlayer2");
-		newList.push(entryProxy.Identity);
+		let identity = entryProxy.Identity;
+		identity = identity.replace('Mozilla ','');
+		newList.push(identity);
 	});
 
 	return newList.toString()

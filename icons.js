@@ -42,9 +42,6 @@ function searchInDesktopEntries(suspectAppName){
 
 	if(!matchedEntries.length === 0)
 		return matchedEntries[0][0]
-
-	if (suspectAppName == "Mozilla Firefox" && matchedEntries.length === 0) //retry with the name Firefox as Mozilla Firefox doesn't seem to work
-		matchedEntries = Gio.DesktopAppInfo.search("Firefox")
 	
 	if(matchedEntries.length === 0)
 		return null
