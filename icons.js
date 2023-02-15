@@ -23,7 +23,8 @@ var getIcon = function getIcon(playerIdentity){
 	if(playerIdentity == null | undefined)
 		return icon
 
-	let suspectMatch = searchInDesktopEntries(playerIdentity.toString());
+	let matchedEntries = Gio.DesktopAppInfo.search(playerIdentity.toString());
+	let suspectMatch = matchedEntries[0][0];
 
 	if(suspectMatch == null)
 		return icon
@@ -32,19 +33,4 @@ var getIcon = function getIcon(playerIdentity){
 	let gioIcon = entry.get_icon();
 	icon.set_gicon(gioIcon);
 	return icon
-}
-
-function searchInDesktopEntries(suspectAppName){
-	if(suspectAppName == null || undefined || "")
-		return null
-
-	let matchedEntries = Gio.DesktopAppInfo.search(suspectAppName);
-
-	if(!matchedEntries.length === 0)
-		return matchedEntries[0][0]
-	
-	if(matchedEntries.length === 0)
-		return null
-
-	return matchedEntries[0][0];
 }
