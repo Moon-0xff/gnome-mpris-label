@@ -151,7 +151,7 @@ class Player {
 		let entryProxy = entryWrapper(Gio.DBus.session,this.address,"/org/mpris/MediaPlayer2");
 		let identity = entryProxy.Identity;
 		identity = identity.replace('Mozilla ',''); //use Firefox as Mozilla Firefox doesn't seem to work for icon
-		this.shortname = identity;log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+identity);
+		this.shortname = identity;
 
 		this.icon = getIcon(this.shortname);
 	}
