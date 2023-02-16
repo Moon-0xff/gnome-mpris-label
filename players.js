@@ -15,6 +15,7 @@ const mprisInterface = `
 const entryInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2">
+		<property name="DesktopEntry" type="s" access="read"/>
 		<property name="Identity" type="s" access="read"/>
 	</interface>
 </node>`
@@ -149,11 +150,10 @@ class Player {
 
 		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 		let entryProxy = entryWrapper(Gio.DBus.session,this.address,"/org/mpris/MediaPlayer2");
-		let identity = entryProxy.Identity;
-		identity = identity.replace('Mozilla ',''); //use Firefox as Mozilla Firefox doesn't seem to work for icon
-		this.shortname = identity;
+		this.identity = entryProxy.Identity;
+		this.desktopEntry = entryProxy.DesktopEntry;
 
-		this.icon = getIcon(this.shortname);
+		this.icon = getIcon(this.identity,this.desktopEntry);
 	}
 	update(){
 		let playbackStatus = this.getStatus();
