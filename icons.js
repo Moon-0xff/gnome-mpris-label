@@ -20,7 +20,7 @@ var getIcon = function getIcon(playerIdentity,playerDesktopEntry){
 		style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 	});
 
-	if(playerIdentity == null | undefined)
+	if( (playerIdentity == null | undefined) && (playerDesktopEntry == null | undefined) )
 		return icon
 
 	let matchedEntries = Gio.DesktopAppInfo.search(playerIdentity);
