@@ -50,6 +50,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
+		this._buildMenu();
 		this.connect('button-press-event',this._buildMenu.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
