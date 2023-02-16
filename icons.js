@@ -30,7 +30,7 @@ var getIcon = function getIcon(playerIdentity,playerDesktopEntry){
 
 	let desktopApp = null;
 	if ( matchedEntries.length > 0 )
-	desktopApp = matchedEntries[0][0]
+		desktopApp = matchedEntries[0][0]
 
 	if(desktopApp == null)
 		return icon
