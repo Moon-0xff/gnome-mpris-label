@@ -153,7 +153,18 @@ class Player {
 		this.identity = entryProxy.Identity;
 		this.desktopEntry = entryProxy.DesktopEntry;
 
-		this.icon = getIcon(this.identity,this.desktopEntry);
+		this.desktopApp = null;
+		let matchedEntries = [];
+		if(! (this.identity == null | undefined))
+			matchedEntries = Gio.DesktopAppInfo.search(this.identity);
+
+		if ( matchedEntries.length === 0 && !(this.desktopEntry == null | undefined) )//backup method using DesktopEntry info
+			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry)
+		
+		if ( matchedEntries.length > 0 )
+			this.desktopApp = matchedEntries[0][0]
+
+		this.icon = getIcon(this.desktopApp);
 	}
 	update(){
 		let playbackStatus = this.getStatus();

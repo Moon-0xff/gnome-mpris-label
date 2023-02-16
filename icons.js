@@ -2,7 +2,7 @@ const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 
-var getIcon = function getIcon(playerIdentity,playerDesktopEntry){
+var getIcon = function getIcon(desktopApp){
 	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	const ICON_PLACE = settings.get_string('show-icon');
 
@@ -20,19 +20,7 @@ var getIcon = function getIcon(playerIdentity,playerDesktopEntry){
 		style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 	});
 
-	if( (playerIdentity == null | undefined) && (playerDesktopEntry == null | undefined) )
-		return icon
-
-	let matchedEntries = Gio.DesktopAppInfo.search(playerIdentity);
-
-	if (matchedEntries.length === 0 )//backup method using DesktopEntry info
-		matchedEntries = Gio.DesktopAppInfo.search(playerDesktopEntry)
-
-	let desktopApp = null;
-	if ( matchedEntries.length > 0 )
-		desktopApp = matchedEntries[0][0]
-
-	if(desktopApp == null)
+	if(desktopApp == null | undefined)
 		return icon
 
 	let entry = Gio.DesktopAppInfo.new(desktopApp);
