@@ -347,17 +347,26 @@ function playersToString(){
 			</interface>
 		</node>`
 
+		const entryInterface = `
+		<node>
+			<interface name="org.mpris.MediaPlayer2">
+				<property name="Identity" type="s" access="read"/>
+			</interface>
+		</node>`
+		
 	const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	const dBusProxy = dBusProxyWrapper(Gio.DBus.session,'org.freedesktop.DBus','/org/freedesktop/DBus');
 
 	let list = dBusProxy.ListNamesSync()[0];
 	list = list.filter(element => element.startsWith('org.mpris.MediaPlayer2'));
 
+	let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
+
 	let newList = [];
 	list.forEach(element => {
-		element = element.replace('org.mpris.MediaPlayer2.','');
-		element = element.replace(/\.instance.*/g,'');
-		newList.push(element);
+		entryProxy = entryWrapper(Gio.DBus.session,element,"/org/mpris/MediaPlayer2");
+		let identity = entryProxy.Identity;
+		newList.push(identity);
 	});
 
 	return newList.toString()

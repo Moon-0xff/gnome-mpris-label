@@ -79,6 +79,9 @@ function removeTextWhenPaused(player){
 }
 
 function parseMetadataField(data) {
+	if (data == undefined)
+		return ""
+
 	if (data.length == 0)
 		return ""
 
