@@ -1,3 +1,4 @@
+const Main = imports.ui.main;
 const {Gio,GObject} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
@@ -7,6 +8,9 @@ const { getIcon } = CurrentExtension.imports.icons;
 const mprisInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
+		<method name="PlayPause" />
+		<property name="CanPlay" type="b" access="read" />
+		<property name="CanPause" type="b" access="read" />
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
 		<property name="Volume" type="d" access="readwrite"/>
@@ -172,11 +176,22 @@ class Player {
 		let playbackStatus = this.proxy.PlaybackStatus;
 		return playbackStatus
 	}
+	toggleStatus() {
+		if ( this.proxy.CanPlay && this.proxy.CanPause )
+			this.proxy.PlayPauseRemote()
+		else {
+			const monitor = global.display.get_current_monitor();
+			const icon = Gio.Icon.new_for_string('dialog-error-symbolic');
+			let text = 'Play/Pause control not available on ' + this.shortname;
+			Main.osdWindowManager.show(monitor, icon, text,0);
+		}
+		return
+	}
 	getVolume() {
 		return this.proxy.Volume
 	}
 	setVolume(volume){
-		this.proxy.Volume = volume;
+		this.proxy.Volume = volume
 	}
 	getVolumeEnabled(){
 		return this.volumeEnabled

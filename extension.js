@@ -51,7 +51,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
-		this.connect('button-press-event',this._buildMenu.bind(this));
+		this._buildMenu(); //build initial menu
+		// this.connect('button-press-event',this._buildMenu.bind(this));
+		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
@@ -63,7 +65,6 @@ class MprisLabel extends PanelMenu.Button {
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
-
 		this._refresh();
 	}
 
@@ -116,6 +117,27 @@ class MprisLabel extends PanelMenu.Button {
 		else if(EXTENSION_PLACE == "right"){
 			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 		}
+	}
+
+	_onClick(event){
+		this.menu.close(); //prevent click from opening the menu
+		switch(event.get_button()){
+			case Clutter.BUTTON_PRIMARY:
+				this._playPause();
+				return Clutter.EVENT_STOP;
+			case Clutter.BUTTON_MIDDLE:
+				// doing nothing right now
+				return Clutter.EVENT_STOP;
+			case Clutter.BUTTON_SECONDARY:
+				this._buildMenu(event);
+				this.menu.open();
+				return Clutter.EVENT_STOP;
+		}
+	}
+
+	_playPause() {
+		if (this.player)
+			this.player.toggleStatus()
 	}
 
 	_onScroll(event) {
