@@ -172,30 +172,50 @@ class Player {
 		this.proxy.connectObject('g-properties-changed', () => this._onPropertiesChanged(), this);
 
 		setTimeout(() => { //some players returns null if probed too quickly
-			
-			let volume = this.proxy.Volume;
-			this.volumeEnabled = false;
+			this.metadata = this.getMetadata();
+			this.metadataString = this.metadata['xesam:artist'].get_strv()[0]+'_'+this.metadata['xesam:album'].get_string()[0]+'_'+this.metadata['xesam:title'].get_string()[0];
+			log(Date().substring(16,24)+' gnome-mpris-label/players.js - initial this.metadataString: '+this.metadataString);
 
-			// if ( volume == null ) //exclude firefox
-			// 	this.volumeEnabled = false
-			// if ( volume == 1 && address.includes('chromium') ) //exclude chrome
-			// 	this.volumeEnabled = false
+			this.playbackStatus = this.getStatus();
 
-			this.propertyChanged = false;
-			let newVolume = volume-0.0001;
-			this.proxy.Volume = newVolume; //volume check by re-applying the current volume
-			setTimeout(() => { // wait for signal to be received
-				if (this.propertyChanged)
-					this.volumeEnabled = true
-
-				log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+', volumeEnabled: '+this.volumeEnabled);
-			}, 2000);
+			this.canSetVolume = false; //default
+			this.volume = this.proxy.Volume;
+			let newVolume = Math.max(0,this.volume-0.0001);
+			this.setVolume(newVolume); //apply volume to see if it triggers onPropertiesChanged
+			this.volume = newVolume
 		}, 2000);
-		this.propertyChanged = false;
 	}
 	_onPropertiesChanged(){
-		log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Properties changed! ');
-		this.propertyChanged = true;
+		this.propertyChanged = undefined;
+
+		let volume = this.getVolume();
+		if (volume !== this.volume && this.volume != undefined && volume != null){
+			this.propertyChanged = "Volume";log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Volume changed');
+			this.canSetVolume = true;
+			this.volume = volume;
+			return
+		}
+
+		let playbackStatus = this.getStatus();
+		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - this.playbackStatus: '+this.playbackStatus);
+		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - playbackStatus: '+playbackStatus);
+		if (this.playbackStatus != playbackStatus){
+			this.propertyChanged = "PlaybackStatus";log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' PlaybackStatus changed');
+			this.playbackStatus = playbackStatus;
+			// this.statusTimestamp = new Date().getTime();
+			return
+		}
+
+		let metadata = this.getMetadata();
+		let metadataString = metadata['xesam:artist'].get_strv()[0]+'_'+metadata['xesam:album'].get_string()[0]+'_'+metadata['xesam:title'].get_string()[0];
+		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - this.metadataString: '+this.metadataString);
+		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - metadataString: '+metadataString);
+		if (this.metadataString != metadataString){
+			this.propertyChanged = "Metadata";log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Metadata changed');
+			this.metadataString = metadataString
+		}
+
+		log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Properties changed: '+this.propertyChanged);
 	}
 	update(){
 		let playbackStatus = this.getStatus();
@@ -259,7 +279,7 @@ class Player {
 		this.proxy.Volume = volume
 	}
 	getVolumeEnabled(){
-		return this.volumeEnabled
+		return this.canSetVolume
 	}
 }
 
