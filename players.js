@@ -169,20 +169,33 @@ class Player {
 
 		this.icon = this.getIcon(this.desktopApp);
 
-		setTimeout(() => { //some players returns null if probed too quickly
-			let volume = this.proxy.Volume;
-			this.volumeEnabled = true;
-			if ( volume == null ) //exclude firefox
-				this.volumeEnabled = false
-
-			if ( volume == 1 && address.includes('chromium') ) //exclude chrome
-				this.volumeEnabled = false
-		}, 2000);
-
 		this.proxy.connectObject('g-properties-changed', () => this._onPropertiesChanged(), this);
+
+		setTimeout(() => { //some players returns null if probed too quickly
+			
+			let volume = this.proxy.Volume;
+			this.volumeEnabled = false;
+
+			// if ( volume == null ) //exclude firefox
+			// 	this.volumeEnabled = false
+			// if ( volume == 1 && address.includes('chromium') ) //exclude chrome
+			// 	this.volumeEnabled = false
+
+			this.propertyChanged = false;
+			let newVolume = volume-0.0001;
+			this.proxy.Volume = newVolume; //volume check by re-applying the current volume
+			setTimeout(() => { // wait for signal to be received
+				if (this.propertyChanged)
+					this.volumeEnabled = true
+
+				log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+', volumeEnabled: '+this.volumeEnabled);
+			}, 2000);
+		}, 2000);
+		this.propertyChanged = false;
 	}
 	_onPropertiesChanged(){
-		log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+'Properties changed!');
+		log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Properties changed! ');
+		this.propertyChanged = true;
 	}
 	update(){
 		let playbackStatus = this.getStatus();
