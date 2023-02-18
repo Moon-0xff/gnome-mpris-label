@@ -1,9 +1,7 @@
 const Main = imports.ui.main;
-const {Gio,GObject} = imports.gi;
+const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
-
-const { getIcon } = CurrentExtension.imports.icons;
 
 const mprisInterface = `
 <node>
@@ -14,6 +12,14 @@ const mprisInterface = `
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
 		<property name="Volume" type="d" access="readwrite"/>
+	</interface>
+</node>`
+
+const entryInterface = `
+<node>
+	<interface name="org.mpris.MediaPlayer2">
+		<property name="DesktopEntry" type="s" access="read"/>
+		<property name="Identity" type="s" access="read"/>
 	</interface>
 </node>`
 
@@ -108,13 +114,14 @@ var Players = class Players {
 			if(SOURCES_BLACKLIST && USE_WHITELIST && !SOURCES_WHITELIST)
 				USE_WHITELIST = false;
 
-			const blacklist = SOURCES_BLACKLIST.replaceAll(' ','').split(',');
-			const whitelist = SOURCES_WHITELIST.replaceAll(' ','').split(',');
+			const blacklist = SOURCES_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
+			const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
 
+			let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 			dBusList = dBusList.filter(function(element){
-				let source_name = element.replace('org.mpris.MediaPlayer2.','');
-				source_name = source_name.replace(/\.instance.*/g,'');
-				if (blacklist.includes(source_name) || (!whitelist.includes(source_name) && USE_WHITELIST))
+				let entryProxy = entryWrapper(Gio.DBus.session,element,"/org/mpris/MediaPlayer2");
+				let identity = entryProxy.Identity.replace(' ','').toLowerCase();
+				if (blacklist.includes(identity) || (!whitelist.includes(identity) && USE_WHITELIST))
 					return false
 
 				return true
@@ -140,15 +147,27 @@ class Player {
 	constructor(address){
 		this.address = address;
 		this.statusTimestamp = new Date().getTime();
-		this.icon = getIcon(address);
 
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
+
+		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
+		let entryProxy = entryWrapper(Gio.DBus.session,this.address,"/org/mpris/MediaPlayer2");
+		this.identity = entryProxy.Identity;
+		this.desktopEntry = entryProxy.DesktopEntry;
+
+		this.desktopApp = null;
+		let matchedEntries = [];
+		if(! (this.identity == null | undefined))
+			matchedEntries = Gio.DesktopAppInfo.search(this.identity);
+
+		if ( matchedEntries.length === 0 && !(this.desktopEntry == null | undefined) )//backup method using DesktopEntry info
+			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry)
 		
-		let shortname = address.replace('org.mpris.MediaPlayer2.','');
-		shortname = shortname.replace(/\.instance.*/g,'');
-		shortname = shortname.charAt(0).toUpperCase() + shortname.slice(1);//Capitalise first letter
-		this.shortname = shortname;
+		if ( matchedEntries.length > 0 )
+			this.desktopApp = matchedEntries[0][0]
+
+		this.icon = this.getIcon(this.desktopApp);
 
 		setTimeout(() => { //some players returns null if probed too quickly
 			let volume = this.proxy.Volume;
@@ -175,6 +194,34 @@ class Player {
 	getStatus() {
 		let playbackStatus = this.proxy.PlaybackStatus;
 		return playbackStatus
+	}
+	getIcon(desktopApp){
+		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		const ICON_PLACE = settings.get_string('show-icon');
+		const Config = imports.misc.config;
+	
+		let icon_left_padding = 0;
+		let icon_right_padding = 0;
+		if (Config.PACKAGE_VERSION.startsWith("3."))
+			if (ICON_PLACE == "right")
+				icon_left_padding = 3
+			else if (ICON_PLACE == "left")
+				icon_right_padding = 3
+	
+			let icon = new St.Icon({
+			style_class: 'system-status-icon',
+			fallback_icon_name: 'audio-volume-high',
+			style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
+		});
+	
+		if(desktopApp == null | undefined)
+			return icon
+	
+		let entry = Gio.DesktopAppInfo.new(desktopApp);
+		let gioIcon = entry.get_icon();
+		entry.launch;
+		icon.set_gicon(gioIcon);
+		return icon
 	}
 	toggleStatus() {
 		if ( this.proxy.CanPlay && this.proxy.CanPause )

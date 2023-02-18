@@ -227,7 +227,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	//player selection submenu:
 		this.players.list.forEach(player => {
-			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.shortname);
+			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
 
 			if (AUTO_SWITCH_TO_MOST_RECENT){
 				if(!this.unfocusColor)
