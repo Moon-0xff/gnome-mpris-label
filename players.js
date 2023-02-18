@@ -32,12 +32,30 @@ const dBusInterface = `
 	</interface>
 </node>`
 
+const dBusPropertiesInterface = `
+<node>
+	<interface name="org.freedesktop.DBus.Properties">
+		<signal name="PropertiesChanged">
+			<arg type="s" name="interface_name"/>
+			<arg type="a{sv}" name="changed_properties"/>
+			<arg type="as" name="invalidated_properties"/>
+		</signal>
+	</interface>
+</node>`
+
 var Players = class Players {
 	constructor(){
 		this.list = [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+
+		const dBusProxyPropertiesWrapper = Gio.DBusProxy.makeProxyWrapper(dBusPropertiesInterface);
+		this.dBusPropertiesProxy = dBusProxyPropertiesWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
+		this.dBusPropertiesProxy.connectSignal("PropertiesChanged", this._onPropertiesChanged.bind(this));
+	}
+	_onPropertiesChanged(){
+		log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+'Properties changed!');
 	}
 	pick(){
 		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
