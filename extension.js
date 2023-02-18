@@ -187,7 +187,7 @@ class MprisLabel extends PanelMenu.Button {
 
 				const icon = Gio.Icon.new_for_string(this._setVolumeIcon(newVolume));
 				let volumeRatio = newVolume/VolumeMax
-				let playerName = this.player.shortname;
+				let playerName = this.player.identity;
 				Main.osdWindowManager.show(monitor, icon, playerName, volumeRatio);
 			}
 			else {
