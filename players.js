@@ -190,29 +190,29 @@ class Player {
 
 		let volume = this.getVolume();
 		if (volume !== this.volume && this.volume != undefined && volume != null){
-			this.propertyChanged = "Volume";log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Volume changed');
+			this.propertyChanged = "Volume";
+			log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Volume changed');
 			this.canSetVolume = true;
 			this.volume = volume;
 			return
 		}
 
 		let playbackStatus = this.getStatus();
-		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - this.playbackStatus: '+this.playbackStatus);
-		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - playbackStatus: '+playbackStatus);
 		if (this.playbackStatus != playbackStatus){
-			this.propertyChanged = "PlaybackStatus";log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' PlaybackStatus changed');
+			this.propertyChanged = "PlaybackStatus";
+			log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' PlaybackStatus changed');
 			this.playbackStatus = playbackStatus;
-			// this.statusTimestamp = new Date().getTime();
+			this.statusTimestamp = new Date().getTime();
 			return
 		}
 
 		let metadata = this.getMetadata();
 		let metadataString = metadata['xesam:artist'].get_strv()[0]+'_'+metadata['xesam:album'].get_string()[0]+'_'+metadata['xesam:title'].get_string()[0];
-		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - this.metadataString: '+this.metadataString);
-		// log(Date().substring(16,24)+' gnome-mpris-label/players.js - metadataString: '+metadataString);
 		if (this.metadataString != metadataString){
-			this.propertyChanged = "Metadata";log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Metadata changed');
-			this.metadataString = metadataString
+			this.propertyChanged = "Metadata";
+			log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Metadata changed');
+			this.metadataString = metadataString;
+			return
 		}
 
 		log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Properties changed: '+this.propertyChanged);
