@@ -169,13 +169,14 @@ function buildPrefsWidget(){
 	const addMore = "\nDepending on your taste, you might want to add more filters to this list, like \"Live\" or \"Recorded\"";
 	labelfilterlistEntry.set_tooltip_text(presentTheExamples + theDefaultExamples + moreExplanation + addMore);
 	filtersPage.attach(labelfilterlistEntry,0,position,1,1);
-	filtersPage._settings.bind('label-filtered-list',labelfilterlistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	labelfilterlistEntry.set_placeholder_text('Separate entries with commas');
+	filtersPage._settings.bind('additional-info-subregex',labelfilterlistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	labelfilterlistEntry.set_placeholder_text('Separate entries with pipe characters');
 	position++;
 
 	addSubcategoryLabel(filtersPage,"Regex filter (for each field):");
 	let regexFilterEntry = new Gtk.Entry({ visible: true });
-	regexFilterEntry.set_placeholder_text('Separate entries with commas');
+	filtersPage._settings.bind('user-regex-filter',regexFilterEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	regexFilterEntry.set_placeholder_text('Regex is compiled for Javascript(gjs)');
 	filtersPage.attach(regexFilterEntry,0,position,1,1);
 	position++;
 
@@ -199,7 +200,8 @@ function buildPrefsWidget(){
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
-		settings.reset('label-filtered-list');
+		settings.reset('additional-info-subregex');
+		settings.reset('user-regex-filter');
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment

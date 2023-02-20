@@ -19,7 +19,8 @@ function getSettings(){
 	LAST_FIELD = settings.get_string('last-field');
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	DIVIDER_STRING = settings.get_string('divider-string');
-	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
+	ADDITIONAL_INFO_SUBREGEX = settings.get_string('additional-info-subregex');
+	USER_REGEX_FILTER = settings.get_string('user-regex-filter');
 }
 
 var buildLabel = function buildLabel(players){
@@ -92,7 +93,8 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	data = removeRemasterText(data);
+	data = filterAdditionalInfo(data);
+	data = filterUserRegex(data);
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -109,29 +111,33 @@ function parseMetadataField(data) {
 	return data
 }
 
-function removeRemasterText(datastring) {
-	if(LABEL_FILTERED_LIST == "")
+function filterAdditionalInfo(datastring) {
+	if(ADDITIONAL_INFO_SUBREGEX == "")
 		return datastring
 
-	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
+	let matchedSubStrings = datastring.match(new RegExp("(?:-|\\(|\\[).*(?:" + ADDITIONAL_INFO_SUBREGEX + ").*(?:$|\\)|\\])","i"));
 
-	if (!matchedSubString)
-		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
-
-	if (!matchedSubString)
-		return datastring //returns <datastring> unaltered if both matches were not successful
-
-	const filterlist = LABEL_FILTERED_LIST.toLowerCase().split(',');
-
-	filterlist.forEach(filter => { //go through each filter to look for a match
-		if(matchedSubString[0].toLowerCase().includes(filter)){
-			datastring = datastring.replace(matchedSubString[0],"");
-		}
-	});
+	if (!matchedSubStrings)
+		return datastring
 
 	if (datastring.charAt(datastring.length-1) == " ")
 		datastring = datastring.substring(0,datastring.length-1);
 
+	matchedSubStrings.forEach(match => datastring = datastring.replace(match,""));
+
 	return datastring
 }
 
+function filterUserRegex(datastring) {
+	if (USER_REGEX_FILTER == "")
+		return datastring
+
+	let matches = datastring.match(new RegExp(USER_REGEX_FILTER,"i"));
+
+	if (!matches)
+		return datastring
+
+	matches.forEach(match => datastring = datastring.replace(match,""));
+
+	return datastring
+}

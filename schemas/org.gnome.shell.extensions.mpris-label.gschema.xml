@@ -82,8 +82,12 @@
       <default>false</default>
     </key>
 
-    <key name="label-filtered-list" type="s">
-      <default>"remaster,mix,featuring,feat."</default>
+    <key name="additional-info-subregex" type="s">
+      <default>"remaster|mix|featuring|feat\\."</default>
+    </key>
+
+    <key name="user-regex-filter" type="s">
+      <default>""</default>
     </key>
 
   </schema>
