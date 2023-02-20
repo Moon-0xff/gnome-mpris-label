@@ -169,7 +169,7 @@ class Player {
 
 		this.icon = this.getIcon(this.desktopApp);
 
-		this.proxy.connectObject('g-properties-changed', () => this._onPropertiesChanged(), this);
+		this.proxy.connect('g-properties-changed', this._onPropertiesChanged.bind(this));
 
 		setTimeout(() => { //some players returns null if probed too quickly
 			this.metadata = this.getMetadata();
