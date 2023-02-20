@@ -120,10 +120,10 @@ function filterAdditionalInfo(datastring) {
 	if (!matchedSubStrings)
 		return datastring
 
+	matchedSubStrings.forEach(match => datastring = datastring.replace(match,""));
+
 	if (datastring.charAt(datastring.length-1) == " ")
 		datastring = datastring.substring(0,datastring.length-1);
-
-	matchedSubStrings.forEach(match => datastring = datastring.replace(match,""));
 
 	return datastring
 }
