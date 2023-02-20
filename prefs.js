@@ -166,8 +166,10 @@ function buildPrefsWidget(){
 	const presentTheExamples = "Examples of \"Additional information\" segments, also the ones filtered by default:\n"; //splitted this lengthy explanation in multiple lines
 	const theDefaultExamples = "\tExample - 2023 Remastered\n\tExample - Featuring SomeArtist\n\tExample (feat. SomeArtist)\n\tExample (2023 Mix)\n";
 	const moreExplanation = "\nThe targeted segments are defined in code as:\n\t \"a substring enclosed by parentheses or between the end of the string and a hyphen\"\n";
-	const addMore = "\nDepending on your taste, you might want to add more filters to this list, like \"Live\" or \"Recorded\"";
-	labelfilterlistEntry.set_tooltip_text(presentTheExamples + theDefaultExamples + moreExplanation + addMore);
+	const addMore = "\nDepending on your taste, you might want to add more filters to this list, like \"Live\" or \"Recorded\"\n";
+	const regexExplanation = "\nRegex rules apply. Regex knowledge isn't required to populate this entry, but special/graphical characters might require escaping\n";
+	const alphanumeric = "\nIf you limit your entry to alphanumeric characters you shouldn't have any problems";
+	labelfilterlistEntry.set_tooltip_text(presentTheExamples + theDefaultExamples + moreExplanation + addMore + regexExplanation + alphanumeric);
 	filtersPage.attach(labelfilterlistEntry,0,position,1,1);
 	filtersPage._settings.bind('additional-info-subregex',labelfilterlistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	labelfilterlistEntry.set_placeholder_text('Separate entries with pipe characters');
@@ -349,12 +351,12 @@ function playersToString(){
 			</interface>
 		</node>`
 
-		const entryInterface = `
-		<node>
-			<interface name="org.mpris.MediaPlayer2">
-				<property name="Identity" type="s" access="read"/>
-			</interface>
-		</node>`
+	const entryInterface = `
+	<node>
+		<interface name="org.mpris.MediaPlayer2">
+			<property name="Identity" type="s" access="read"/>
+		</interface>
+	</node>`
 		
 	const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	const dBusProxy = dBusProxyWrapper(Gio.DBus.session,'org.freedesktop.DBus','/org/freedesktop/DBus');
