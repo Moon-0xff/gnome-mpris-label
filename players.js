@@ -168,10 +168,10 @@ class Player {
 			this.desktopApp = matchedEntries[0][0]
 
 		// make sure the result matches a running app
-		let entry = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-		let activeApps = Shell.AppSystem.get_default().get_running();
-		if (!activeApps.includes(entry))
-			this.desktopApp = undefined;
+		// let entry = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
+		// let activeApps = Shell.AppSystem.get_default().get_running();
+		// if (!activeApps.includes(entry))
+		// 	this.desktopApp = undefined;
 
 		this.icon = this.getIcon(this.desktopApp);
 
