@@ -1,7 +1,7 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const {Clutter,Gio,GLib,GObject,St} = imports.gi;
+const {Shell,Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
@@ -127,12 +127,19 @@ class MprisLabel extends PanelMenu.Button {
 				return Clutter.EVENT_STOP;
 			case Clutter.BUTTON_MIDDLE:
 				// doing nothing right now
+				this._activatePlayer();
 				return Clutter.EVENT_STOP;
 			case Clutter.BUTTON_SECONDARY:
 				this._buildMenu(event);
 				this.menu.open();
 				return Clutter.EVENT_STOP;
 		}
+	}
+
+	_activatePlayer(){
+		//TODO: implement status toggle for player to go back to original status on second click
+		if (this.player)
+			Shell.AppSystem.get_default().lookup_app(this.player.desktopApp).activate();
 	}
 
 	_playPause() {
@@ -192,7 +199,7 @@ class MprisLabel extends PanelMenu.Button {
 			}
 			else {
 				const icon = Gio.Icon.new_for_string('audio-volume-muted-symbolic');
-				let displayText = this.player.shortname + ' - Mpris volume not supported'
+				let displayText = this.player.identity + ' - Mpris volume not supported'
 				Main.osdWindowManager.show(monitor, icon, displayText, '0');
 			}
 		}
