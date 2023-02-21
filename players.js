@@ -174,7 +174,6 @@ class Player {
 		setTimeout(() => { //some players returns null if probed too quickly
 			this.metadata = this.getMetadata();
 			this.metadataString = this.metadata['xesam:artist'].get_strv()[0]+'_'+this.metadata['xesam:album'].get_string()[0]+'_'+this.metadata['xesam:title'].get_string()[0];
-			log(Date().substring(16,24)+' gnome-mpris-label/players.js - initial this.metadataString: '+this.metadataString);
 
 			this.playbackStatus = this.getStatus();
 
@@ -191,7 +190,7 @@ class Player {
 		let volume = this.getVolume();
 		if (volume !== this.volume && this.volume != undefined && volume != null){
 			this.propertyChanged = "Volume";
-			log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Volume changed');
+			// log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Volume changed');
 			this.canSetVolume = true;
 			this.volume = volume;
 			return
@@ -200,7 +199,7 @@ class Player {
 		let playbackStatus = this.getStatus();
 		if (this.playbackStatus != playbackStatus){
 			this.propertyChanged = "PlaybackStatus";
-			log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' PlaybackStatus changed');
+			// log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' PlaybackStatus changed');
 			this.playbackStatus = playbackStatus;
 			this.statusTimestamp = new Date().getTime();
 			return
@@ -210,7 +209,7 @@ class Player {
 		let metadataString = metadata['xesam:artist'].get_strv()[0]+'_'+metadata['xesam:album'].get_string()[0]+'_'+metadata['xesam:title'].get_string()[0];
 		if (this.metadataString != metadataString){
 			this.propertyChanged = "Metadata";
-			log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Metadata changed');
+			// log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Metadata changed');
 			this.metadataString = metadataString;
 			return
 		}
@@ -255,7 +254,12 @@ class Player {
 		if(desktopApp == null | undefined)
 			return icon
 	
-		let entry = Gio.DesktopAppInfo.new(desktopApp);
+		// make sure the result matches a running app
+		let entry = Shell.AppSystem.get_default().lookup_app(desktopApp);
+		let activeApps = Shell.AppSystem.get_default().get_running();
+		if (!activeApps.includes(entry))
+			return icon;
+
 		let gioIcon = entry.get_icon();
 		entry.launch;
 		icon.set_gicon(gioIcon);
