@@ -142,18 +142,29 @@ class MprisLabel extends PanelMenu.Button {
 	_activatePlayer(){
 		//TODO: implement status toggle for player to go back to original status on second click
 		if (this.player) {
-			// following check doesn't work with Rhythmbox or Firefox
-			let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
-			// log(Date().substring(16,24)+' gnome-mpris-label/extension.js: '+playerObject);
-			let activeApps = Shell.AppSystem.get_default().get_running();
-			if (activeApps.includes(playerObject))
-				playerObject.activate()
-			else {
-				const monitor = global.display.get_current_monitor();
-				const icon = Gio.Icon.new_for_string('dialog-error-symbolic');
-				let displayText = 'Open Player not supported by '+this.player.identity
-				Main.osdWindowManager.show(monitor, icon, displayText);
+			// // following check doesn't work with Rhythmbox or Firefox
+			// let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
+			// let activeApps = Shell.AppSystem.get_default().get_running();
+			// if (activeApps.includes(playerObject)){
+			// 	playerObject.activate();
+			// 	return
+			// }
+
+			let identity = this.player.identity.toLowerCase()
+			for (const actor of global.get_window_actors()) {
+				const window = actor.get_meta_window();
+				let wm_class = window.get_wm_class().toLowerCase();
+				let title = window.get_title().toLowerCase();
+				if (wm_class.includes(identity) | identity.includes(wm_class) | title.includes(identity)) {
+					window.activate(global.get_current_time());
+					return
+				}
 			}
+
+			const monitor = global.display.get_current_monitor();
+			const icon = Gio.Icon.new_for_string('dialog-error-symbolic');
+			let displayText = 'Open Player not supported by '+this.player.identity
+			Main.osdWindowManager.show(monitor, icon, displayText);
 		}
 	}
 
