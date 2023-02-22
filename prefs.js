@@ -161,7 +161,7 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
-	addSubcategoryLabel(filtersPage,'Regex filter "Additional information" for title label segments:');
+	addSubcategoryLabel(filtersPage,'Filter "Additional information" label segments:');
 	let labelfilterlistEntry = new Gtk.Entry({ visible: true });
 	const presentTheExamples = "Examples of \"Additional information\" segments, also the ones filtered by default:\n"; //splitted this lengthy explanation in multiple lines
 	const theDefaultExamples = "\tExample - 2023 Remastered\n\tExample - Featuring SomeArtist\n\tExample (feat. SomeArtist)\n\tExample (2023 Mix)\n";
@@ -175,11 +175,22 @@ function buildPrefsWidget(){
 	labelfilterlistEntry.set_placeholder_text('Separate entries with pipe characters');
 	position++;
 
-	addSubcategoryLabel(filtersPage,"Regex filter for all fields:");
+	addSubcategoryLabel(filtersPage,"Regex filter (for each field):");
 	let regexFilterEntry = new Gtk.Entry({ visible: true });
 	filtersPage._settings.bind('user-regex-filter',regexFilterEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	regexFilterEntry.set_placeholder_text('Regex is compiled for Javascript(gjs)');
 	filtersPage.attach(regexFilterEntry,0,position,1,1);
+	filtersPage._settings.connect('changed::user-regex-filter', () => {
+		try {
+			new RegExp(filtersPage._settings.get_string('user-regex-filter',"i"));
+		}
+		catch(e){
+			let iconTheme = new Gtk.IconTheme();
+			let gdkIcon = iconTheme.load_icon('dialog-warning',16,Gtk.IconLookupFlags.USE_BUILTIN);
+			regexFilterEntry.primary_icon_gicon = gdkIcon;
+		}
+
+	});
 	position++;
 
 	let warning = addLabel(filtersPage,"<u><b>Warning:</b></u> badly or maliciously formed regexes can seriously mess with your system");
