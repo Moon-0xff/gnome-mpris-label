@@ -120,6 +120,10 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onClick(event){
+		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+		if (REPOSITION_ON_BUTTON_PRESS)
+			this._updateTrayPosition(); //force tray position update on button press
+
 		this.menu.close(); //prevent click from opening the menu
 		switch(event.get_button()){
 			case Clutter.BUTTON_PRIMARY:
@@ -224,11 +228,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_buildMenu(){
-		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
-
-		if (REPOSITION_ON_BUTTON_PRESS)
-			this._updateTrayPosition(); //force tray position update on button press
 
 		this.menu.removeAll(); //start by deleting everything
 
