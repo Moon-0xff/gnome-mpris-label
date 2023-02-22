@@ -130,7 +130,6 @@ class MprisLabel extends PanelMenu.Button {
 				this._playPause();
 				return Clutter.EVENT_STOP;
 			case Clutter.BUTTON_MIDDLE:
-				// doing nothing right now
 				this._activatePlayer();
 				return Clutter.EVENT_STOP;
 			case Clutter.BUTTON_SECONDARY:
@@ -142,8 +141,20 @@ class MprisLabel extends PanelMenu.Button {
 
 	_activatePlayer(){
 		//TODO: implement status toggle for player to go back to original status on second click
-		if (this.player)
-			Shell.AppSystem.get_default().lookup_app(this.player.desktopApp).activate();
+		if (this.player) {
+			// following check doesn't work with Rhythmbox or Firefox
+			let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
+			// log(Date().substring(16,24)+' gnome-mpris-label/extension.js: '+playerObject);
+			let activeApps = Shell.AppSystem.get_default().get_running();
+			if (activeApps.includes(playerObject))
+				playerObject.activate()
+			else {
+				const monitor = global.display.get_current_monitor();
+				const icon = Gio.Icon.new_for_string('dialog-error-symbolic');
+				let displayText = 'Open Player not supported by '+this.player.identity
+				Main.osdWindowManager.show(monitor, icon, displayText);
+			}
+		}
 	}
 
 	_playPause() {
@@ -174,8 +185,7 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 		}
 
-		let monitor = global.display.get_current_monitor();
-
+		const monitor = global.display.get_current_monitor();
 		let volumeControlMode = VOLUME_CONTROL;
 		if ( volumeControlMode == 'Source_Fallback' ){
 			volumeControlMode = 'Source'
@@ -204,7 +214,7 @@ class MprisLabel extends PanelMenu.Button {
 			else {
 				const icon = Gio.Icon.new_for_string('audio-volume-muted-symbolic');
 				let displayText = this.player.identity + ' - Mpris volume not supported'
-				Main.osdWindowManager.show(monitor, icon, displayText, '0');
+				Main.osdWindowManager.show(monitor, icon, displayText);
 			}
 		}
 

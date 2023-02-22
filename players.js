@@ -167,12 +167,6 @@ class Player {
 		if ( matchedEntries.length > 0 )
 			this.desktopApp = matchedEntries[0][0]
 
-		// make sure the result matches a running app
-		// let entry = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-		// let activeApps = Shell.AppSystem.get_default().get_running();
-		// if (!activeApps.includes(entry))
-		// 	this.desktopApp = undefined;
-
 		this.icon = this.getIcon(this.desktopApp);
 
 		this.proxy.connect('g-properties-changed', this._onPropertiesChanged.bind(this));
@@ -210,7 +204,7 @@ class Player {
 			this.statusTimestamp = new Date().getTime();
 			return
 		}
-
+		
 		let metadata = this.getMetadata();
 		let metadataString = metadata['xesam:artist'].get_strv()[0]+'_'+metadata['xesam:album'].get_string()[0]+'_'+metadata['xesam:title'].get_string()[0];
 		if (this.metadataString != metadataString){
