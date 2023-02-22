@@ -161,7 +161,7 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
-	addSubcategoryLabel(filtersPage,'Filter "Additional information" label segments:');
+	addSubcategoryLabel(filtersPage,'Regex filter "Additional information" for title label segments:');
 	let labelfilterlistEntry = new Gtk.Entry({ visible: true });
 	const presentTheExamples = "Examples of \"Additional information\" segments, also the ones filtered by default:\n"; //splitted this lengthy explanation in multiple lines
 	const theDefaultExamples = "\tExample - 2023 Remastered\n\tExample - Featuring SomeArtist\n\tExample (feat. SomeArtist)\n\tExample (2023 Mix)\n";
@@ -175,7 +175,7 @@ function buildPrefsWidget(){
 	labelfilterlistEntry.set_placeholder_text('Separate entries with pipe characters');
 	position++;
 
-	addSubcategoryLabel(filtersPage,"Regex filter (for each field):");
+	addSubcategoryLabel(filtersPage,"Regex filter for all fields:");
 	let regexFilterEntry = new Gtk.Entry({ visible: true });
 	filtersPage._settings.bind('user-regex-filter',regexFilterEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	regexFilterEntry.set_placeholder_text('Regex is compiled for Javascript(gjs)');

@@ -1,5 +1,6 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
@@ -7,7 +8,6 @@ let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	MAX_STRING_LENGTH,DIVIDER_STRING;
 
 function getSettings(){
-	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
@@ -112,15 +112,17 @@ function parseMetadataField(data) {
 }
 
 function filterAdditionalInfo(datastring) {
-	if(ADDITIONAL_INFO_SUBREGEX == "")
+	if(ADDITIONAL_INFO_SUBREGEX == "" | ADDITIONAL_INFO_SUBREGEX.includes('invalid syntax'))
 		return datastring
 
-	let matchedSubStrings = datastring.match(new RegExp("(?:-|\\(|\\[).*(?:" + ADDITIONAL_INFO_SUBREGEX + ").*(?:$|\\)|\\])","i"));
-
-	if (!matchedSubStrings)
+	const regexString = "(?:-|\\(|\\[).*(?:" + ADDITIONAL_INFO_SUBREGEX + ").*(?:$|\\)|\\])";
+	if(!validRegex(regexString)){
+		settings.set_string('additional-info-subregex',ADDITIONAL_INFO_SUBREGEX + ' (⚠ invalid syntax!)');
 		return datastring
+	}
 
-	matchedSubStrings.forEach(match => datastring = datastring.replace(match,""));
+	const regexFilter = new RegExp(regexString,"i");
+	datastring = datastring.replace(regexFilter,"");
 
 	if (datastring.charAt(datastring.length-1) == " ")
 		datastring = datastring.substring(0,datastring.length-1);
@@ -129,15 +131,25 @@ function filterAdditionalInfo(datastring) {
 }
 
 function filterUserRegex(datastring) {
-	if (USER_REGEX_FILTER == "")
+	if (USER_REGEX_FILTER == "" | USER_REGEX_FILTER.includes('invalid syntax'))
 		return datastring
 
-	let matches = datastring.match(new RegExp(USER_REGEX_FILTER,"i"));
-
-	if (!matches)
+	if(!validRegex(USER_REGEX_FILTER)){
+		settings.set_string('user-regex-filter',USER_REGEX_FILTER + ' (⚠ invalid syntax!)');
 		return datastring
+	}
 
-	matches.forEach(match => datastring = datastring.replace(match,""));
-
+	const regexFilter = RegExp(USER_REGEX_FILTER,"gi");
+	datastring = datastring.replace(regexFilter,"");
 	return datastring
+}
+
+function validRegex(expression){
+	var isValid = true;
+	try {
+		new RegExp(expression,"i");
+	} catch(e) {
+		isValid = false;
+	}
+	return isValid
 }
