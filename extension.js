@@ -173,6 +173,16 @@ class MprisLabel extends PanelMenu.Button {
 			this.player.toggleStatus()
 	}
 
+	_goNext() {
+		if (this.player)
+			this.player.goNext()
+	}
+	
+	_goPrevious() {
+		if (this.player)
+			this.player.goPrevious()
+	}
+
 	_onScroll(event) {
 		const VOLUME_CONTROL = this.settings.get_string('volume-control');
 

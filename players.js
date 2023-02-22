@@ -7,8 +7,12 @@ const mprisInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
 		<method name="PlayPause" />
+		<method name="Next" />
+		<method name="Previous" />
 		<property name="CanPlay" type="b" access="read" />
 		<property name="CanPause" type="b" access="read" />
+		<property name="CanGoNext" type="b" access="read" />
+		<property name="CanGoPrevious" type="b" access="read" />
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
 		<property name="Volume" type="d" access="readwrite"/>
@@ -262,15 +266,22 @@ class Player {
 		return icon
 	}
 	toggleStatus() {
-		if ( this.proxy.CanPlay && this.proxy.CanPause )
+		if (this.proxy.CanPlay && this.proxy.CanPause)
 			this.proxy.PlayPauseRemote()
-		else {
-			const monitor = global.display.get_current_monitor();
-			const icon = Gio.Icon.new_for_string('dialog-error-symbolic');
-			let text = 'Play/Pause control not available on ' + this.shortname;
-			Main.osdWindowManager.show(monitor, icon, text,0);
-		}
-		return
+		else
+			displayError("Play/Pause control not available")
+	}
+	goNext(){
+		if (this.proxy.CanGoNext)
+			this.proxy.NextRemote()
+		else
+			displayError("Go Next control not available")
+	}
+	goPrevious(){
+		if (this.proxy.CanGoPrevious)
+			this.proxy.PreviousRemote()
+		else
+			displayError("Go Previous control not available")
 	}
 	getVolume() {
 		return this.proxy.Volume
@@ -280,6 +291,12 @@ class Player {
 	}
 	getVolumeEnabled(){
 		return this.canSetVolume
+	}
+	displayError(text){
+		const monitor = global.display.get_current_monitor();
+		const icon = Gio.Icon.new_for_string('dialog-error-symbolic');
+		text = text+' on ' + this.shortname;
+		Main.osdWindowManager.show(monitor,icon,text,0);
 	}
 }
 
