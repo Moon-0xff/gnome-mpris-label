@@ -51,7 +51,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
-		this._buildMenu(); //build initial menu
+		this._buildMenu();
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
@@ -130,6 +130,12 @@ class MprisLabel extends PanelMenu.Button {
 				return Clutter.EVENT_STOP;
 			case Clutter.BUTTON_MIDDLE:
 				this._activatePlayer();
+				return Clutter.EVENT_STOP;
+			case 8:
+				this._goPrevious();
+				return Clutter.EVENT_STOP;
+			case 9:
+				this._goNext();
 				return Clutter.EVENT_STOP;
 			case Clutter.BUTTON_SECONDARY:
 				this._buildMenu(event);
