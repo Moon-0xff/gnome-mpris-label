@@ -169,7 +169,7 @@ class Player {
 			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry)
 		
 		if ( matchedEntries.length > 0 )
-			this.desktopApp = matchedEntries[0][0]
+			this.desktopApp = this._matchRunningApps(matchedEntries)
 
 		this.icon = this.getIcon(this.desktopApp);
 
@@ -187,6 +187,19 @@ class Player {
 			this.setVolume(newVolume); //apply volume to see if it triggers onPropertiesChanged
 			this.volume = newVolume
 		}, 2000);
+	}
+	_matchRunningApps(matchedEntries){
+		let activeApps = Shell.AppSystem.get_default().get_running();
+		for(var i = 0; i < matchedEntries.length; i++) {
+			var desktopFile = matchedEntries[i];
+			for(var j = 0; j < desktopFile.length; j++) {
+				var entry = desktopFile[j];
+				var playerObject = Shell.AppSystem.get_default().lookup_app(entry);
+				if (activeApps.includes(playerObject))
+					return entry
+			}
+		}
+		return matchedEntries[0][0]
 	}
 	_onPropertiesChanged(){
 		this.propertyChanged = undefined;
