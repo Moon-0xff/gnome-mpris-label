@@ -218,7 +218,7 @@ class Player {
 			return
 		}
 
-		log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Properties changed: '+this.propertyChanged);
+		// log(Date().substring(16,24)+' gnome-mpris-label/players.js: '+this.identity+' Properties changed: '+this.propertyChanged);
 	}
 	update(){
 		let playbackStatus = this.getStatus();

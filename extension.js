@@ -40,7 +40,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.box = new St.BoxLayout({
 			x_align: Clutter.ActorAlign.FILL
 		});
-		this._onPaddingChanged();//apply padding
+		this._onPaddingChanged();
 		this.add_child(this.box);
 
 		this.label = new St.Label({
@@ -52,7 +52,6 @@ class MprisLabel extends PanelMenu.Button {
 		this.players = new Players();
 
 		this._buildMenu(); //build initial menu
-		// this.connect('button-press-event',this._buildMenu.bind(this));
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
@@ -142,14 +141,6 @@ class MprisLabel extends PanelMenu.Button {
 	_activatePlayer(){
 		//TODO: implement status toggle for player to go back to original status on second click
 		if (this.player) {
-			// // following check doesn't work with Rhythmbox or Firefox
-			// let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
-			// let activeApps = Shell.AppSystem.get_default().get_running();
-			// if (activeApps.includes(playerObject)){
-			// 	playerObject.activate();
-			// 	return
-			// }
-
 			let identity = this.player.identity.toLowerCase()
 			for (const actor of global.get_window_actors()) {
 				const window = actor.get_meta_window();
