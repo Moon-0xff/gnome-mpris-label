@@ -234,6 +234,10 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
+	vfunc_event(event){
+		return Clutter.EVENT_PROPAGATE;
+	}
+
 	_disable(){
 		if(this.icon)
 			this.box.remove_child(this.icon);
