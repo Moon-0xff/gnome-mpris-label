@@ -86,5 +86,17 @@
       <default>false</default>
     </key>
 
+    <key name="left-click-action" type="s">
+      <default>"open-menu"</default>
+    </key>
+
+    <key name="middle-click-action" type="s">
+      <default>"next-track"</default>
+    </key>
+
+    <key name="right-click-action" type="s">
+      <default>"play-pause"</default>
+    </key>
+
   </schema>
 </schemalist>

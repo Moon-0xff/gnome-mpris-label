@@ -51,7 +51,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.players = new Players();
 
 		this._buildMenu();
-		this.connect('button-press-event',this._buildMenu.bind(this));
+		this.connect('button-press-event',(_a, event) => this._onClick(event));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -117,12 +117,52 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_buildMenu(){
+	_onClick(event){
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
-		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition(); //force tray position update on button press
+
+		switch(event.get_button()){
+			case Clutter.BUTTON_PRIMARY:
+				this._activateButton('left-click-action');
+				return Clutter.EVENT_STOP;
+			case Clutter.BUTTON_MIDDLE:
+				this._activateButton('middle-click-action');
+				return Clutter.EVENT_STOP;
+			case Clutter.BUTTON_SECONDARY:
+				this._activateButton('right-click-action');
+				return Clutter.EVENT_STOP;
+		}
+	}
+
+	_activateButton(option) {
+		const value = this.settings.get_string(option);
+
+		switch(value){
+			case 'play-pause':
+				if(this.player)
+					this.player.toggleStatus();
+				break;
+			case 'next-track':
+				if(this.player)
+					this.player.goNext();
+				break;
+			case 'prev-track':
+				if(this.player)
+					this.player.goPrevious();
+				break;
+			case 'open-menu':
+				this.menu.toggle();
+				break;
+			case 'next-player':
+				this.player = this.players.next();
+				break;
+		}
+	}
+
+	_buildMenu(){
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this.menu.removeAll(); //start by deleting everything
 

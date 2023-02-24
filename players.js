@@ -5,6 +5,13 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const mprisInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
+		<method name="PlayPause" />
+		<method name="Next" />
+		<method name="Previous" />
+		<property name="CanPlay" type="b" access="read" />
+		<property name="CanPause" type="b" access="read" />
+		<property name="CanGoNext" type="b" access="read" />
+		<property name="CanGoPrevious" type="b" access="read" />
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
 	</interface>
@@ -207,6 +214,18 @@ class Player {
 		entry.launch;
 		icon.set_gicon(gioIcon);
 		return icon
+	}
+	toggleStatus() {
+		if (this.proxy.CanPlay && this.proxy.CanPause)
+			this.proxy.PlayPauseRemote()
+	}
+	goNext(){
+		if (this.proxy.CanGoNext)
+			this.proxy.NextRemote()
+	}
+	goPrevious(){
+		if (this.proxy.CanGoPrevious)
+			this.proxy.PreviousRemote()
 	}
 }
 
