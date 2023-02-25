@@ -23,3 +23,9 @@ Aditionally:
 - Fixes issues with the panel position being "stolen" by other extensions
 - Adds filters to allow/disallow specified mpris sources
 - Adds tooltips(hints) for various options
+
+# Upcoming Version
+- Adds a menu for player selection
+- Improves filtering
+- Increases the chance of finding the application icon
+- Adds bindable mouse controls
