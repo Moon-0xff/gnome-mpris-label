@@ -153,6 +153,7 @@ class MprisLabel extends PanelMenu.Button {
 					this.player.goPrevious();
 				break;
 			case 'open-menu':
+				this._buildMenu();
 				this.menu.toggle();
 				break;
 			case 'next-player':
