@@ -134,7 +134,6 @@ var Players = class Players {
 
 		let addresses = [];
 		this.list.forEach(element => {
-			element.update();
 			addresses.push(element.address);
 		});
 
@@ -152,6 +151,7 @@ class Player {
 
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
+		this.proxy.connect('g-properties-changed', this.update.bind(this));
 
 		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 		let entryProxy = entryWrapper(Gio.DBus.session,this.address,"/org/mpris/MediaPlayer2");
@@ -172,20 +172,14 @@ class Player {
 		this.icon = this.getIcon(this.desktopApp);
 	}
 	update(){
-		let playbackStatus = this.getStatus();
+		this.metadata = this.proxy.Metadata;
+
+		let playbackStatus = this.proxy.PlaybackStatus;
 
 		if(this.playbackStatus != playbackStatus){
 			this.playbackStatus = playbackStatus;
 			this.statusTimestamp = new Date().getTime();
 		}
-	}
-	getMetadata(){
-		let metadata = this.proxy.Metadata;
-		return metadata
-	}
-	getStatus() {
-		let playbackStatus = this.proxy.PlaybackStatus
-		return playbackStatus
 	}
 	getIcon(desktopApp){
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');

@@ -40,7 +40,7 @@ var buildLabel = function buildLabel(players){
 	// metadata is a javascript object
 	// "fields" are enumerable string-keyed properties
 	// each "field" is a GLib.Variant object
-	let metadata = players.selected.getMetadata();
+	let metadata = players.selected.metadata;
 
 	if(metadata == null)
 		return placeholder
