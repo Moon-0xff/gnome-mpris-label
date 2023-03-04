@@ -15,6 +15,7 @@ const mprisInterface = `
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
 	</interface>
+
 </node>`
 
 const entryInterface = `
@@ -31,21 +32,25 @@ const dBusInterface = `
 		<method name="ListNames">
 			<arg direction="out" type="as"/>
 		</method>
+		<signal name="NameOwnerChanged">
+			<arg direction="out" type="s"/>
+			<arg direction="out" type="s"/>
+			<arg direction="out" type="s"/>
+		</signal>
 	</interface>
 </node>`
 
 var Players = class Players {
 	constructor(){
 		this.list = [];
+		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
-		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus");
+		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	}
 	pick(){
 		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
-
-		this._updateList();
 
 		if(this.list.length == 0){
 			this.selected = null;
@@ -81,8 +86,6 @@ var Players = class Players {
 	next(){
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
-		this._updateList();
-
 		let list = this.list;
 
 		if(AUTO_SWITCH_TO_MOST_RECENT)
@@ -104,43 +107,58 @@ var Players = class Players {
 
 		return this.selected
 	}
-	_updateList(){
+	_initList(){
 		let dBusList = this.dBusProxy.ListNamesSync()[0];
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
+		this.unfilteredList = [];
+		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
+
+		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
+		this.settings.connect('changed::mpris-sources-blacklist',this._filterList.bind(this));
+		this.settings.connect('changed::mpris-sources-whitelist',this._filterList.bind(this));
+		this.settings.connect('changed::use-whitelisted-sources-only',this._filterList.bind(this));
+
+		this._filterList();
+	}
+	_updateList(proxy, sender, [name,oldOwner,newOwner]){
+		if(name.startsWith("org.mpris.MediaPlayer2")){
+			if(newOwner && !oldOwner){ //add player
+				let player = new Player(name);
+				this.unfilteredList.push(player);
+			}
+			else if (!newOwner && oldOwner){ //delete player
+				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
+			}
+			this._filterList();
+		}
+	}
+	_filterList(){
 		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
 		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
+		let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
 
-		if(SOURCES_BLACKLIST || SOURCES_WHITELIST){
-			let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
-			if(SOURCES_BLACKLIST && USE_WHITELIST && !SOURCES_WHITELIST)
-				USE_WHITELIST = false;
+		if(!SOURCES_BLACKLIST || !SOURCES_WHITELIST)
+			this.list = this.unfilteredList;
 
-			const blacklist = SOURCES_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
-			const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
+		const blacklist = SOURCES_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
+		const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
 
-			let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
-			dBusList = dBusList.filter(function(element){
-				let entryProxy = entryWrapper(Gio.DBus.session,element,"/org/mpris/MediaPlayer2");
-				let identity = entryProxy.Identity.replace(' ','').toLowerCase();
-				if (blacklist.includes(identity) || (!whitelist.includes(identity) && USE_WHITELIST))
-					return false
+		if(USE_WHITELIST && SOURCES_WHITELIST)
+			this.list = this.unfilteredList.filter(element => whitelist.includes(element));
 
-				return true
-			});
-		}
+		if(!USE_WHITELIST && SOURCES_BLACKLIST)
+			this.list = this.unfilteredList.filter(element => !blacklist.includes(element));
 
-		this.list = this.list.filter(element => dBusList.includes(element.address));
-
-		let addresses = [];
-		this.list.forEach(element => {
-			addresses.push(element.address);
+		this.updateActiveList();
+	}
+	updateActiveList(){
+		let actives = [];
+		this.list.forEach(player => {
+			if(player.playbackStatus == "Playing")
+				actives.push(player);
 		});
-
-		let newPlayers = dBusList.filter(element => !addresses.includes(element));
-		newPlayers.forEach(element => this.list.push(new Player(element)));
-
-		this.activePlayers = this.list.filter(element => element.playbackStatus == "Playing")
+		this.activePlayers = actives;
 	}
 }
 
@@ -153,10 +171,13 @@ class Player {
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
 		this.proxy.connect('g-properties-changed', this.update.bind(this));
 
-		let entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
-		let entryProxy = entryWrapper(Gio.DBus.session,this.address,"/org/mpris/MediaPlayer2");
-		this.identity = entryProxy.Identity;
-		this.desktopEntry = entryProxy.DesktopEntry;
+		const entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
+		this.entryProxy = entryWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this._onEntryProxyReady.bind(this));
+
+	}
+	_onEntryProxyReady(){
+		this.identity = this.entryProxy.Identity;
+		this.desktopEntry = this.entryProxy.DesktopEntry;
 
 		this.desktopApp = null;
 		let matchedEntries = [];
@@ -164,10 +185,10 @@ class Player {
 			matchedEntries = Gio.DesktopAppInfo.search(this.identity);
 
 		if ( matchedEntries.length === 0 && !(this.desktopEntry == null | undefined) )//backup method using DesktopEntry info
-			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry)
+			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry);
 		
 		if ( matchedEntries.length > 0 )
-			this.desktopApp = matchedEntries[0][0]
+			this.desktopApp = matchedEntries[0][0];
 
 		this.icon = this.getIcon(this.desktopApp);
 	}

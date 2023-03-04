@@ -50,7 +50,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players();
 
-		this._buildMenu();
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
@@ -158,6 +157,7 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 			case 'next-player':
 				this.player = this.players.next();
+				this._refresh();
 				break;
 		}
 	}
@@ -224,6 +224,7 @@ class MprisLabel extends PanelMenu.Button {
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 
+		this.players.updateActiveList();
 		this.player = this.players.pick();
 		this._setText();
 		this._setIcon();

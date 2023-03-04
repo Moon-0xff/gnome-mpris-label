@@ -29,3 +29,4 @@ Aditionally:
 - Improves filtering
 - Increases the chance of finding the application icon
 - Adds bindable mouse controls
+- Improves performance (refresh time down from 5-9ms to 1ms or less)
