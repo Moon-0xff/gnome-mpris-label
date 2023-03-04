@@ -145,12 +145,10 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_activatePlayer(){
-		//TODO: implement status toggle for player to go back to original status on second click
 		if (this.player) {
 			let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
-			let activeApps = Shell.AppSystem.get_default().get_running();
-			if (activeApps.includes(playerObject)){
-				playerObject.activate();
+			if (playerObject) {
+				playerObject.activate()
 				return
 			}
 
