@@ -239,7 +239,6 @@ class Player {
 	
 		let entry = Gio.DesktopAppInfo.new(desktopApp);
 		let gioIcon = entry.get_icon();
-		entry.launch;
 		icon.set_gicon(gioIcon);
 		return icon
 	}
