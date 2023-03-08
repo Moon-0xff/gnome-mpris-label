@@ -36,7 +36,7 @@ function buildPrefsWidget(){
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
 	addSubcategoryLabel(panelPage,'Mouse controls');
-	let buttonActions = {'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player'};
+	let buttonActions = {'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player','open app':'activate-player'};
 	let leftClickComboBox = addStringComboBox(panelPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(panelPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(panelPage,'right-click-action','Right click action:',buttonActions,undefined);
