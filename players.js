@@ -193,16 +193,19 @@ class Player {
 		this.icon = this.getIcon(this.desktopApp);
 	}
 	_matchRunningApps(matchedEntries){
-		let activeApps = Shell.AppSystem.get_default().get_running();
-		for(var i = 0; i < matchedEntries.length; i++) {
-			var desktopFile = matchedEntries[i];
-			for(var j = 0; j < desktopFile.length; j++) {
-				var entry = desktopFile[j];
-				var playerObject = Shell.AppSystem.get_default().lookup_app(entry);
+		const activeApps = Shell.AppSystem.get_default().get_running();
+		let match = "";
+		matchedEntries.forEach((n, i) => {
+			n.forEach((entry, j) => {
+				let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
 				if (activeApps.includes(playerObject))
-					return entry
-			}
-		}
+					match = entry
+			});
+		});
+
+		if(match)
+			return match
+
 		return matchedEntries[0][0]
 	}
 	update(){
