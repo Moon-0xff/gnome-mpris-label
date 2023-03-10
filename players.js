@@ -194,7 +194,7 @@ class Player {
 	}
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
-		let match = "";
+		let match = matchedEntries[0][0];
 		matchedEntries.forEach((n, i) => {
 			n.forEach((entry, j) => {
 				let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
@@ -202,11 +202,7 @@ class Player {
 					match = entry
 			});
 		});
-
-		if(match)
-			return match
-
-		return matchedEntries[0][0]
+		return match
 	}
 	update(){
 		this.metadata = this.proxy.Metadata;
