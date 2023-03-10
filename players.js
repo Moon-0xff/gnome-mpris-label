@@ -65,12 +65,9 @@ var Players = class Players {
 		let list = this.list;
 
 		if(AUTO_SWITCH_TO_MOST_RECENT){
-			if(this.activePlayers.length == 0){
-				if(REMOVE_TEXT_WHEN_PAUSED)
-					this.selected = null
-					
+			if(this.activePlayers.length == 0)
 				return this.selected
-			}
+
 			list = this.activePlayers;
 		}
 
