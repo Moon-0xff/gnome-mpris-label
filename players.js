@@ -183,6 +183,15 @@ class Player {
 
 		if ( matchedEntries.length === 0 && !(this.desktopEntry == null | undefined) )//backup method using DesktopEntry info
 			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry);
+
+		//de-nest matchedEntries. Gio.DesktopAppInfo.search returns a nested array
+		let entries = [];
+		matchedEntries.forEach(nest => {
+			nest.forEach(entry => {
+				entries.push(entry);
+			});
+		});
+		matchedEntries = entries;
 		
 		if ( matchedEntries.length > 0 )
 			this.desktopApp = this._matchRunningApps(matchedEntries)
@@ -191,13 +200,14 @@ class Player {
 	}
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
-		let match = matchedEntries[0][0];
-		matchedEntries.forEach((n, i) => {
-			n.forEach((entry, j) => {
-				let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
-				if (activeApps.includes(playerObject))
-					match = entry
-			});
+
+		let match = matchedEntries[0];
+		matchedEntries.forEach(entry => {
+			let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
+			if (activeApps.includes(playerObject)){
+				match = entry
+				return match
+			}
 		});
 		return match
 	}
