@@ -206,7 +206,6 @@ class Player {
 			let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
 			if (activeApps.includes(playerObject)){
 				match = entry
-				return match
 			}
 		});
 		return match
