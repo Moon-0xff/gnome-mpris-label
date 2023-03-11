@@ -40,6 +40,7 @@ function buildPrefsWidget(){
 	let leftClickComboBox = addStringComboBox(panelPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(panelPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(panelPage,'right-click-action','Right click action:',buttonActions,undefined);
+	let mouseScrollComboBox = addStringComboBox(panelPage,'mouse-scroll-action','Mouse scroll action:',{'Global Volume':'global','Source Volume':'source','Disabled':'off'},undefined);
 
 	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
@@ -51,9 +52,11 @@ function buildPrefsWidget(){
 		settings.reset('left-click-action');
 		settings.reset('middle-click-action');
 		settings.reset('right-click-action');
+		settings.reset('mouse-scroll-action');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		mouseScrollComboBox.set_active_id(settings.get_string('mouse-scroll-action'));
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 	});
 

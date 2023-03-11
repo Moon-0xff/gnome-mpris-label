@@ -98,5 +98,8 @@
       <default>"play-pause"</default>
     </key>
 
+    <key name="mouse-scroll-action" type="s">
+      <default>"source"</default>
+    </key>
   </schema>
 </schemalist>

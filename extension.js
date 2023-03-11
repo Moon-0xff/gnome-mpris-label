@@ -5,6 +5,7 @@ const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const Volume = imports.ui.status.volume;
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -51,6 +52,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.players = new Players();
 
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
+		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -134,7 +136,69 @@ class MprisLabel extends PanelMenu.Button {
 				return Clutter.EVENT_STOP;
 		}
 	}
+	_onScroll(event) {
+		const VOLUME_CONTROL = this.settings.get_string('mouse-scroll-action');
 
+		if (VOLUME_CONTROL == 'off')
+			return
+
+		if (event.is_pointer_emulated())
+			return Clutter.EVENT_PROPAGATE;
+
+		let delta = 0;
+		switch(event.get_scroll_direction()) {
+			case Clutter.ScrollDirection.UP: 
+				delta = 1;
+				break;
+			case Clutter.ScrollDirection.DOWN: 
+				delta = -1;
+				break;
+			case Clutter.ScrollDirection.SMOOTH: 
+				delta = -event.get_scroll_delta()[1];
+				delta = Math.clamp(-1,delta,1);
+				break;
+		}
+
+		const monitor = global.display.get_current_monitor(); //identify current monitor for OSD
+
+		if (VOLUME_CONTROL == 'source' && this.player){
+			// 	Implement source volume control here
+			return Clutter.EVENT_STOP;
+		}
+
+		if (VOLUME_CONTROL == 'global'){
+			let volumeControl = Volume.getMixerControl();
+			let volume = volumeControl.get_default_sink().volume;
+			let volumeMax = volumeControl.get_vol_max_norm(); 
+			let volumeStep = volumeMax / 30;
+			let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
+
+			volumeControl.get_default_sink().volume = newVolume;
+			volumeControl.get_default_sink().push_volume();
+			let volumeRatio = newVolume/volumeMax
+			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
+
+			Main.osdWindowManager.show(monitor, icon, undefined, volumeRatio);
+			return Clutter.EVENT_STOP;
+		}
+
+		return Clutter.EVENT_STOP;
+	}
+	_setVolumeIcon(volume) {
+		let volume_icon = 'audio-volume-high-symbolic';
+		switch (true) {
+			case (volume == 0):
+				volume_icon = 'audio-volume-muted-symbolic';
+				break
+			case (volume < 0.33):
+				volume_icon = 'audio-volume-low-symbolic';
+				break
+			case (volume < 0.67):
+				volume_icon = 'audio-volume-medium-symbolic';
+				break
+		}
+		return volume_icon
+	}
 	_activateButton(option) {
 		const value = this.settings.get_string(option);
 
