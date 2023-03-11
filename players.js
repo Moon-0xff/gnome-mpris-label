@@ -65,12 +65,9 @@ var Players = class Players {
 		let list = this.list;
 
 		if(AUTO_SWITCH_TO_MOST_RECENT){
-			if(this.activePlayers.length == 0){
-				if(REMOVE_TEXT_WHEN_PAUSED)
-					this.selected = null
-					
+			if(this.activePlayers.length == 0)
 				return this.selected
-			}
+
 			list = this.activePlayers;
 		}
 
@@ -186,11 +183,32 @@ class Player {
 
 		if ( matchedEntries.length === 0 && !(this.desktopEntry == null | undefined) )//backup method using DesktopEntry info
 			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry);
+
+		//de-nest matchedEntries. Gio.DesktopAppInfo.search returns a nested array
+		let entries = [];
+		matchedEntries.forEach(nest => {
+			nest.forEach(entry => {
+				entries.push(entry);
+			});
+		});
+		matchedEntries = entries;
 		
 		if ( matchedEntries.length > 0 )
-			this.desktopApp = matchedEntries[0][0];
+			this.desktopApp = this._matchRunningApps(matchedEntries)
 
 		this.icon = this.getIcon(this.desktopApp);
+	}
+	_matchRunningApps(matchedEntries){
+		const activeApps = Shell.AppSystem.get_default().get_running();
+
+		let match = matchedEntries[0];
+		matchedEntries.forEach(entry => {
+			let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
+			if (activeApps.includes(playerObject)){
+				match = entry
+			}
+		});
+		return match
 	}
 	update(){
 		this.metadata = this.proxy.Metadata;
@@ -226,7 +244,6 @@ class Player {
 	
 		let entry = Gio.DesktopAppInfo.new(desktopApp);
 		let gioIcon = entry.get_icon();
-		entry.launch;
 		icon.set_gicon(gioIcon);
 		return icon
 	}
