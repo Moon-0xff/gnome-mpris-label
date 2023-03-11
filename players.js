@@ -184,8 +184,16 @@ class Player {
 		if ( matchedEntries.length === 0 && !(this.desktopEntry == null | undefined) )//backup method using DesktopEntry info
 			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry);
 
-		//cross check search result Vs running apps
-		if ( matchedEntries[0].length > 0 )
+		//de-nest matchedEntries. Gio.DesktopAppInfo.search returns a nested array
+		let entries = [];
+		matchedEntries.forEach(nest => {
+			nest.forEach(entry => {
+				entries.push(entry);
+			});
+		});
+		matchedEntries = entries;
+		
+		if ( matchedEntries.length > 0 )
 			this.desktopApp = this._matchRunningApps(matchedEntries)
 
 		this.icon = this.getIcon(this.desktopApp);
@@ -193,11 +201,13 @@ class Player {
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
 
-		let match = matchedEntries[0][0];
-		matchedEntries[0].forEach(entry => {
+		let match = matchedEntries[0];
+		matchedEntries.forEach(entry => {
 			let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
-			if (activeApps.includes(playerObject))
+			if (activeApps.includes(playerObject)){
 				match = entry
+				return match
+			}
 		});
 		return match
 	}
