@@ -210,11 +210,21 @@ class MprisLabel extends PanelMenu.Button {
 		streamList.forEach(stream => {
 			let name = stream.get_name().toLowerCase();
 			let identity = player.identity.toLowerCase();
-			if (name.includes(identity) ||identity.includes(name)){
-				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - we have a match: '+name+'/'+identity);
+			if (name==identity){
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - exact match: '+name+'/'+identity);
 				stream_id = stream.get_id();
 			}
 		});
+		if (!stream_id){ //fuzzy match fallback
+			streamList.forEach(stream => {
+				let name = stream.get_name().toLowerCase();
+				let identity = player.identity.toLowerCase();
+				if (name.includes(identity) ||identity.includes(name)){
+					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - fuzzy match: '+name+'/'+identity);
+					stream_id = stream.get_id();
+				}
+			});
+		}
 		return stream_id
 	}
 	_setVolumeIcon(volume) {
