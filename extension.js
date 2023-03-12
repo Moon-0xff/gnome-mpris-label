@@ -145,25 +145,24 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 	_onScroll(event) {
-		const VOLUME_CONTROL = this.settings.get_string('volume-control-scheme');
-
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
 
-		let delta = 0;
-		switch(event.get_scroll_direction()) {
-			case Clutter.ScrollDirection.UP: 
-				delta = 1;
-				break;
-			case Clutter.ScrollDirection.DOWN: 
-				delta = -1;
-				break;
-			case Clutter.ScrollDirection.SMOOTH: 
-				delta = -event.get_scroll_delta()[1];
-				delta = Math.clamp(-1,delta,1);
-				break;
-		}
+		if (event.get_scroll_direction() == Clutter.ScrollDirection.SMOOTH){
+			let delta = -event.get_scroll_delta()[1];
+			delta = Math.clamp(-1,delta,1);
 
+			if(delta == 1)
+				this._activateButton('scroll-up-action');
+			else if(delta == -1)
+				this._activateButton('scroll-down-action');
+
+			return Clutter.EVENT_STOP;
+		}
+	}
+
+	_changeVolume(delta){
+		const VOLUME_CONTROL = this.settings.get_string('volume-control-scheme');
 		let stream = "";
 		let stream_name = undefined;
 		switch(VOLUME_CONTROL) {
@@ -190,8 +189,6 @@ class MprisLabel extends PanelMenu.Button {
 		let volumeRatio = newVolume/this._volumeMax;
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
 		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
-
-		return Clutter.EVENT_STOP;
 	}
 	_getStreamID(player){
 		const volumeControl = Volume.getMixerControl();
@@ -259,6 +256,12 @@ class MprisLabel extends PanelMenu.Button {
 			case 'next-player':
 				this.player = this.players.next();
 				this._refresh();
+				break;
+			case 'volume-up':
+				this._changeVolume(1);
+				break;
+			case 'volume-down':
+				this._changeVolume(-1);
 				break;
 		}
 	}
