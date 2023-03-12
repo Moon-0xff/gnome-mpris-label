@@ -175,17 +175,7 @@ class MprisLabel extends PanelMenu.Button {
 		const volumeMax = volumeControl.get_vol_max_norm(); 
 
 		if (VOLUME_CONTROL == 'source' && this.player){
-			const streamList = volumeControl.get_streams();
-			let stream_id = "";
-			streamList.forEach(stream => {
-				let name = stream.get_name().toLowerCase();
-				let identity = this.player.identity.toLowerCase();
-				if (name.includes(identity) ||identity.includes(name)){
-					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - we have a match: '+name+'/'+identity);
-					stream_id = stream.get_id();
-				}
-			});
-
+			const stream_id = this._getStreamID(this.player);
 			const stream = volumeControl.lookup_stream_id(stream_id);
 
 			let volume = stream.volume;
@@ -212,6 +202,20 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		return Clutter.EVENT_STOP;
+	}
+	_getStreamID(player){
+		const volumeControl = Volume.getMixerControl();
+		const streamList = volumeControl.get_streams();
+		let stream_id = "";
+		streamList.forEach(stream => {
+			let name = stream.get_name().toLowerCase();
+			let identity = player.identity.toLowerCase();
+			if (name.includes(identity) ||identity.includes(name)){
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - we have a match: '+name+'/'+identity);
+				stream_id = stream.get_id();
+			}
+		});
+		return stream_id
 	}
 	_setVolumeIcon(volume) {
 		let volume_icon = 'audio-volume-high-symbolic';
