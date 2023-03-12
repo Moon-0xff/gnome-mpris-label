@@ -325,9 +325,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
-		const VOLUME_CONTROL = this.settings.get_string('volume-control-scheme');
 
-		this.previousPlayer = this.player
 		this.players.updateActiveList();
 		this.player = this.players.pick();
 
