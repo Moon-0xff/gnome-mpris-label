@@ -52,6 +52,8 @@ class MprisLabel extends PanelMenu.Button {
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
 		this.volumeControl = Volume.getMixerControl();
+		this.volumeControl.connect("stream-added", this._getStream.bind(this));
+		this.volumeControl.connect("stream-removed",this._getStream.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -193,7 +195,11 @@ class MprisLabel extends PanelMenu.Button {
 		switch(VOLUME_CONTROL) {
 			case 'application':
 				if (this.player){
-					stream = this._getStream();
+					stream = this.stream;
+
+					if(!stream)
+						stream = this._getStream();
+
 					stream_name = this.player.identity;
 				}
 				else
@@ -241,7 +247,9 @@ class MprisLabel extends PanelMenu.Button {
 				}
 			});
 		}
-		return this.volumeControl.lookup_stream_id(stream_id);
+		this.stream = this.volumeControl.lookup_stream_id(stream_id);
+
+		return this.stream
 	}
 
 	_setVolumeIcon(volume) {
