@@ -31,11 +31,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
-		const LEFT_PADDING = this.settings.get_int('left-padding');
-		const RIGHT_PADDING = this.settings.get_int('right-padding');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
-		const SHOW_ICON = this.settings.get_string('show-icon');
 		const REPOSITION_DELAY = this.settings.get_int('reposition-delay');
 
 		this.box = new St.BoxLayout({
