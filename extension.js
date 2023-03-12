@@ -1,7 +1,7 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const {Shell,Clutter,Gio,GLib,GObject,St} = imports.gi;
+const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
@@ -171,7 +171,7 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 			case 'activate-player':
 				if(this.player)
-					this._activatePlayer();
+					this.player.activatePlayer();
 				break;
 			case 'open-menu':
 				this._buildMenu();
@@ -262,11 +262,6 @@ class MprisLabel extends PanelMenu.Button {
 				break
 		}
 		return volume_icon
-	}
-
-	_activatePlayer(){
-		let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
-		playerObject.activate();
 	}
 
 	_buildMenu(){
