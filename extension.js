@@ -145,10 +145,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 	_onScroll(event) {
-		const VOLUME_CONTROL = this.settings.get_string('mouse-scroll-action');
-
-		if (VOLUME_CONTROL == 'off')
-			return
+		const VOLUME_CONTROL = this.settings.get_string('volume-control-scheme');
 
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
@@ -170,7 +167,7 @@ class MprisLabel extends PanelMenu.Button {
 		let stream = "";
 		let stream_name = undefined;
 		switch(VOLUME_CONTROL) {
-			case 'source': 
+			case 'application':
 				if (this.player){
 					const stream_id = this._stream_id
 					stream = this._volumeControl.lookup_stream_id(stream_id);
@@ -332,7 +329,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
-		const VOLUME_CONTROL = this.settings.get_string('mouse-scroll-action');
+		const VOLUME_CONTROL = this.settings.get_string('volume-control-scheme');
 
 		this.previousPlayer = this.player
 		this.players.updateActiveList();

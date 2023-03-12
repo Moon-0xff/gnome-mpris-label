@@ -35,12 +35,6 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
-	addSubcategoryLabel(panelPage,'Mouse controls');
-	let buttonActions = {'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player','open app':'activate-player'};
-	let leftClickComboBox = addStringComboBox(panelPage,'left-click-action','Left click action:',buttonActions,undefined);
-	let middleClickComboBox = addStringComboBox(panelPage,'middle-click-action','Middle click action:',buttonActions,undefined);
-	let rightClickComboBox = addStringComboBox(panelPage,'right-click-action','Right click action:',buttonActions,undefined);
-	let mouseScrollComboBox = addStringComboBox(panelPage,'mouse-scroll-action','Mouse scroll action:',{'Global Volume':'global','Source Volume':'source','Disabled':'off'},undefined);
 
 	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
@@ -49,14 +43,6 @@ function buildPrefsWidget(){
 		settings.reset('extension-place');
 		settings.reset('reposition-delay');
 		settings.reset('reposition-on-button-press');
-		settings.reset('left-click-action');
-		settings.reset('middle-click-action');
-		settings.reset('right-click-action');
-		settings.reset('mouse-scroll-action');
-		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
-		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
-		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
-		mouseScrollComboBox.set_active_id(settings.get_string('mouse-scroll-action'));
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 	});
 
@@ -199,6 +185,43 @@ function buildPrefsWidget(){
 	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
 
 	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
+
+//controls page:
+	let controlsPage = buildGrid(shellVersion,settings);
+
+	position = 0;
+
+	let buttonActions = {
+		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track',
+		'next player':'next-player','open app':'activate-player','volume up':'volume-up','volume down':'volume-down'
+	};
+
+	addSubcategoryLabel(controlsPage,'Bindings');
+	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
+	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
+	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
+	let ScrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',buttonActions,undefined);
+	let ScrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',buttonActions,undefined);
+
+	addSubcategoryLabel(controlsPage,'Behaviour');
+	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
+
+	addButton(controlsPage,'Reset controls settings',() => {
+		settings.reset('left-click-action');
+		settings.reset('middle-click-action');
+		settings.reset('right-click-action');
+		settings.reset('scroll-up-action');
+		settings.reset('scroll-down-action');
+		settings.reset('volume-control-scheme');
+		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
+		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
+		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		ScrollUpComboBox.set_active_id(settings.get_string('scroll-up-action'));
+		ScrollDownComboBox.set_active_id(settings.get_string('scroll-down-action'));
+		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
+	});
+
+	prefsWidget.append_page(controlsPage, buildLabel('Controls'));
 
 	return prefsWidget
 }
