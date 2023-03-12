@@ -153,6 +153,43 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
+	_activateButton(option) {
+		const value = this.settings.get_string(option);
+
+		switch(value){
+			case 'play-pause':
+				if(this.player)
+					this.player.toggleStatus();
+				break;
+			case 'next-track':
+				if(this.player)
+					this.player.goNext();
+				break;
+			case 'prev-track':
+				if(this.player)
+					this.player.goPrevious();
+				break;
+			case 'activate-player':
+				if(this.player)
+					this._activatePlayer();
+				break;
+			case 'open-menu':
+				this._buildMenu();
+				this.menu.toggle();
+				break;
+			case 'next-player':
+				this.player = this.players.next();
+				this._refresh();
+				break;
+			case 'volume-up':
+				this._changeVolume(1);
+				break;
+			case 'volume-down':
+				this._changeVolume(-1);
+				break;
+		}
+	}
+
 	_changeVolume(delta){
 		const VOLUME_CONTROL = this.settings.get_string('volume-control-scheme');
 		let stream = "";
@@ -227,43 +264,6 @@ class MprisLabel extends PanelMenu.Button {
 		return volume_icon
 	}
 
-	_activateButton(option) {
-		const value = this.settings.get_string(option);
-
-		switch(value){
-			case 'play-pause':
-				if(this.player)
-					this.player.toggleStatus();
-				break;
-			case 'next-track':
-				if(this.player)
-					this.player.goNext();
-				break;
-			case 'prev-track':
-				if(this.player)
-					this.player.goPrevious();
-				break;
-			case 'activate-player':
-				if(this.player)
-					this._activatePlayer();
-				break;
-			case 'open-menu':
-				this._buildMenu();
-				this.menu.toggle();
-				break;
-			case 'next-player':
-				this.player = this.players.next();
-				this._refresh();
-				break;
-			case 'volume-up':
-				this._changeVolume(1);
-				break;
-			case 'volume-down':
-				this._changeVolume(-1);
-				break;
-		}
-	}
-	
 	_activatePlayer(){
 		let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
 		playerObject.activate();
