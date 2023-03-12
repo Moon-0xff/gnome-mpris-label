@@ -6,7 +6,6 @@ const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
-const { MixerSinkInput } = imports.gi.Gvc; //consider removing?
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -54,7 +53,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._volumeControl = Volume.getMixerControl();
 		this._volumeMax = this._volumeControl.get_vol_max_norm(); 
-		this._volumeStep = this._volumeMax / 30;
 		this._volumeControl.connect("stream-added", this._streamUpdated.bind(this));
 		this._volumeControl.connect("stream-removed", this._streamUpdated.bind(this));
 
