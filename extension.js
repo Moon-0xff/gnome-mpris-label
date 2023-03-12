@@ -56,8 +56,6 @@ class MprisLabel extends PanelMenu.Button {
 		this._volumeControl.connect("stream-added", this._streamUpdated.bind(this));
 		this._volumeControl.connect("stream-removed", this._streamUpdated.bind(this));
 
-		this._monitor = global.display.get_current_monitor(); //identify current monitor for OSD
-
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
@@ -186,13 +184,15 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 		}
 
+		let monitor = global.display.get_current_monitor(); //identify current monitor for OSD
+		let volumeStep = this._volumeMax / 30;
 		let volume = stream.volume;
-		let newVolume = Math.round(Math.clamp(0,volume+this._volumeStep*delta,this._volumeMax));
+		let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,this._volumeMax));
 		stream.volume = newVolume;
 		stream.push_volume();
 		let volumeRatio = newVolume/this._volumeMax;
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-		Main.osdWindowManager.show(this._monitor, icon, stream_name, volumeRatio);
+		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
 
 		return Clutter.EVENT_STOP;
 	}
