@@ -6,7 +6,7 @@ const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
-const { MixerSinkInput } = imports.gi.Gvc;
+const { MixerSinkInput } = imports.gi.Gvc; //consider removing?
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -58,8 +58,8 @@ class MprisLabel extends PanelMenu.Button {
 		this._volumeControl = Volume.getMixerControl();
 		this._volumeMax = this._volumeControl.get_vol_max_norm(); 
 		this._volumeStep = this._volumeMax / 30;
-		// this._volumeControl.connect("stream-added", this._streamAdded.bind(this));
-		// this._volumeControl.connect("stream-removed", this._streamRemoved.bind(this));
+		this._volumeControl.connect("stream-added", this._streamUpdated.bind(this));
+		this._volumeControl.connect("stream-removed", this._streamUpdated.bind(this));
 
 		this._monitor = global.display.get_current_monitor(); //identify current monitor for OSD
 
@@ -145,13 +145,12 @@ class MprisLabel extends PanelMenu.Button {
 				return Clutter.EVENT_STOP;
 		}
 	}
-	// _streamAdded(control, id){
-	// 	const stream = control.lookup_stream_id(id);
-	// 	let name = stream.get_name();
-	// 	let description = stream.get_description();
-	// 	let icon = stream.get_icon_name();
-	// 	log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - id/name/description: '+id+' / '+name+' / '+description+' / '+icon);
-	// }
+	_streamUpdated(control, id){
+		if (this.player){
+			this._stream_id = this._getStreamID(this.player);
+			log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - stream list updated.'+this.player.identity+' now stream #'+this._stream_id);
+		}
+	}
 	_onScroll(event) {
 		const VOLUME_CONTROL = this.settings.get_string('mouse-scroll-action');
 
@@ -175,14 +174,12 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 		}
 
-
-
 		let stream = "";
 		let stream_name = undefined;
 		switch(VOLUME_CONTROL) {
 			case 'source': 
 				if (this.player){
-					const stream_id = this._getStreamID(this.player);
+					const stream_id = this._stream_id
 					stream = this._volumeControl.lookup_stream_id(stream_id);
 					stream_name = this.player.identity;
 				}
@@ -212,8 +209,8 @@ class MprisLabel extends PanelMenu.Button {
 			let name = stream.get_name().toLowerCase();
 			let identity = player.identity.toLowerCase();
 			if (name==identity){
-				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - exact match: '+name+'/'+identity);
 				stream_id = stream.get_id();
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - exact match: '+name+' (stream #'+stream_id+')');
 			}
 		});
 		if (!stream_id){ //fuzzy match fallback
@@ -221,8 +218,8 @@ class MprisLabel extends PanelMenu.Button {
 				let name = stream.get_name().toLowerCase();
 				let identity = player.identity.toLowerCase();
 				if (name.includes(identity) ||identity.includes(name)){
-					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - fuzzy match: '+name+'/'+identity);
 					stream_id = stream.get_id();
+					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - fuzzy match: '+name+'/'+identity+' (stream #'+stream_id+')');
 				}
 			});
 		}
@@ -340,9 +337,19 @@ class MprisLabel extends PanelMenu.Button {
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
+		const VOLUME_CONTROL = this.settings.get_string('mouse-scroll-action');
 
+		this.previousPlayer = this.player
 		this.players.updateActiveList();
 		this.player = this.players.pick();
+
+		if (this.player){
+			if (this.previousPlayer !=this.player){//update streamID if player changed
+				this._stream_id = this._getStreamID(this.player);
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - player changed, now '+this.player.identity+' (stream #'+this._stream_id+')');
+			}
+		}
+
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
@@ -350,7 +357,6 @@ class MprisLabel extends PanelMenu.Button {
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
-
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
