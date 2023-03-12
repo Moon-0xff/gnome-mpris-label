@@ -6,6 +6,7 @@ const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
+const { MixerSinkInput } = imports.gi.Gvc;
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -53,6 +54,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
+
+		// this._control = Volume.getMixerControl();
+		// this._control.connect("stream-added", this._streamAdded.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -136,6 +140,13 @@ class MprisLabel extends PanelMenu.Button {
 				return Clutter.EVENT_STOP;
 		}
 	}
+	// _streamAdded(control, id){
+	// 	const stream = control.lookup_stream_id(id);
+	// 	let name = stream.get_name();
+	// 	let description = stream.get_description();
+	// 	let icon = stream.get_icon_name();
+	// 	log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - id/name/description: '+id+' / '+name+' / '+description+' / '+icon);
+	// }
 	_onScroll(event) {
 		const VOLUME_CONTROL = this.settings.get_string('mouse-scroll-action');
 
@@ -160,24 +171,42 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		const monitor = global.display.get_current_monitor(); //identify current monitor for OSD
+		const volumeControl = Volume.getMixerControl();
+		const volumeMax = volumeControl.get_vol_max_norm(); 
 
 		if (VOLUME_CONTROL == 'source' && this.player){
-			// 	Implement source volume control here
+			const streamList = volumeControl.get_streams();
+			let stream_id = "";
+			streamList.forEach(stream => {
+				let name = stream.get_name().toLowerCase();
+				let identity = this.player.identity.toLowerCase();
+				if (name.includes(identity) ||identity.includes(name)){
+					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - we have a match: '+name+'/'+identity);
+					stream_id = stream.get_id();
+				}
+			});
+
+			const stream = volumeControl.lookup_stream_id(stream_id);
+
+			let volume = stream.volume;
+			let volumeStep = volumeMax / 30;
+			let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
+			stream.volume = newVolume;
+			stream.push_volume();
+			let volumeRatio = newVolume/volumeMax;
+			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
+			Main.osdWindowManager.show(monitor, icon, this.player.identity, volumeRatio);
 			return Clutter.EVENT_STOP;
 		}
 
 		if (VOLUME_CONTROL == 'global'){
-			let volumeControl = Volume.getMixerControl();
 			let volume = volumeControl.get_default_sink().volume;
-			let volumeMax = volumeControl.get_vol_max_norm(); 
 			let volumeStep = volumeMax / 30;
 			let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
-
 			volumeControl.get_default_sink().volume = newVolume;
 			volumeControl.get_default_sink().push_volume();
-			let volumeRatio = newVolume/volumeMax
+			let volumeRatio = newVolume/volumeMax;
 			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-
 			Main.osdWindowManager.show(monitor, icon, undefined, volumeRatio);
 			return Clutter.EVENT_STOP;
 		}
