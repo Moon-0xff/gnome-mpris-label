@@ -173,34 +173,33 @@ class MprisLabel extends PanelMenu.Button {
 		const monitor = global.display.get_current_monitor(); //identify current monitor for OSD
 		const volumeControl = Volume.getMixerControl();
 		const volumeMax = volumeControl.get_vol_max_norm(); 
+		const volumeStep = volumeMax / 30;
 
-		if (VOLUME_CONTROL == 'source' && this.player){
-			const stream_id = this._getStreamID(this.player);
-			const stream = volumeControl.lookup_stream_id(stream_id);
-
-			let volume = stream.volume;
-			let volumeStep = volumeMax / 30;
-			let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
-			stream.volume = newVolume;
-			stream.push_volume();
-			let volumeRatio = newVolume/volumeMax;
-			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-			Main.osdWindowManager.show(monitor, icon, this.player.identity, volumeRatio);
-			return Clutter.EVENT_STOP;
+		let stream = "";
+		let stream_name = undefined;
+		switch(VOLUME_CONTROL) {
+			case 'source': 
+				if (this.player){
+					const stream_id = this._getStreamID(this.player);
+					stream = volumeControl.lookup_stream_id(stream_id);
+					stream_name = this.player.identity;
+				}
+				else
+					return
+				break;
+			case 'global': 
+				stream = volumeControl.get_default_sink();
+				break;
 		}
 
-		if (VOLUME_CONTROL == 'global'){
-			let volume = volumeControl.get_default_sink().volume;
-			let volumeStep = volumeMax / 30;
-			let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
-			volumeControl.get_default_sink().volume = newVolume;
-			volumeControl.get_default_sink().push_volume();
-			let volumeRatio = newVolume/volumeMax;
-			const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-			Main.osdWindowManager.show(monitor, icon, undefined, volumeRatio);
-			return Clutter.EVENT_STOP;
-		}
-
+		let volume = stream.volume;
+		let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
+		stream.volume = newVolume;
+		stream.push_volume();
+		let volumeRatio = newVolume/volumeMax;
+		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
+		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
+		
 		return Clutter.EVENT_STOP;
 	}
 	_getStreamID(player){
