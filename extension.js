@@ -336,6 +336,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
+
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
