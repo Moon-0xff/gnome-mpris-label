@@ -51,10 +51,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
-		this._volumeControl = Volume.getMixerControl();
-		this._volumeMax = this._volumeControl.get_vol_max_norm(); 
-		this._volumeControl.connect("stream-added", this._streamUpdated.bind(this));
-		this._volumeControl.connect("stream-removed", this._streamUpdated.bind(this));
+		this.volumeControl = Volume.getMixerControl();
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -138,12 +135,7 @@ class MprisLabel extends PanelMenu.Button {
 				return Clutter.EVENT_STOP;
 		}
 	}
-	_streamUpdated(control, id){
-		if (this.player){
-			this._stream_id = this._getStreamID(this.player);
-			log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - stream list updated.'+this.player.identity+' now stream #'+this._stream_id);
-		}
-	}
+
 	_onScroll(event) {
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
@@ -168,35 +160,39 @@ class MprisLabel extends PanelMenu.Button {
 		switch(VOLUME_CONTROL) {
 			case 'application':
 				if (this.player){
-					const stream_id = this._stream_id
-					stream = this._volumeControl.lookup_stream_id(stream_id);
+					stream = this._getStream();
 					stream_name = this.player.identity;
 				}
 				else
 					return
 				break;
 			case 'global': 
-				stream = this._volumeControl.get_default_sink();
+				stream = this.volumeControl.get_default_sink();
 				break;
 		}
 
-		let monitor = global.display.get_current_monitor(); //identify current monitor for OSD
-		let volumeStep = this._volumeMax / 30;
+		let max = this.volumeControl.get_vol_max_norm()
+		let step = max / 30;
 		let volume = stream.volume;
-		let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,this._volumeMax));
+
+		let newVolume = volume + step * delta;
+		newVolume = Math.round(Math.clamp(0,newVolume,max));
+
 		stream.volume = newVolume;
 		stream.push_volume();
-		let volumeRatio = newVolume/this._volumeMax;
+
+		let volumeRatio = newVolume/max;
+		let monitor = global.display.get_current_monitor(); //identify current monitor for OSD
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
 		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
 	}
-	_getStreamID(player){
-		const volumeControl = Volume.getMixerControl();
-		const streamList = volumeControl.get_streams();
+
+	_getStream(){
+		const streamList = this.volumeControl.get_streams();
 		let stream_id = "";
 		streamList.forEach(stream => {
 			let name = stream.get_name().toLowerCase();
-			let identity = player.identity.toLowerCase();
+			let identity = this.player.identity.toLowerCase();
 			if (name==identity){
 				stream_id = stream.get_id();
 				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - exact match: '+name+' (stream #'+stream_id+')');
@@ -205,15 +201,16 @@ class MprisLabel extends PanelMenu.Button {
 		if (!stream_id){ //fuzzy match fallback
 			streamList.forEach(stream => {
 				let name = stream.get_name().toLowerCase();
-				let identity = player.identity.toLowerCase();
+				let identity = this.player.identity.toLowerCase();
 				if (name.includes(identity) ||identity.includes(name)){
 					stream_id = stream.get_id();
 					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - fuzzy match: '+name+'/'+identity+' (stream #'+stream_id+')');
 				}
 			});
 		}
-		return stream_id
+		return this.volumeControl.lookup_stream_id(stream_id);
 	}
+
 	_setVolumeIcon(volume) {
 		let volume_icon = 'audio-volume-high-symbolic';
 		switch (true) {
@@ -229,6 +226,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 		return volume_icon
 	}
+
 	_activateButton(option) {
 		const value = this.settings.get_string(option);
 
@@ -337,13 +335,6 @@ class MprisLabel extends PanelMenu.Button {
 		this.previousPlayer = this.player
 		this.players.updateActiveList();
 		this.player = this.players.pick();
-
-		if (this.player){
-			if (this.previousPlayer !=this.player){//update streamID if player changed
-				this._stream_id = this._getStreamID(this.player);
-				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js - player changed, now '+this.player.identity+' (stream #'+this._stream_id+')');
-			}
-		}
 
 		this._setText();
 		this._setIcon();
