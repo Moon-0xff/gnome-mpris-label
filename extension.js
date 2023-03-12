@@ -55,8 +55,13 @@ class MprisLabel extends PanelMenu.Button {
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
-		// this._control = Volume.getMixerControl();
-		// this._control.connect("stream-added", this._streamAdded.bind(this));
+		this._volumeControl = Volume.getMixerControl();
+		this._volumeMax = this._volumeControl.get_vol_max_norm(); 
+		this._volumeStep = this._volumeMax / 30;
+		// this._volumeControl.connect("stream-added", this._streamAdded.bind(this));
+		// this._volumeControl.connect("stream-removed", this._streamRemoved.bind(this));
+
+		this._monitor = global.display.get_current_monitor(); //identify current monitor for OSD
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -170,10 +175,7 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 		}
 
-		const monitor = global.display.get_current_monitor(); //identify current monitor for OSD
-		const volumeControl = Volume.getMixerControl();
-		const volumeMax = volumeControl.get_vol_max_norm(); 
-		const volumeStep = volumeMax / 30;
+
 
 		let stream = "";
 		let stream_name = undefined;
@@ -181,25 +183,25 @@ class MprisLabel extends PanelMenu.Button {
 			case 'source': 
 				if (this.player){
 					const stream_id = this._getStreamID(this.player);
-					stream = volumeControl.lookup_stream_id(stream_id);
+					stream = this._volumeControl.lookup_stream_id(stream_id);
 					stream_name = this.player.identity;
 				}
 				else
 					return
 				break;
 			case 'global': 
-				stream = volumeControl.get_default_sink();
+				stream = this._volumeControl.get_default_sink();
 				break;
 		}
 
 		let volume = stream.volume;
-		let newVolume = Math.round(Math.clamp(0,volume+volumeStep*delta,volumeMax));
+		let newVolume = Math.round(Math.clamp(0,volume+this._volumeStep*delta,this._volumeMax));
 		stream.volume = newVolume;
 		stream.push_volume();
-		let volumeRatio = newVolume/volumeMax;
+		let volumeRatio = newVolume/this._volumeMax;
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
-		
+		Main.osdWindowManager.show(this._monitor, icon, stream_name, volumeRatio);
+
 		return Clutter.EVENT_STOP;
 	}
 	_getStreamID(player){
