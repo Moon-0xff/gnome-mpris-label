@@ -189,25 +189,17 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_changeVolume(delta){
-		const VOLUME_CONTROL = this.settings.get_string('volume-control-scheme');
-		let stream = "";
-		let stream_name = undefined;
-		switch(VOLUME_CONTROL) {
-			case 'application':
-				if (this.player){
-					stream = this.stream;
+		let stream = this.volumeControl.get_default_sink();
+		let stream_name = 'System Volume (Global)';
 
-					if(!stream)
-						stream = this._getStream();
+		const CONTROL_SCHEME = this.settings.get_string('volume-control-scheme');
 
-					stream_name = this.player.identity;
-				}
-				else
-					return
-				break;
-			case 'global': 
-				stream = this.volumeControl.get_default_sink();
-				break;
+		if(CONTROL_SCHEME == 'application' && this.player){
+			stream = this.stream;
+			if (!stream)
+				stream = this._getStream()
+
+			stream_name = this.player.identity;
 		}
 
 		let max = this.volumeControl.get_vol_max_norm()
