@@ -189,7 +189,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_changeVolume(delta){
-		let stream = this.volumeControl.get_default_sink();
+		let stream = [];
+		stream[0] = this.volumeControl.get_default_sink();
 		let stream_name = 'System Volume (Global)';
 
 		const CONTROL_SCHEME = this.settings.get_string('volume-control-scheme');
@@ -204,13 +205,14 @@ class MprisLabel extends PanelMenu.Button {
 
 		let max = this.volumeControl.get_vol_max_norm()
 		let step = max / 30;
-		let volume = stream.volume;
-
+		let volume = stream[0].volume;
 		let newVolume = volume + step * delta;
 		newVolume = Math.round(Math.clamp(0,newVolume,max));
 
-		stream.volume = newVolume;
-		stream.push_volume();
+		stream.forEach(stream => {
+			stream.volume = newVolume;
+			stream.push_volume();
+		});
 
 		let volumeRatio = newVolume/max;
 		let monitor = global.display.get_current_monitor(); //identify current monitor for OSD
@@ -223,17 +225,15 @@ class MprisLabel extends PanelMenu.Button {
 			return
 
 		const streamList = this.volumeControl.get_streams();
-		let stream_id;
+		this.stream = [];
 
 		streamList.forEach(stream => {
 			if(
 				stream.get_name().match(new RegExp(this.player.identity,"i")) ||
 				this.player.identity.match(new RegExp(stream.get_name(),"i"))
 			)
-					stream_id = stream.get_id();
+				this.stream.push(stream);
 		});
-
-		this.stream = this.volumeControl.lookup_stream_id(stream_id);
 
 		return this.stream
 	}
