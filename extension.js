@@ -226,8 +226,11 @@ class MprisLabel extends PanelMenu.Button {
 		let stream_id;
 
 		streamList.forEach(stream => {
-			if(stream.get_name().match(new RegExp(this.player.identity,"i")))
-				stream_id = stream.get_id();
+			if(
+				stream.get_name().match(new RegExp(this.player.identity,"i")) ||
+				this.player.identity.match(new RegExp(stream.get_name(),"i"))
+			)
+					stream_id = stream.get_id();
 		});
 
 		this.stream = this.volumeControl.lookup_stream_id(stream_id);
