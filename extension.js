@@ -228,6 +228,14 @@ class MprisLabel extends PanelMenu.Button {
 		this.stream = [];
 
 		streamList.forEach(stream => {
+			if(	stream.get_name().toLowerCase() == this.player.identity.toLowerCase())
+				this.stream.push(stream);
+		});
+
+		if (this.stream.length)
+			return this.stream
+
+		streamList.forEach(stream => {
 			if(
 				stream.get_name().match(new RegExp(this.player.identity,"i")) ||
 				this.player.identity.match(new RegExp(stream.get_name(),"i"))
