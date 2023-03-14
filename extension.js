@@ -226,12 +226,11 @@ class MprisLabel extends PanelMenu.Button {
 		let volumeRatio = newVolume/max;
 		let monitor = global.display.get_current_monitor(); //identify current monitor for OSD
 
-		if(delta == 0){//toggel mute
+		if(delta == 0){//toggle mute
 			stream.forEach(stream => {
-				if(!stream.is_muted)
-					volumeRatio = 0 //set mute icon
-
 				stream.change_is_muted(!stream.is_muted);
+				if(!stream.is_muted) //set mute icon
+					volumeRatio = 0
 			});
 		}
 
