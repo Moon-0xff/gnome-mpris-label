@@ -201,7 +201,7 @@ function buildPrefsWidget(){
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
 	let scrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',buttonActions,undefined);
-	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action',buttonActions,undefined);
+	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',buttonActions,undefined);
 
 	//the scroll comboboxes are just for show (for now). Setting the sensitivity to OFF makes them non-interactive and gray.
 	scrollUpComboBox.set_button_sensitivity(Gtk.SensitivityType.OFF);
