@@ -91,7 +91,7 @@
     </key>
 
     <key name="middle-click-action" type="s">
-      <default>"next-track"</default>
+      <default>"volume-mute"</default>
     </key>
 
     <key name="right-click-action" type="s">
