@@ -206,6 +206,11 @@ class MprisLabel extends PanelMenu.Button {
 		let max = this.volumeControl.get_vol_max_norm()
 		let step = max / 30;
 		let volume = stream[0].volume;
+		stream.forEach(stream => {//if multiple stream, use the lowest as base reference
+			if (stream.volume < volume)
+				volume = stream.volume;
+		});
+
 		let newVolume = volume + step * delta;
 		newVolume = Math.round(Math.clamp(0,newVolume,max));
 
