@@ -197,7 +197,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(CONTROL_SCHEME == 'application' && this.player){
 			stream = this.stream;
-			if (!stream)
+			if (stream.length == 0)
 				stream = this._getStream()
 
 			stream_name = this.player.identity;
@@ -232,7 +232,7 @@ class MprisLabel extends PanelMenu.Button {
 				this.stream.push(stream);
 		});
 
-		if (this.stream.length)
+		if (this.stream.length > 0)
 			return this.stream
 
 		streamList.forEach(stream => {
