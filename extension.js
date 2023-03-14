@@ -145,7 +145,8 @@ class MprisLabel extends PanelMenu.Button {
 		if (event.get_scroll_direction() == Clutter.ScrollDirection.SMOOTH){
 			let delta = -event.get_scroll_delta()[1];
 			delta = Math.clamp(-1,delta,1);
-			this._changeVolume(delta);
+			if(!delta ==0)
+				this._changeVolume(delta)
 
 			return Clutter.EVENT_STOP;
 		}
@@ -185,6 +186,9 @@ class MprisLabel extends PanelMenu.Button {
 			case 'volume-down':
 				this._changeVolume(-1);
 				break;
+			case 'volume-mute':
+				this._changeVolume(0);
+				break;
 		}
 	}
 
@@ -221,6 +225,16 @@ class MprisLabel extends PanelMenu.Button {
 
 		let volumeRatio = newVolume/max;
 		let monitor = global.display.get_current_monitor(); //identify current monitor for OSD
+
+		if(delta == 0){//toggel mute
+			stream.forEach(stream => {
+				if(!stream.is_muted)
+					volumeRatio = 0 //set mute icon
+
+				stream.change_is_muted(!stream.is_muted);
+			});
+		}
+
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
 		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
 	}
