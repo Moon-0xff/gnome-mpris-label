@@ -91,11 +91,11 @@
     </key>
 
     <key name="middle-click-action" type="s">
-      <default>"volume-mute"</default>
+      <default>"play-pause"</default>
     </key>
 
     <key name="right-click-action" type="s">
-      <default>"play-pause"</default>
+      <default>"activate-player"</default>
     </key>
 
     <key name="volume-control-scheme" type="s">

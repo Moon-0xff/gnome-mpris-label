@@ -145,7 +145,8 @@ class MprisLabel extends PanelMenu.Button {
 		if (event.get_scroll_direction() == Clutter.ScrollDirection.SMOOTH){
 			let delta = -event.get_scroll_delta()[1];
 			delta = Math.clamp(-1,delta,1);
-			if(!delta ==0)
+
+			if(!delta == 0)
 				this._changeVolume(delta)
 
 			return Clutter.EVENT_STOP;
