@@ -91,11 +91,23 @@
     </key>
 
     <key name="middle-click-action" type="s">
-      <default>"next-track"</default>
+      <default>"play-pause"</default>
     </key>
 
     <key name="right-click-action" type="s">
-      <default>"play-pause"</default>
+      <default>"activate-player"</default>
+    </key>
+
+    <key name="volume-control-scheme" type="s">
+      <default>"application"</default>
+    </key>
+
+    <key name="scroll-up-action" type="s">
+      <default>"volume-up"</default>
+    </key>
+
+    <key name="scroll-down-action" type="s">
+      <default>"volume-down"</default>
     </key>
 
   </schema>

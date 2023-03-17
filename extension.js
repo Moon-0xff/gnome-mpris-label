@@ -1,10 +1,11 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const {Shell,Clutter,Gio,GLib,GObject,St} = imports.gi;
+const {Clutter,Gio,GLib,GObject,St} = imports.gi;
 const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const Volume = imports.ui.status.volume;
 
 const { Players } = CurrentExtension.imports.players;
 const { buildLabel } = CurrentExtension.imports.label;
@@ -29,11 +30,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
-		const LEFT_PADDING = this.settings.get_int('left-padding');
-		const RIGHT_PADDING = this.settings.get_int('right-padding');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
-		const SHOW_ICON = this.settings.get_string('show-icon');
 		const REPOSITION_DELAY = this.settings.get_int('reposition-delay');
 
 		this.box = new St.BoxLayout({
@@ -51,6 +49,11 @@ class MprisLabel extends PanelMenu.Button {
 		this.players = new Players();
 
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
+		this.connect('scroll-event', (_a, event) => this._onScroll(event));
+
+		this.volumeControl = Volume.getMixerControl();
+		this.volumeControl.connect("stream-added", this._getStream.bind(this));
+		this.volumeControl.connect("stream-removed",this._getStream.bind(this));
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
@@ -135,6 +138,21 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
+	_onScroll(event) {
+		if (event.is_pointer_emulated())
+			return Clutter.EVENT_PROPAGATE;
+
+		if (event.get_scroll_direction() == Clutter.ScrollDirection.SMOOTH){
+			let delta = -event.get_scroll_delta()[1];
+			delta = Math.clamp(-1,delta,1);
+
+			if(!delta == 0)
+				this._changeVolume(delta)
+
+			return Clutter.EVENT_STOP;
+		}
+	}
+
 	_activateButton(option) {
 		const value = this.settings.get_string(option);
 
@@ -153,7 +171,7 @@ class MprisLabel extends PanelMenu.Button {
 				break;
 			case 'activate-player':
 				if(this.player)
-					this._activatePlayer();
+					this.player.activatePlayer();
 				break;
 			case 'open-menu':
 				this._buildMenu();
@@ -163,12 +181,106 @@ class MprisLabel extends PanelMenu.Button {
 				this.player = this.players.next();
 				this._refresh();
 				break;
+			case 'volume-up':
+				this._changeVolume(1);
+				break;
+			case 'volume-down':
+				this._changeVolume(-1);
+				break;
+			case 'volume-mute':
+				this._changeVolume(0);
+				break;
 		}
 	}
-	
-	_activatePlayer(){
-		let playerObject = Shell.AppSystem.get_default().lookup_app(this.player.desktopApp);
-		playerObject.activate();
+
+	_changeVolume(delta){
+		let stream = [];
+		stream[0] = this.volumeControl.get_default_sink();
+		let stream_name = 'System Volume (Global)';
+
+		const CONTROL_SCHEME = this.settings.get_string('volume-control-scheme');
+
+		if(CONTROL_SCHEME == 'application' && this.player){
+			if(this.stream.length == 0)
+				this._getStream();
+
+			if (this.stream.length > 0){
+				stream = this.stream;
+				stream_name = this.player.identity;
+			}
+		}
+
+		let max = this.volumeControl.get_vol_max_norm()
+		let step = max / 30;
+		let volume = stream[0].volume;
+		stream.forEach(stream => {//if multiple stream, use the lowest as base reference
+			if (stream.volume < volume)
+				volume = stream.volume;
+		});
+
+		let newVolume = volume + step * delta;
+		newVolume = Math.round(Math.clamp(0,newVolume,max));
+
+		stream.forEach(stream => {
+			stream.volume = newVolume;
+			stream.push_volume();
+		});
+
+		let volumeRatio = newVolume/max;
+		let monitor = global.display.get_current_monitor(); //identify current monitor for OSD
+
+		if(delta == 0){//toggle mute
+			stream.forEach(stream => {
+				stream.change_is_muted(!stream.is_muted);
+				if(!stream.is_muted) //set mute icon
+					volumeRatio = 0
+			});
+		}
+
+		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
+		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
+	}
+
+	_getStream(){
+		if(!this.player || !this.player.identity)
+			return
+
+		const streamList = this.volumeControl.get_streams();
+		this.stream = [];
+
+		streamList.forEach(stream => {
+			if(stream.get_name() && stream.get_name().toLowerCase() == this.player.identity.toLowerCase())
+				this.stream.push(stream);
+		});
+
+		if (this.stream.length > 0)
+			return this.stream
+
+		streamList.forEach(stream => {
+			if(
+				stream.get_name().match(new RegExp(this.player.identity,"i")) ||
+				this.player.identity.match(new RegExp(stream.get_name(),"i"))
+			)
+				this.stream.push(stream);
+		});
+
+		return this.stream
+	}
+
+	_setVolumeIcon(volume) {
+		let volume_icon = 'audio-volume-high-symbolic';
+		switch (true) {
+			case (volume == 0):
+				volume_icon = 'audio-volume-muted-symbolic';
+				break
+			case (volume < 0.33):
+				volume_icon = 'audio-volume-low-symbolic';
+				break
+			case (volume < 0.67):
+				volume_icon = 'audio-volume-medium-symbolic';
+				break
+		}
+		return volume_icon
 	}
 
 	_buildMenu(){
@@ -233,8 +345,12 @@ class MprisLabel extends PanelMenu.Button {
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 
+		let prevPlayer = this.player;
 		this.players.updateActiveList();
 		this.player = this.players.pick();
+		if(this.player != prevPlayer)
+			this._getStream();
+
 		this._setText();
 		this._setIcon();
 		this._removeTimeout();
