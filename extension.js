@@ -201,11 +201,13 @@ class MprisLabel extends PanelMenu.Button {
 		const CONTROL_SCHEME = this.settings.get_string('volume-control-scheme');
 
 		if(CONTROL_SCHEME == 'application' && this.player){
-			stream = this.stream;
-			if (stream.length == 0)
-				stream = this._getStream()
+			if(this.stream.length == 0)
+				this._getStream();
 
-			stream_name = this.player.identity;
+			if (this.stream.length > 0){
+				stream = this.stream;
+				stream_name = this.player.identity;
+			}
 		}
 
 		let max = this.volumeControl.get_vol_max_norm()
@@ -240,14 +242,14 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_getStream(){
-		if(!this.player)
+		if(!this.player || !this.player.identity)
 			return
 
 		const streamList = this.volumeControl.get_streams();
 		this.stream = [];
 
 		streamList.forEach(stream => {
-			if(	stream.get_name().toLowerCase() == this.player.identity.toLowerCase())
+			if(stream.get_name() && stream.get_name().toLowerCase() == this.player.identity.toLowerCase())
 				this.stream.push(stream);
 		});
 
