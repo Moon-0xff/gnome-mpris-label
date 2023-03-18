@@ -55,7 +55,6 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(labelPage,'Behaviour');
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
 	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
 	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
@@ -102,7 +101,7 @@ function buildPrefsWidget(){
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
-		settings.reset('remove-remaster-text');
+		settings.reset('remove-filtered-text');
 		settings.reset('divider-string');
 		settings.reset('first-field');
 		settings.reset('second-field');
@@ -163,6 +162,43 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
+	addSubcategoryLabel(filtersPage,'Filter "Additional information" label segments:');
+	let labelfilterlistEntry = new Gtk.Entry({ visible: true });
+	const presentTheExamples = "Examples of \"Additional information\" segments, also the ones filtered by default:\n"; //splitted this lengthy explanation in multiple lines
+	const theDefaultExamples = "\tExample - 2023 Remastered\n\tExample - Featuring SomeArtist\n\tExample (feat. SomeArtist)\n\tExample (2023 Mix)\n";
+	const moreExplanation = "\nThe targeted segments are defined in code as:\n\t \"a substring enclosed by parentheses or between the end of the string and a hyphen\"\n";
+	const addMore = "\nDepending on your taste, you might want to add more filters to this list, like \"Live\" or \"Recorded\"\n";
+	const regexExplanation = "\nRegex rules apply. Regex knowledge isn't required to populate this entry, but special/graphical characters might require escaping\n";
+	const alphanumeric = "\nIf you limit your entry to alphanumeric characters you shouldn't have any problems";
+	labelfilterlistEntry.set_tooltip_text(presentTheExamples + theDefaultExamples + moreExplanation + addMore + regexExplanation + alphanumeric);
+	filtersPage.attach(labelfilterlistEntry,0,position,1,1);
+	filtersPage._settings.bind('additional-info-subregex',labelfilterlistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	labelfilterlistEntry.set_placeholder_text('Separate entries with pipe characters');
+	position++;
+
+	addSubcategoryLabel(filtersPage,"Regex filter (for each field):");
+	let regexFilterEntry = new Gtk.Entry({ visible: true });
+	filtersPage._settings.bind('user-regex-filter',regexFilterEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	regexFilterEntry.set_placeholder_text('Regex is compiled for Javascript(gjs)');
+	filtersPage.attach(regexFilterEntry,0,position,1,1);
+	filtersPage._settings.connect('changed::user-regex-filter', () => {
+		try {
+			new RegExp(filtersPage._settings.get_string('user-regex-filter',"i"));
+		}
+		catch(e){
+			let iconTheme = new Gtk.IconTheme();
+			let gdkIcon = iconTheme.load_icon('dialog-warning',16,Gtk.IconLookupFlags.USE_BUILTIN);
+			regexFilterEntry.primary_icon_gicon = gdkIcon;
+		}
+
+	});
+	position++;
+
+	let warning = addLabel(filtersPage,"<u><b>Warning:</b></u> badly or maliciously formed regexes can seriously mess with your system");
+	warning.use_markup = true;
+	position++;
+
+
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
 		filtersPageSubGrid.margin = 0;
@@ -179,6 +215,8 @@ function buildPrefsWidget(){
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
+		settings.reset('additional-info-subregex');
+		settings.reset('user-regex-filter');
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment
@@ -281,6 +319,7 @@ function addLabel(widget,labelstring,labeltooltip){
 		thisLabel.set_tooltip_text(labeltooltip)
 
 	widget.attach(thisLabel,0,position,1,1);
+	return thisLabel
 }
 
 function buildStringComboBox(settings,setting,options){
@@ -354,20 +393,20 @@ function buildLabel(labelstring){ //don't confuse with label.js buildLabel
 
 function playersToString(){
 	const dBusInterface = `
-		<node>
-			<interface name="org.freedesktop.DBus">
-				<method name="ListNames">
-					<arg direction="out" type="as"/>
-				</method>
-			</interface>
-		</node>`
+	<node>
+		<interface name="org.freedesktop.DBus">
+			<method name="ListNames">
+				<arg direction="out" type="as"/>
+			</method>
+		</interface>
+	</node>`
 
-		const entryInterface = `
-		<node>
-			<interface name="org.mpris.MediaPlayer2">
-				<property name="Identity" type="s" access="read"/>
-			</interface>
-		</node>`
+	const entryInterface = `
+	<node>
+		<interface name="org.mpris.MediaPlayer2">
+			<property name="Identity" type="s" access="read"/>
+		</interface>
+	</node>`
 		
 	const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	const dBusProxy = dBusProxyWrapper(Gio.DBus.session,'org.freedesktop.DBus','/org/freedesktop/DBus');

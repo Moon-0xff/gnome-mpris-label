@@ -30,10 +30,6 @@
       <default>"＿"</default>
     </key>
 
-    <key name="remove-remaster-text" type="b">
-      <default>true</default>
-    </key>
-
     <key name="divider-string" type="s">
       <default>" | "</default>
     </key>
@@ -84,6 +80,14 @@
 
     <key name="use-whitelisted-sources-only" type="b">
       <default>false</default>
+    </key>
+
+    <key name="additional-info-subregex" type="s">
+      <default>"remaster|mix|featuring|feat\\."</default>
+    </key>
+
+    <key name="user-regex-filter" type="s">
+      <default>""</default>
     </key>
 
     <key name="left-click-action" type="s">

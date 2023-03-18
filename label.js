@@ -11,7 +11,6 @@ function getSettings(){
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
-	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
 	DIVIDER_STRING = settings.get_string('divider-string');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
@@ -20,6 +19,8 @@ function getSettings(){
 	LAST_FIELD = settings.get_string('last-field');
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	DIVIDER_STRING = settings.get_string('divider-string');
+	ADDITIONAL_INFO_SUBREGEX = settings.get_string('additional-info-subregex');
+	USER_REGEX_FILTER = settings.get_string('user-regex-filter');
 }
 
 var buildLabel = function buildLabel(players){
@@ -92,8 +93,8 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
+	data = filterAdditionalInfo(data);
+	data = filterUserRegex(data);
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -110,22 +111,16 @@ function parseMetadataField(data) {
 	return data
 }
 
-function removeRemasterText(datastring) {
-	if(!REMOVE_REMASTER_TEXT)
+function filterAdditionalInfo(datastring) {
+	if(ADDITIONAL_INFO_SUBREGEX == "")
 		return datastring
 
-	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
+	let matchedSubStrings = datastring.match(new RegExp("(?:-|\\(|\\[).*(?:" + ADDITIONAL_INFO_SUBREGEX + ").*(?:$|\\)|\\])","i"));
 
-	if (!matchedSubString)
-		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
+	if (!matchedSubStrings)
+		return datastring
 
-	if (!matchedSubString)
-		return datastring //returns <datastring> unaltered if both matches were not successful
-
-	if(!matchedSubString[0].match(/Remaster/i))
-		return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
-
-	datastring = datastring.replace(matchedSubString[0],"");
+	matchedSubStrings.forEach(match => datastring = datastring.replace(match,""));
 
 	if (datastring.charAt(datastring.length-1) == " ")
 		datastring = datastring.substring(0,datastring.length-1);
@@ -133,3 +128,16 @@ function removeRemasterText(datastring) {
 	return datastring
 }
 
+function filterUserRegex(datastring) {
+	if (USER_REGEX_FILTER == "")
+		return datastring
+
+	let matches = datastring.match(new RegExp(USER_REGEX_FILTER,"i"));
+
+	if (!matches)
+		return datastring
+
+	matches.forEach(match => datastring = datastring.replace(match,""));
+
+	return datastring
+}
