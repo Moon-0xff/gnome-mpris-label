@@ -150,6 +150,9 @@ var Players = class Players {
 		this.updateActiveList();
 	}
 	updateActiveList(){
+		if (this.unfilteredList)
+			this._filterList()
+
 		let actives = [];
 		this.list.forEach(player => {
 			if(player.playbackStatus == "Playing")
