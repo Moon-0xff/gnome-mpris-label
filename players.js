@@ -142,10 +142,10 @@ var Players = class Players {
 		const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
 
 		if(USE_WHITELIST && SOURCES_WHITELIST)
-			this.list = this.unfilteredList.filter(element => whitelist.includes(element));
+			this.list = this.unfilteredList.filter(element => whitelist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 
 		if(!USE_WHITELIST && SOURCES_BLACKLIST)
-			this.list = this.unfilteredList.filter(element => !blacklist.includes(element));
+			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 
 		this.updateActiveList();
 	}
