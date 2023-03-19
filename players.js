@@ -202,9 +202,11 @@ class Player {
 		const activeApps = Shell.AppSystem.get_default().get_running();
 
 		let match = matchedEntries[0];
+		let matchFound = false;
 		matchedEntries.forEach(entry => {
 			let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
-			if (activeApps.includes(playerObject)){
+			if (activeApps.includes(playerObject) && !matchFound){
+				matchFound = true;
 				match = entry
 			}
 		});
