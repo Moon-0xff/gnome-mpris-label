@@ -201,16 +201,15 @@ class Player {
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
 
-		let match = matchedEntries[0];
-		let matchFound = false;
-		matchedEntries.forEach(entry => {
+		const match = matchedEntries.find(entry => {
 			let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
-			if (activeApps.includes(playerObject) && !matchFound){
-				matchFound = true;
-				match = entry
-			}
+			return activeApps.includes(playerObject)
 		});
-		return match
+
+		if(match)
+			return match
+
+		return matchedEntries[0]
 	}
 	update(){
 		this.metadata = this.proxy.Metadata;
