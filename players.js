@@ -57,6 +57,9 @@ var Players = class Players {
 			return this.selected
 		}
 
+		if(!this.list.includes(this.selected))
+			this.selected = null
+
 		if(this.list.includes(this.selected) && !AUTO_SWITCH_TO_MOST_RECENT)
 			return this.selected
 
