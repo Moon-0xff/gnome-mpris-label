@@ -261,8 +261,10 @@ class Player {
 			this.proxy.PreviousRemote()
 	}
 	activatePlayer(){
-		let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-		app.activate();
+		if(this.desktopApp){
+			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
+			app.activate();
+		}
 	}
 }
 
