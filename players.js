@@ -115,9 +115,9 @@ var Players = class Players {
 		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
-		this.settings.connect('changed::mpris-sources-blacklist',this._filterList.bind(this));
-		this.settings.connect('changed::mpris-sources-whitelist',this._filterList.bind(this));
-		this.settings.connect('changed::use-whitelisted-sources-only',this._filterList.bind(this));
+		this.settings.connect('changed::mpris-sources-blacklist',this.updateFilterList.bind(this));
+		this.settings.connect('changed::mpris-sources-whitelist',this.updateFilterList.bind(this));
+		this.settings.connect('changed::use-whitelisted-sources-only',this.updateFilterList.bind(this));
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
@@ -130,7 +130,10 @@ var Players = class Players {
 			}
 		}
 	}
-	_filterList(){
+	updateFilterList(){
+		if(!this.unfilteredList)
+			return
+
 		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
 		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
 		let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
@@ -148,9 +151,6 @@ var Players = class Players {
 			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 	}
 	updateActiveList(){
-		if(this.unfilteredList)
-			this._filterList()
-
 		let actives = [];
 		this.list.forEach(player => {
 			if(player.playbackStatus == "Playing")
