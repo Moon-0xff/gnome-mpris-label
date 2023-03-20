@@ -115,9 +115,6 @@ var Players = class Players {
 		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
-		this.settings.connect('changed::mpris-sources-blacklist',this.updateFilterList.bind(this));
-		this.settings.connect('changed::mpris-sources-whitelist',this.updateFilterList.bind(this));
-		this.settings.connect('changed::use-whitelisted-sources-only',this.updateFilterList.bind(this));
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
