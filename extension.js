@@ -346,8 +346,17 @@ class MprisLabel extends PanelMenu.Button {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 
 		let prevPlayer = this.player;
-		this.players.updateActiveList();
+
+		try {
+			this.players.updateFilterList();
+			this.players.updateActiveList();
+		}
+		catch {
+			; //do nothing
+		}
+
 		this.player = this.players.pick();
+
 		if(this.player != prevPlayer)
 			this._getStream();
 

@@ -57,6 +57,9 @@ var Players = class Players {
 			return this.selected
 		}
 
+		if(!this.list.includes(this.selected))
+			this.selected = null
+
 		if(this.list.includes(this.selected) && !AUTO_SWITCH_TO_MOST_RECENT)
 			return this.selected
 
@@ -112,11 +115,6 @@ var Players = class Players {
 		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
-		this.settings.connect('changed::mpris-sources-blacklist',this._filterList.bind(this));
-		this.settings.connect('changed::mpris-sources-whitelist',this._filterList.bind(this));
-		this.settings.connect('changed::use-whitelisted-sources-only',this._filterList.bind(this));
-
-		this._filterList();
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
@@ -127,10 +125,12 @@ var Players = class Players {
 			else if (!newOwner && oldOwner){ //delete player
 				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
 			}
-			this._filterList();
 		}
 	}
-	_filterList(){
+	updateFilterList(){
+		if(!this.unfilteredList)
+			return
+
 		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
 		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
 		let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
@@ -142,12 +142,10 @@ var Players = class Players {
 		const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
 
 		if(USE_WHITELIST && SOURCES_WHITELIST)
-			this.list = this.unfilteredList.filter(element => whitelist.includes(element));
+			this.list = this.unfilteredList.filter(element => whitelist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 
 		if(!USE_WHITELIST && SOURCES_BLACKLIST)
-			this.list = this.unfilteredList.filter(element => !blacklist.includes(element));
-
-		this.updateActiveList();
+			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 	}
 	updateActiveList(){
 		let actives = [];
