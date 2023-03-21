@@ -57,6 +57,9 @@ var Players = class Players {
 			return this.selected
 		}
 
+		if(!this.list.includes(this.selected))
+			this.selected = null
+
 		if(this.list.includes(this.selected) && !AUTO_SWITCH_TO_MOST_RECENT)
 			return this.selected
 
@@ -112,11 +115,6 @@ var Players = class Players {
 		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
-		this.settings.connect('changed::mpris-sources-blacklist',this._filterList.bind(this));
-		this.settings.connect('changed::mpris-sources-whitelist',this._filterList.bind(this));
-		this.settings.connect('changed::use-whitelisted-sources-only',this._filterList.bind(this));
-
-		this._filterList();
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
@@ -127,10 +125,12 @@ var Players = class Players {
 			else if (!newOwner && oldOwner){ //delete player
 				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
 			}
-			this._filterList();
 		}
 	}
-	_filterList(){
+	updateFilterList(){
+		if(!this.unfilteredList)
+			return
+
 		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
 		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
 		let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
@@ -142,12 +142,10 @@ var Players = class Players {
 		const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
 
 		if(USE_WHITELIST && SOURCES_WHITELIST)
-			this.list = this.unfilteredList.filter(element => whitelist.includes(element));
+			this.list = this.unfilteredList.filter(element => whitelist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 
 		if(!USE_WHITELIST && SOURCES_BLACKLIST)
-			this.list = this.unfilteredList.filter(element => !blacklist.includes(element));
-
-		this.updateActiveList();
+			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 	}
 	updateActiveList(){
 		let actives = [];
@@ -192,7 +190,7 @@ class Player {
 			});
 		});
 		matchedEntries = entries;
-		
+
 		if ( matchedEntries.length > 0 )
 			this.desktopApp = this._matchRunningApps(matchedEntries)
 
@@ -201,14 +199,15 @@ class Player {
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
 
-		let match = matchedEntries[0];
-		matchedEntries.forEach(entry => {
+		const match = matchedEntries.find(entry => {
 			let playerObject = Shell.AppSystem.get_default().lookup_app(entry);
-			if (activeApps.includes(playerObject)){
-				match = entry
-			}
+			return activeApps.includes(playerObject)
 		});
-		return match
+
+		if(match)
+			return match
+
+		return matchedEntries[0]
 	}
 	update(){
 		this.metadata = this.proxy.Metadata;
@@ -224,7 +223,7 @@ class Player {
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		const ICON_PLACE = settings.get_string('show-icon');
 		const Config = imports.misc.config;
-	
+
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
 		if (Config.PACKAGE_VERSION.startsWith("3."))
@@ -232,16 +231,16 @@ class Player {
 				icon_left_padding = 3
 			else if (ICON_PLACE == "left")
 				icon_right_padding = 3
-	
+
 			let icon = new St.Icon({
 			style_class: 'system-status-icon',
 			fallback_icon_name: 'audio-volume-high',
 			style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 		});
-	
+
 		if(desktopApp == null | undefined)
 			return icon
-	
+
 		let entry = Gio.DesktopAppInfo.new(desktopApp);
 		let gioIcon = entry.get_icon();
 		icon.set_gicon(gioIcon);
@@ -260,8 +259,10 @@ class Player {
 			this.proxy.PreviousRemote()
 	}
 	activatePlayer(){
-		let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-		app.activate();
+		if(this.desktopApp){
+			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
+			app.activate();
+		}
 	}
 }
 
