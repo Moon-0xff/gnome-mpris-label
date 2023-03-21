@@ -102,6 +102,14 @@
       <default>"activate-player"</default>
     </key>
 
+    <key name="back-click-action" type="s">
+      <default>"prev-track"</default>
+    </key>
+
+    <key name="forward-click-action" type="s">
+      <default>"next-track"</default>
+    </key>
+
     <key name="volume-control-scheme" type="s">
       <default>"application"</default>
     </key>

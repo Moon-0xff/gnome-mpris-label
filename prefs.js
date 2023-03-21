@@ -238,6 +238,8 @@ function buildPrefsWidget(){
 	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
+	let backClickComboBox = addStringComboBox(controlsPage,'back-click-action','Back click action:',buttonActions,undefined);
+	let forwardClickComboBox = addStringComboBox(controlsPage,'forward-click-action','Forward click action:',buttonActions,undefined);
 	let scrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',buttonActions,undefined);
 	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',buttonActions,undefined);
 
@@ -252,10 +254,14 @@ function buildPrefsWidget(){
 		settings.reset('left-click-action');
 		settings.reset('middle-click-action');
 		settings.reset('right-click-action');
+		settings.reset('back-click-action');
+		settings.reset('forward-click-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		backClickComboBox.set_active_id(settings.get_string('back-click-action'));
+		forwardClickComboBox.set_active_id(settings.get_string('forward-click-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
 
