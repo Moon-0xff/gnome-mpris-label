@@ -86,6 +86,10 @@
       <default>false</default>
     </key>
 
+    <key name="show-control" type="b">
+      <default>true</default>
+    </key>
+
     <key name="left-click-action" type="s">
       <default>"open-menu"</default>
     </key>

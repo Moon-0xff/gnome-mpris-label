@@ -6,6 +6,8 @@ const mprisInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
 		<method name="PlayPause" />
+		<method name="Play" />
+		<method name="Pause" />
 		<method name="Next" />
 		<method name="Previous" />
 		<property name="CanPlay" type="b" access="read" />
@@ -249,6 +251,17 @@ class Player {
 	toggleStatus() {
 		if (this.proxy.CanPlay && this.proxy.CanPause)
 			this.proxy.PlayPauseRemote()
+	}
+	play() {
+		if (this.proxy.CanPlay || this.proxy.CanPause)
+			this.proxy.PlayRemote()
+	}
+	pause() {
+		if (this.proxy.CanPlay || this.proxy.CanPause)
+			this.proxy.PauseRemote()
+	}
+	playbackStatus(){
+		return this.proxy.playbackStatus
 	}
 	goNext(){
 		if (this.proxy.CanGoNext)

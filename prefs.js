@@ -197,6 +197,7 @@ function buildPrefsWidget(){
 	};
 
 	addSubcategoryLabel(controlsPage,'Bindings');
+	addSwitch(controlsPage,'show-control','Show control:',"");
 	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
@@ -215,6 +216,7 @@ function buildPrefsWidget(){
 		settings.reset('middle-click-action');
 		settings.reset('right-click-action');
 		settings.reset('volume-control-scheme');
+		showControlComboBox.set_active_id(settings.get_string('show-control'));
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
