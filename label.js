@@ -112,7 +112,7 @@ function parseMetadataField(data) {
 }
 
 function filterAdditionalInfo(datastring) {
-	if(ADDITIONAL_INFO_SUBREGEX == "")
+	if(ADDITIONAL_INFO_SUBREGEX == "" | !validRegex(ADDITIONAL_INFO_SUBREGEX))
 		return datastring
 
 	let matchedSubStrings = datastring.match(new RegExp("(?:-|\\(|\\[).*(?:" + ADDITIONAL_INFO_SUBREGEX + ").*(?:$|\\)|\\])","i"));
@@ -129,7 +129,7 @@ function filterAdditionalInfo(datastring) {
 }
 
 function filterUserRegex(datastring) {
-	if (USER_REGEX_FILTER == "")
+	if (USER_REGEX_FILTER == "" | !validRegex(USER_REGEX_FILTER))
 		return datastring
 
 	let matches = datastring.match(new RegExp(USER_REGEX_FILTER,"i"));
@@ -140,4 +140,14 @@ function filterUserRegex(datastring) {
 	matches.forEach(match => datastring = datastring.replace(match,""));
 
 	return datastring
+}
+
+function validRegex(expression){
+	var isValid = true;
+	try {
+		new RegExp(expression,"i");
+	} catch(e) {
+		isValid = false;
+	}
+	return isValid
 }
