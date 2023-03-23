@@ -234,12 +234,14 @@ function buildPrefsWidget(){
 		'next player':'next-player','open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down'
 	};
 
-	addSubcategoryLabel(controlsPage,'Bindings');
+	addSubcategoryLabel(controlsPage,'Mouse bindings');
 	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
 	let scrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',buttonActions,undefined);
 	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',buttonActions,undefined);
+	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined);
+	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined);
 
 	//the scroll comboboxes are just for show (for now). Setting the sensitivity to OFF makes them non-interactive and gray.
 	scrollUpComboBox.set_button_sensitivity(Gtk.SensitivityType.OFF);
@@ -252,10 +254,14 @@ function buildPrefsWidget(){
 		settings.reset('left-click-action');
 		settings.reset('middle-click-action');
 		settings.reset('right-click-action');
+		settings.reset('thumb-forward-action');
+		settings.reset('thumb-backward-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
+		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
 

@@ -114,5 +114,13 @@
       <default>"volume-down"</default>
     </key>
 
+    <key name="thumb-forward-action" type="s">
+      <default>"next-track"</default>
+    </key>
+
+    <key name="thumb-backward-action" type="s">
+      <default>"prev-track"</default>
+    </key>
+
   </schema>
 </schemalist>

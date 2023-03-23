@@ -135,6 +135,12 @@ class MprisLabel extends PanelMenu.Button {
 			case Clutter.BUTTON_SECONDARY:
 				this._activateButton('right-click-action');
 				return Clutter.EVENT_STOP;
+			case 8:
+				this._activateButton('thumb-backward-action');
+				return Clutter.EVENT_STOP;
+			case 9:
+				this._activateButton('thumb-forward-action')
+				return Clutter.EVENT_STOP;
 		}
 	}
 
