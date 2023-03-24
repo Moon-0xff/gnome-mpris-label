@@ -62,8 +62,8 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(labelPage,'Appearance');
 	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
+	let placeholderEntry = addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	let dividerEntry = addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
 
 	//visible fields is a bit more complex
 	addLabel(labelPage,'Visible fields and order:',undefined);
@@ -115,6 +115,8 @@ function buildPrefsWidget(){
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
+		placeholderEntry.set_text(settings.get_string('button-placeholder'));
+		dividerEntry.set_text(settings.get_string('divider-string'));
 	});
 
 	prefsWidget.append_page(labelPage, buildLabel('Label'));
@@ -139,14 +141,26 @@ function buildPrefsWidget(){
 	addSubcategoryLabel(filtersPage,'Ignore list:');
 	let blacklistEntry = new Gtk.Entry({ visible: true });
 	filtersPage.attach(blacklistEntry,0,position,1,1);
-	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	blacklistEntry.set_text(settings.get_string('mpris-sources-blacklist'));
+	blacklistEntry.connect('focus-out-event', () => {
+		settings.set_string('mpris-sources-blacklist',blacklistEntry.text);
+	});
+	blacklistEntry.connect('activate', () => {
+		settings.set_string('mpris-sources-blacklist',blacklistEntry.text);
+	});
 	blacklistEntry.set_placeholder_text('Separate entries with commas');
 	position++;
 
 	addSubcategoryLabel(filtersPage,'Allow list:');
 	let whitelistEntry = new Gtk.Entry({ visible: true });
 	filtersPage.attach(whitelistEntry,0,position,1,1);
-	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	whitelistEntry.set_text(settings.get_string('mpris-sources-whitelist'));
+	whitelistEntry.connect('focus-out-event', () => {
+		settings.set_string('mpris-sources-whitelist',whitelistEntry.text);
+	});
+	whitelistEntry.connect('activate', () => {
+		settings.set_string('mpris-sources-whitelist',whitelistEntry.text);
+	});
 	whitelistEntry.set_placeholder_text('Separate entries with commas');
 	position++;
 
@@ -179,6 +193,8 @@ function buildPrefsWidget(){
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
+		blacklistEntry.set_text(settings.get_string('mpris-sources-blacklist'));
+		whitelistEntry.set_text(settings.get_string('mpris-sources-whitelist'));
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment
@@ -277,8 +293,18 @@ function addEntry(widget,setting,labelstring,labeltooltip){
 		visible: true
 	});
 	widget.attach(thisEntry,1,position,1,1);
-	widget._settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+
+	thisEntry.set_text(widget._settings.get_string(setting));
+	thisEntry.connect('focus-out-event', () => {
+		widget._settings.set_string(setting,thisEntry.text);
+	});
+	thisEntry.connect('activate', () => {
+		widget._settings.set_string(setting,thisEntry.text);
+	});
+
 	position++;
+
+	return thisEntry //necessary to reset text when reset button is clicked
 }
 
 function addLabel(widget,labelstring,labeltooltip){
