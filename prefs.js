@@ -193,8 +193,8 @@ function buildPrefsWidget(){
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
-		blacklistEntry.set_text(settings.get_string('mpris-source-blacklist'));
-		whitelistEntry.set_text(settings.get_string('mpris-source-whitelist'));
+		blacklistEntry.set_text(settings.get_string('mpris-sources-blacklist'));
+		whitelistEntry.set_text(settings.get_string('mpris-sources-whitelist'));
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment
