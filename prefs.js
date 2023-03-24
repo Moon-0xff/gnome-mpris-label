@@ -145,6 +145,9 @@ function buildPrefsWidget(){
 	blacklistEntry.connect('focus-out-event', () => {
 		settings.set_string('mpris-sources-blacklist',blacklistEntry.text);
 	});
+	blacklistEntry.connect('activate', () => {
+		settings.set_string('mpris-sources-blacklist',blacklistEntry.text);
+	});
 	blacklistEntry.set_placeholder_text('Separate entries with commas');
 	position++;
 
@@ -153,6 +156,9 @@ function buildPrefsWidget(){
 	filtersPage.attach(whitelistEntry,0,position,1,1);
 	whitelistEntry.set_text(settings.get_string('mpris-sources-whitelist'));
 	whitelistEntry.connect('focus-out-event', () => {
+		settings.set_string('mpris-sources-whitelist',whitelistEntry.text);
+	});
+	whitelistEntry.connect('activate', () => {
 		settings.set_string('mpris-sources-whitelist',whitelistEntry.text);
 	});
 	whitelistEntry.set_placeholder_text('Separate entries with commas');
@@ -290,6 +296,9 @@ function addEntry(widget,setting,labelstring,labeltooltip){
 
 	thisEntry.set_text(widget._settings.get_string(setting));
 	thisEntry.connect('focus-out-event', () => {
+		widget._settings.set_string(setting,thisEntry.text);
+	});
+	thisEntry.connect('activate', () => {
 		widget._settings.set_string(setting,thisEntry.text);
 	});
 
