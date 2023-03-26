@@ -25,6 +25,7 @@ Aditionally:
 - Adds tooltips(hints) for various options
 
 # Upcoming Version
+- Adds support for GNOME 44
 - Adds a menu for player selection
 - Improves filtering
 - Increases the chance of finding the application icon
