@@ -86,7 +86,7 @@
       <default>false</default>
     </key>
 
-    <key name="show-control" type="b">
+    <key name="show-panel-controls" type="b">
       <default>true</default>
     </key>
 

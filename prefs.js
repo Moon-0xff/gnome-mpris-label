@@ -191,7 +191,7 @@ function buildPrefsWidget(){
 
 	position = 0;
 
-	addSwitch(controlsPage,'show-control','Show panel controls:',undefined);
+	addSwitch(controlsPage,'show-panel-controls','Show panel controls:',undefined);
 
 	let buttonActions = {
 		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player',

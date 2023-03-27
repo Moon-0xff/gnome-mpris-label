@@ -122,7 +122,7 @@ class MprisLabel extends PanelMenu.Button {
 	_updateTrayPosition(){
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
-		const SHOW_CONTROL = this.settings.get_boolean('show-control');
+		const SHOW_CONTROL = this.settings.get_boolean('show-panel-controls');
 
 		this.container.get_parent().remove_child(this.container);
 
