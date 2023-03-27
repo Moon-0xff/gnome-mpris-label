@@ -135,13 +135,13 @@ class MprisLabel extends PanelMenu.Button {
 		else if(EXTENSION_PLACE == "center"){
 			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._leftBox.insert_child_at_index(this.buttonContainer, EXTENSION_INDEX + 1);
+				Main.panel._centerBox.insert_child_at_index(this.buttonContainer, EXTENSION_INDEX + 1);
 			}
 		}
 		else if(EXTENSION_PLACE == "right"){
 			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._leftBox.insert_child_at_index(this.buttonContainer, EXTENSION_INDEX + 1);
+				Main.panel._rightBox.insert_child_at_index(this.buttonContainer, EXTENSION_INDEX + 1);
 			}
 		}
 	}
