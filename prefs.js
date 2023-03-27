@@ -191,13 +191,14 @@ function buildPrefsWidget(){
 
 	position = 0;
 
+	addSwitch(controlsPage,'show-control','Show panel controls:',undefined);
+
 	let buttonActions = {
 		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player',
 		'open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down','none':'none'
 	};
 
 	addSubcategoryLabel(controlsPage,'Mouse bindings');
-	addSwitch(controlsPage,'show-control','Show control:',"");
 	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
