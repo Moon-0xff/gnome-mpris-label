@@ -230,8 +230,8 @@ function buildPrefsWidget(){
 	position = 0;
 
 	let buttonActions = {
-		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track',
-		'next player':'next-player','open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down'
+		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player',
+		'open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down','none':'none'
 	};
 
 	addSubcategoryLabel(controlsPage,'Mouse bindings');
