@@ -110,24 +110,24 @@ class MprisLabel extends PanelMenu.Button {
 		this.container.get_parent().remove_child(this.container);
 
 		if(SHOW_CONTROL)
-			this.panelControls = new panelControls();
+			this.panelControls = new PanelControls();
 
 		if(EXTENSION_PLACE == "left"){
 			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._leftBox.insert_child_at_index(this.panelControls, EXTENSION_INDEX + 1);
+				Main.panel._leftBox.insert_child_at_index(this.panelControls.container, EXTENSION_INDEX + 1);
 			}
 		}
 		else if(EXTENSION_PLACE == "center"){
 			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._centerBox.insert_child_at_index(this.panelControls, EXTENSION_INDEX + 1);
+				Main.panel._centerBox.insert_child_at_index(this.panelControls.container, EXTENSION_INDEX + 1);
 			}
 		}
 		else if(EXTENSION_PLACE == "right"){
 			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._rightBox.insert_child_at_index(this.panelControls, EXTENSION_INDEX + 1);
+				Main.panel._rightBox.insert_child_at_index(this.panelControls.container, EXTENSION_INDEX + 1);
 			}
 		}
 	}
@@ -371,8 +371,8 @@ class MprisLabel extends PanelMenu.Button {
 			this.players.updateFilterList();
 			this.players.updateActiveList();
 
-			if(this.panelControls)
-				this.panelControls.triggerControl();
+			if(this.panelControls && this.player != null | undefined)
+				this.panelControls.updateControls(this.player);
 		}
 		catch {
 			; //do nothing
@@ -443,8 +443,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.box.remove_child(this.label);
 		this.remove_child(this.box);
-		this.remove_child(this.panelButtons);
-		this.panelButtons.destroy();
+		this.remove_child(this.panelControls);
+		this.panelControls.destroy();
 		this._removeTimeout();
 
 		if (this._repositionTimeout){
@@ -457,10 +457,10 @@ class MprisLabel extends PanelMenu.Button {
 class PanelControls {
 	constructor(){
 		this.container = new St.BoxLayout({ style_class: 'panel-status-menu-box', reactive: true, can_focus: true, track_hover: true, vertical: false });
-		this.forward = this._createContainerButton('media-skip-forward-symbolic', 'next-track', this.buttonContainer);
-		this.play = this._createContainerButton('media-playback-start-symbolic', 'play', this.buttonContainer);
-		this.pause = this._createContainerButton('media-playback-pause-symbolic', 'pause', this.buttonContainer);
-		this.backward = this._createContainerButton('media-skip-backward-symbolic', 'prev-track', this.buttonContainer);
+		this.forward = this._createContainerButton('media-skip-forward-symbolic', 'next-track', this.container);
+		this.play = this._createContainerButton('media-playback-start-symbolic', 'play', this.container);
+		this.pause = this._createContainerButton('media-playback-pause-symbolic', 'pause', this.container);
+		this.backward = this._createContainerButton('media-skip-backward-symbolic', 'prev-track', this.container);
 		this.pause.hide();
 		this.play.hide();
 	}
@@ -479,15 +479,15 @@ class PanelControls {
 			case 'play':
 				if(this.player) {
 					this.player.play();
-					this.buttons.pause.show();
-					this.buttons.play.hide();
+					this.pause.show();
+					this.play.hide();
 				}
 				break;
 			case 'pause':
 				if(this.player) {
 					this.player.pause();
-					this.buttons.play.show();
-					this.buttons.pause.hide();
+					this.play.show();
+					this.pause.hide();
 				}
 				break;
 			case 'next-track':
@@ -501,13 +501,15 @@ class PanelControls {
 		}
 	}
 
-	triggerControl(){
+	updateControls(player){
+		this.player = player;
+
 		if (this.player.playbackStatus === 'Playing') {
-			this.buttons.pause.show()
-			this.buttons.play.hide()
+			this.pause.show()
+			this.play.hide()
 		} else {
-			this.buttons.play.show()
-			this.buttons.pause.hide()
+			this.play.show()
+			this.pause.hide()
 		}
 	}
 
