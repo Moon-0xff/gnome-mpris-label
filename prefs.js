@@ -14,12 +14,12 @@ function buildPrefsWidget(){
 	let prefsWidget = new Gtk.Notebook({visible: true});
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
-	if(shellVersion >= 40){ //workaround taken directly from gjs.guide
+	if (shellVersion >= 40) { //workaround taken directly from gjs.guide
 		prefsWidget.connect('realize', () => {
-		    let window = prefsWidget.get_root();
-		    window.default_width = 600;
-		    window.default_height = 700;
-		});
+			let window = prefsWidget.get_root()
+			window.default_width = 600
+			window.default_height = 700
+		})
 	}
 
 //panel page:
@@ -164,13 +164,12 @@ function buildPrefsWidget(){
 	position++;
 
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
-	if(shellVersion < 40){
-		filtersPageSubGrid.margin = 0;
-	}
-	else {
-		filtersPageSubGrid.margin_top = 0,
-		filtersPageSubGrid.margin_bottom = 0,
-		filtersPageSubGrid.margin_start = 0,
+	if (shellVersion < 40) {
+		filtersPageSubGrid.margin = 0
+	} else {
+		filtersPageSubGrid.margin_top = 0
+		filtersPageSubGrid.margin_bottom = 0
+		filtersPageSubGrid.margin_start = 0
 		filtersPageSubGrid.margin_end = 0
 	}
 	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
@@ -191,7 +190,7 @@ function buildPrefsWidget(){
 
 	position = 0;
 
-	addSwitch(controlsPage,'show-panel-controls','Show panel controls:',undefined);
+	addSwitch(controlsPage, 'show-panel-controls', 'Show panel controls [label action click is disabled]:', undefined)
 
 	let buttonActions = {
 		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player',
@@ -371,13 +370,13 @@ function playersToString(){
 			</interface>
 		</node>`
 
-		const entryInterface = `
+	const entryInterface = `
 		<node>
 			<interface name="org.mpris.MediaPlayer2">
 				<property name="Identity" type="s" access="read"/>
 			</interface>
 		</node>`
-		
+
 	const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 	const dBusProxy = dBusProxyWrapper(Gio.DBus.session,'org.freedesktop.DBus','/org/freedesktop/DBus');
 

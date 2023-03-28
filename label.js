@@ -3,8 +3,7 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
-	MAX_STRING_LENGTH,DIVIDER_STRING;
+	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD,REFRESH_RATE;
 
 function getSettings(){
 	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
@@ -18,8 +17,6 @@ function getSettings(){
 	FIRST_FIELD = settings.get_string('first-field');
 	SECOND_FIELD = settings.get_string('second-field');
 	LAST_FIELD = settings.get_string('last-field');
-	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	DIVIDER_STRING = settings.get_string('divider-string');
 }
 
 var buildLabel = function buildLabel(players){
