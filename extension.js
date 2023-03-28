@@ -65,24 +65,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
-		this.buttons = {};
-		this.buttonContainer = new St.BoxLayout({ style_class: 'panel-status-menu-box', reactive: true, can_focus: true, track_hover: true, vertical: false })
-		this.buttons.forward = this._createContainerButton('media-skip-forward-symbolic', 'next-track', this.buttonContainer)
-		this.buttons.play = this._createContainerButton('media-playback-start-symbolic', 'play', this.buttonContainer)
-		this.buttons.pause = this._createContainerButton('media-playback-pause-symbolic', 'pause', this.buttonContainer)
-		this.buttons.backward = this._createContainerButton('media-skip-backward-symbolic', 'prev-track', this.buttonContainer)
-		this.buttons.pause.hide()
-		this.buttons.play.hide()
-
 		this._refresh();
-	}
-
-	_createContainerButton(iconName, command, container) {
-		let button = new St.Bin({ style_class: 'panel-button', reactive: true, can_focus: true, track_hover: true});
-		button.set_child(new St.Icon({icon_name: iconName, style_class: 'system-status-icon'}));
-		button.connect('button-press-event',(_a, event) => this._controlPlayer(command));
-		container.insert_child_at_index(button, 0);
-		return button;
 	}
 
 	_onPaddingChanged(){
@@ -126,22 +109,25 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.container.get_parent().remove_child(this.container);
 
+		if(SHOW_CONTROL)
+			this.panelControls = new panelControls();
+
 		if(EXTENSION_PLACE == "left"){
 			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._leftBox.insert_child_at_index(this.buttonContainer, EXTENSION_INDEX + 1);
+				Main.panel._leftBox.insert_child_at_index(this.panelControls, EXTENSION_INDEX + 1);
 			}
 		}
 		else if(EXTENSION_PLACE == "center"){
 			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._centerBox.insert_child_at_index(this.buttonContainer, EXTENSION_INDEX + 1);
+				Main.panel._centerBox.insert_child_at_index(this.panelControls, EXTENSION_INDEX + 1);
 			}
 		}
 		else if(EXTENSION_PLACE == "right"){
 			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 			if(SHOW_CONTROL){
-				Main.panel._rightBox.insert_child_at_index(this.buttonContainer, EXTENSION_INDEX + 1);
+				Main.panel._rightBox.insert_child_at_index(this.panelControls, EXTENSION_INDEX + 1);
 			}
 		}
 	}
@@ -183,34 +169,6 @@ class MprisLabel extends PanelMenu.Button {
 				this._changeVolume(delta)
 
 			return Clutter.EVENT_STOP;
-		}
-	}
-
-	_controlPlayer(value) {
-		switch(value){
-			case 'play':
-				if(this.player) {
-
-					this.player.play();
-					this.buttons.pause.show();
-					this.buttons.play.hide();
-				}
-				break;
-			case 'pause':
-				if(this.player) {
-					this.player.pause();
-					this.buttons.play.show();
-					this.buttons.pause.hide();
-				}
-				break;
-			case 'next-track':
-				if(this.player)
-					this.player.goNext();
-				break;
-			case 'prev-track':
-				if(this.player)
-					this.player.goPrevious();
-				break;
 		}
 	}
 
@@ -412,6 +370,9 @@ class MprisLabel extends PanelMenu.Button {
 		try {
 			this.players.updateFilterList();
 			this.players.updateActiveList();
+
+			if(this.panelControls)
+				this.panelControls.triggerControl();
 		}
 		catch {
 			; //do nothing
@@ -458,8 +419,6 @@ class MprisLabel extends PanelMenu.Button {
 				this.label.set_text("")
 			else
 				this.label.set_text(buildLabel(this.players));
-
-			this._triggeredControl()
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -478,7 +437,71 @@ class MprisLabel extends PanelMenu.Button {
 		return Clutter.EVENT_PROPAGATE;
 	}
 
-	_triggeredControl(){
+	_disable(){
+		if(this.icon)
+			this.box.remove_child(this.icon);
+
+		this.box.remove_child(this.label);
+		this.remove_child(this.box);
+		this.remove_child(this.panelButtons);
+		this.panelButtons.destroy();
+		this._removeTimeout();
+
+		if (this._repositionTimeout){
+			GLib.Source.remove(this._repositionTimeout);
+			this._repositionTimeout = null;
+		}
+	}
+});
+
+class PanelControls {
+	constructor(){
+		this.container = new St.BoxLayout({ style_class: 'panel-status-menu-box', reactive: true, can_focus: true, track_hover: true, vertical: false });
+		this.forward = this._createContainerButton('media-skip-forward-symbolic', 'next-track', this.buttonContainer);
+		this.play = this._createContainerButton('media-playback-start-symbolic', 'play', this.buttonContainer);
+		this.pause = this._createContainerButton('media-playback-pause-symbolic', 'pause', this.buttonContainer);
+		this.backward = this._createContainerButton('media-skip-backward-symbolic', 'prev-track', this.buttonContainer);
+		this.pause.hide();
+		this.play.hide();
+	}
+
+	_createContainerButton(iconName, command, container) {
+		let button = new St.Bin({ style_class: 'panel-button', reactive: true, can_focus: true, track_hover: true});
+		button.set_child(new St.Icon({icon_name: iconName, style_class: 'system-status-icon'}));
+		button.connect('button-press-event',(_a, event) => this._controlPlayer(command));
+		container.insert_child_at_index(button, 0);
+
+		return button
+	}
+
+	_controlPlayer(value) {
+		switch(value){
+			case 'play':
+				if(this.player) {
+					this.player.play();
+					this.buttons.pause.show();
+					this.buttons.play.hide();
+				}
+				break;
+			case 'pause':
+				if(this.player) {
+					this.player.pause();
+					this.buttons.play.show();
+					this.buttons.pause.hide();
+				}
+				break;
+			case 'next-track':
+				if(this.player)
+					this.player.goNext();
+				break;
+			case 'prev-track':
+				if(this.player)
+					this.player.goPrevious();
+				break;
+		}
+	}
+
+	triggerControl(){
 		if (this.player.playbackStatus === 'Playing') {
 			this.buttons.pause.show()
 			this.buttons.play.hide()
@@ -488,23 +511,11 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_disable(){
-		if(this.icon)
-			this.box.remove_child(this.icon);
-
-		this.box.remove_child(this.label);
-		this.remove_child(this.box);
-		this.buttonContainer.remove_child(this.buttons.forward)
-		this.buttonContainer.remove_child(this.buttons.play)
-		this.buttonContainer.remove_child(this.buttons.pause)
-		this.buttonContainer.remove_child(this.buttons.backward)
-		this.remove_child(this.buttonContainer);
-		this._removeTimeout();
-
-		if (this._repositionTimeout){
-			GLib.Source.remove(this._repositionTimeout);
-			this._repositionTimeout = null;
-		}
+	destroy(){
+		this.container.remove_child(this.buttons.forward)
+		this.container.remove_child(this.buttons.play)
+		this.container.remove_child(this.buttons.pause)
+		this.container.remove_child(this.buttons.backward)
 	}
-});
+}
 
