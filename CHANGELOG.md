@@ -24,8 +24,7 @@ Aditionally:
 - Adds filters to allow/disallow specified mpris sources
 - Adds tooltips(hints) for various options
 
-# Version 13
-- Adds support for GNOME 44
+# Upcoming Version
 - Adds a menu for player selection
 - Improves filtering
 - Increases the chance of finding the application icon
