@@ -312,7 +312,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.menu.removeAll(); //start by deleting everything
 
-		//player selection submenu:
+	//player selection submenu:
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
 
@@ -347,7 +347,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(settingsMenuItem);
 		});
 
-		//automode entry:
+	//automode entry:
 		if (this.players.list.length > 0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
@@ -362,7 +362,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem()); //add separator
 		}
 
-		//settings shortcut:
+	//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
 	}
 
