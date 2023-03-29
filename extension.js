@@ -111,6 +111,11 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.container.get_parent().remove_child(this.container);
 
+		Main.panel._leftBox.remove_child(this.panelControls.container)
+		Main.panel._centerBox.remove_child(this.panelControls.container)
+		Main.panel._rightBox.remove_child(this.panelControls.container)
+
+
 		if (EXTENSION_PLACE === 'left') {
 			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX)
 			Main.panel._leftBox.insert_child_at_index(this.panelControls.container, EXTENSION_INDEX + 1)
@@ -277,8 +282,8 @@ class MprisLabel extends PanelMenu.Button {
 		streamList.forEach(stream => {
 			if(
 				stream.get_name() && (
-				stream.get_name().match(new RegExp(this.player.identity,"i")) ||
-				this.player.identity.match(new RegExp(stream.get_name(),"i")) )
+					stream.get_name().match(new RegExp(this.player.identity,"i")) ||
+					this.player.identity.match(new RegExp(stream.get_name(),"i")) )
 			)
 				this.stream.push(stream);
 		});
@@ -307,7 +312,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.menu.removeAll(); //start by deleting everything
 
-	//player selection submenu:
+		//player selection submenu:
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
 
@@ -342,7 +347,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(settingsMenuItem);
 		});
 
-	//automode entry:
+		//automode entry:
 		if (this.players.list.length > 0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
@@ -357,7 +362,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem()); //add separator
 		}
 
-	//settings shortcut:
+		//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
 	}
 
@@ -438,23 +443,23 @@ class MprisLabel extends PanelMenu.Button {
 		return Clutter.EVENT_PROPAGATE;
 	}
 
-	_disable(){
-		if(this.icon)
-			this.box.remove_child(this.icon);
+	_disable () {
+		if (this.icon) {
+			this.box.remove_child(this.icon)
+		}
 
-		this.box.remove_child(this.label);
-		this.remove_child(this.box);
-  	this.panelControls.destroy();
-	 	this.remove_child(this.panelControls.container);
-		this._removeTimeout();
+		this.box.remove_child(this.label)
+		this.remove_child(this.box)
+		this.panelControls.destroy()
+		this.remove_child(this.panelControls.container)
+		this._removeTimeout()
 
-		if (this._repositionTimeout){
-			GLib.Source.remove(this._repositionTimeout);
-			this._repositionTimeout = null;
+		if (this._repositionTimeout) {
+			GLib.Source.remove(this._repositionTimeout)
+			this._repositionTimeout = null
 		}
 	}
 });
-
 
 class PanelControls {
 
