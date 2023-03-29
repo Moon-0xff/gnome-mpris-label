@@ -443,20 +443,20 @@ class MprisLabel extends PanelMenu.Button {
 		return Clutter.EVENT_PROPAGATE;
 	}
 
-	_disable () {
+	_disable() {
 		if (this.icon) {
-			this.box.remove_child(this.icon)
+			this.box.remove_child(this.icon);
 		}
 
-		this.box.remove_child(this.label)
-		this.remove_child(this.box)
-		this.panelControls.destroy()
-		this.remove_child(this.panelControls.container)
-		this._removeTimeout()
+		this.box.remove_child(this.label);
+		this.remove_child(this.box);
+		this.panelControls.destroy();
+		this.remove_child(this.panelControls.container);
+		this._removeTimeout();
 
 		if (this._repositionTimeout) {
-			GLib.Source.remove(this._repositionTimeout)
-			this._repositionTimeout = null
+			GLib.Source.remove(this._repositionTimeout);
+			this._repositionTimeout = null;
 		}
 	}
 });
