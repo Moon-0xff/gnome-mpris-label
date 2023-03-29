@@ -367,7 +367,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_refresh() {
-		const refreshRate = this.settings.get_int('refresh-rate');
+		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 
 		let prevPlayer = this.player;
 
@@ -393,7 +393,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._setIcon();
 		this._removeTimeout();
 
-		this._timeout = Mainloop.timeout_add(refreshRate, this._refresh.bind(this));
+		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
 
