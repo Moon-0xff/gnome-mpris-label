@@ -17,7 +17,6 @@ const mprisInterface = `
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
 	</interface>
-
 </node>`
 
 const entryInterface = `

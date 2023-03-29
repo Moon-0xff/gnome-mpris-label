@@ -165,12 +165,13 @@ function buildPrefsWidget(){
 
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if (shellVersion < 40) {
-		filtersPageSubGrid.margin = 0
-	} else {
-		filtersPageSubGrid.margin_top = 0
-		filtersPageSubGrid.margin_bottom = 0
-		filtersPageSubGrid.margin_start = 0
-		filtersPageSubGrid.margin_end = 0
+		filtersPageSubGrid.margin = 0;
+	}
+	else {
+		filtersPageSubGrid.margin_top = 0;
+		filtersPageSubGrid.margin_bottom = 0;
+		filtersPageSubGrid.margin_start = 0;
+		filtersPageSubGrid.margin_end = 0;
 	}
 	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
 
@@ -220,7 +221,6 @@ function buildPrefsWidget(){
 		settings.reset('thumb-forward-action');
 		settings.reset('thumb-backward-action');
 		settings.reset('volume-control-scheme');
-		showControlComboBox.set_active_id(settings.get_string('show-control'));
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
