@@ -312,7 +312,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.menu.removeAll(); //start by deleting everything
 
-		//player selection submenu:
+	//player selection submenu:
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
 
@@ -347,7 +347,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(settingsMenuItem);
 		});
 
-		//automode entry:
+	//automode entry:
 		if (this.players.list.length > 0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
@@ -362,12 +362,12 @@ class MprisLabel extends PanelMenu.Button {
 			this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem()); //add separator
 		}
 
-		//settings shortcut:
+	//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
 	}
 
 	_refresh() {
-		const refreshRate = this.settings.get_int('refresh-rate');
+		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 
 		let prevPlayer = this.player;
 
@@ -393,7 +393,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._setIcon();
 		this._removeTimeout();
 
-		this._timeout = Mainloop.timeout_add(refreshRate, this._refresh.bind(this));
+		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
 
@@ -443,20 +443,20 @@ class MprisLabel extends PanelMenu.Button {
 		return Clutter.EVENT_PROPAGATE;
 	}
 
-	_disable () {
+	_disable() {
 		if (this.icon) {
-			this.box.remove_child(this.icon)
+			this.box.remove_child(this.icon);
 		}
 
-		this.box.remove_child(this.label)
-		this.remove_child(this.box)
-		this.panelControls.destroy()
-		this.remove_child(this.panelControls.container)
-		this._removeTimeout()
+		this.box.remove_child(this.label);
+		this.remove_child(this.box);
+		this.panelControls.destroy();
+		this.remove_child(this.panelControls.container);
+		this._removeTimeout();
 
 		if (this._repositionTimeout) {
-			GLib.Source.remove(this._repositionTimeout)
-			this._repositionTimeout = null
+			GLib.Source.remove(this._repositionTimeout);
+			this._repositionTimeout = null;
 		}
 	}
 });

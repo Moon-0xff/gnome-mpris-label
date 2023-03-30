@@ -165,12 +165,13 @@ function buildPrefsWidget(){
 
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if (shellVersion < 40) {
-		filtersPageSubGrid.margin = 0
-	} else {
-		filtersPageSubGrid.margin_top = 0
-		filtersPageSubGrid.margin_bottom = 0
-		filtersPageSubGrid.margin_start = 0
-		filtersPageSubGrid.margin_end = 0
+		filtersPageSubGrid.margin = 0;
+	}
+	else {
+		filtersPageSubGrid.margin_top = 0;
+		filtersPageSubGrid.margin_bottom = 0;
+		filtersPageSubGrid.margin_start = 0;
+		filtersPageSubGrid.margin_end = 0;
 	}
 	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
 
