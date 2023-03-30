@@ -220,7 +220,7 @@ function buildPrefsWidget(){
 		settings.reset('thumb-forward-action');
 		settings.reset('thumb-backward-action');
 		settings.reset('volume-control-scheme');
-		showControlComboBox.set_active_id(settings.get_string('show-control'));
+		settings.reset('show-panel-controls');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
