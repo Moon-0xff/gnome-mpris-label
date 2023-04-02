@@ -266,14 +266,18 @@ class Player {
 			
 			if (this.player_window == null || focused_window != this.player_window){//activate player
 				this.previous_app_window = focused_window;
+				if (this.player_window)//only able to record status once window is known
+					this.player_window_minimized = this.player_window.minimized
+
 				app.activate();
 				this.player_window = global.display.get_focus_window();
 				return
 			}
 
-			//if player was minimised before activatePlayer, re-minimise it
-			
 			if (this.previous_app_window){//restore previous window
+				if (this.player_window_minimized)
+					this.player_window.minimize();
+				
 				this.previous_app_window.activate(global.get_current_time());
 				// AltTab.AppSwitcherPopup(); //does nothing
 			}
