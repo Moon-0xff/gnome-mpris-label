@@ -268,7 +268,8 @@ class Player {
 					this.player_window_minimized = this.player_window.minimized
 				else {
 					let window = this._guessAppWindow(this.identity);
-					this.player_window_minimized = window.minimized;
+					if (window)
+						this.player_window_minimized = window.minimized;
 				}
 
 				app.activate();
