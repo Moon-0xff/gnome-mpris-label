@@ -262,28 +262,24 @@ class Player {
 		if(this.desktopApp){
 			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
 			let focused_window = global.display.get_focus_window();
+			let player_window = this._guessAppWindow(this.identity);
 
-			if (this.player_window == null || focused_window != this.player_window){//activate player
-				if (this.player_window)//only able to record status once window is known
-					this.player_window_minimized = this.player_window.minimized
-				else {
-					let window = this._guessAppWindow(this.identity);
-					if (window)
-						this.player_window_minimized = window.minimized;
-				}
-
-				app.activate();
-				this.player_window = global.display.get_focus_window();
+			// if search fails: do nothing
+			if (!player_window)
 				return
-			}
 
-			if (this.player_window_minimized)
-				this.player_window.minimize();
+			// if focused_window is player window: minimize
+			if (focused_window == player_window)
+				player_window.minimize();
+
+			// if focused_window isn't player window: focus the player window
+			else
+				app.activate();
 
 			// equivalent to Alt+tab. window to be focused is at the end of the list, just before player and Gnome-shell
-			let windows_list = global.get_window_actors();
-			let app_window = windows_list[windows_list.length - 3].get_meta_window(); 
-			app_window.activate(global.get_current_time());
+			//let windows_list = global.get_window_actors();
+			//let app_window = windows_list[windows_list.length - 3].get_meta_window();
+			//app_window.activate(global.get_current_time());
 		}
 	}
 	_guessAppWindow(identity){//secondary best-guess method to match player with window
