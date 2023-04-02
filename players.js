@@ -266,6 +266,10 @@ class Player {
 			if (this.player_window == null || focused_window != this.player_window){//activate player
 				if (this.player_window)//only able to record status once window is known
 					this.player_window_minimized = this.player_window.minimized
+				else {
+					let window = this._guessAppWindow(this.identity);
+					this.player_window_minimized = window.minimized;
+				}
 
 				app.activate();
 				this.player_window = global.display.get_focus_window();
@@ -279,6 +283,15 @@ class Player {
 			let windows_list = global.get_window_actors();
 			let app_window = windows_list[windows_list.length - 3].get_meta_window(); 
 			app_window.activate(global.get_current_time());
+		}
+	}
+	_guessAppWindow(identity){//secondary best-guess method to match player with window
+		identity = identity.toLowerCase();
+		for (const actor of global.get_window_actors()) {
+			const window = actor.get_meta_window();
+			let wm_class = window.get_wm_class().toLowerCase();
+			if (wm_class.includes(identity) | identity.includes(wm_class))
+				return window;
 		}
 	}
 }
