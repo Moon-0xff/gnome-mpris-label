@@ -263,9 +263,8 @@ class Player {
 		if(this.desktopApp){
 			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
 			let focused_window = global.display.get_focus_window();
-			
+
 			if (this.player_window == null || focused_window != this.player_window){//activate player
-				this.previous_app_window = focused_window;
 				if (this.player_window)//only able to record status once window is known
 					this.player_window_minimized = this.player_window.minimized
 
@@ -274,13 +273,13 @@ class Player {
 				return
 			}
 
-			if (this.previous_app_window){//restore previous window
-				if (this.player_window_minimized)
-					this.player_window.minimize();
-				
-				this.previous_app_window.activate(global.get_current_time());
-				// AltTab.AppSwitcherPopup(); //does nothing
-			}
+			if (this.player_window_minimized)
+				this.player_window.minimize();
+
+			// equivalent to Alt+tab. window to be focused is at the end of the list, just before player and Gnome-shell
+			let windows_list = global.get_window_actors();
+			let app_window = windows_list[windows_list.length - 3].get_meta_window(); 
+			app_window.activate(global.get_current_time());
 		}
 	}
 }
