@@ -1,6 +1,7 @@
 const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const AltTab = imports.ui.altTab;
 
 const mprisInterface = `
 <node>
@@ -261,8 +262,31 @@ class Player {
 	activatePlayer(){
 		if(this.desktopApp){
 			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-			app.activate();
+			this.focused_window = this.getActiveWindow();//get details of the app opened prior
+			
+			if (this.player_window == null || this.focused_window != this.player_window){//activate player
+				this.previous_app_window = this.focused_window;
+				app.activate();
+				this.player_window = this.getActiveWindow();
+				return
+			}
+
+			//if player was minimised before activatePlayer, re-minimise it
+			
+			if (this.previous_app_window){//restore previous window
+				this.previous_app_window.activate(global.get_current_time());
+				// AltTab.AppSwitcherPopup.previousWindow(); //does nothing
+			}
 		}
+	}
+	getActiveWindow(){
+		for (const actor of global.get_window_actors()) {
+			const window = actor.get_meta_window();
+			if (window.has_focus())
+				return window;
+		}
+		
+		return null
 	}
 }
 
