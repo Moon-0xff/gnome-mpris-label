@@ -279,7 +279,15 @@ class Player {
 	}
 	_guessAppWindow(identity){//secondary best-guess method to match player with window
 		identity = identity.toLowerCase();
-		for (const actor of global.get_window_actors()) {
+		
+		for (const actor of global.get_window_actors()) {//first pass exact match
+			const window = actor.get_meta_window();
+			let wm_class = window.get_wm_class().toLowerCase();
+			if (wm_class == identity)
+				return window;
+		}
+		
+		for (const actor of global.get_window_actors()) {//fallback approximate match
 			const window = actor.get_meta_window();
 			let wm_class = window.get_wm_class().toLowerCase();
 			if (wm_class.includes(identity) | identity.includes(wm_class))
