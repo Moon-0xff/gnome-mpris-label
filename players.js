@@ -270,6 +270,7 @@ class Player {
 			if (focused_window == player_window){
 				if (this.player_window_minimized)
 					player_window.minimize();
+
 				//window to be focused is at the end of the list, just before player and Gnome-shell
 				let windows_list = global.get_window_actors();
 				let app_window = windows_list[windows_list.length - 3].get_meta_window();
