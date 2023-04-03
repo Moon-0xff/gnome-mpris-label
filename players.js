@@ -275,23 +275,24 @@ class Player {
 		else{
 			if(this.desktopApp){
 				this.focusedApp = global.display.get_focus_window(); //save focused window
-				let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
 				this.playerWindowMinimized = playerWindow.minimized;
-				app.activate();
+				Shell.AppSystem.get_default().lookup_app(this.desktopApp).activate();
 			}
 		}
 	}
 	_guessAppWindow(identity){//secondary best-guess method to match player with window
 		identity = identity.toLowerCase();
+		let windows_list = global.get_window_actors();
+		windows_list = windows_list.filter(element => element.get_meta_window().get_window_type() == 0); //only keep normal windows
 		
-		for (const actor of global.get_window_actors()) {//first pass exact match
+		for (const actor of windows_list) {//first pass exact match
 			const window = actor.get_meta_window();
 			let wm_class = window.get_wm_class().toLowerCase();
 			if (wm_class == identity)
 				return window;
 		}
 		
-		for (const actor of global.get_window_actors()) {//fallback approximate match
+		for (const actor of windows_list) {//fallback approximate match
 			const window = actor.get_meta_window();
 			let wm_class = window.get_wm_class().toLowerCase();
 			if (wm_class.includes(identity) | identity.includes(wm_class))
