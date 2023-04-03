@@ -1,6 +1,7 @@
-const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
+const {Clutter,Gio,GLib,GObject,Shell,St,Meta} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const altTab = imports.ui.altTab;
 
 const mprisInterface = `
 <node>
@@ -269,10 +270,10 @@ class Player {
 			if (this.player_window_minimized)
 				player_window.minimize();
 
-			//window to be focused is at the end of the list, just before player and Gnome-shell
 			let windows_list = global.get_window_actors();
-			let app_window = windows_list[windows_list.length - 3].get_meta_window();
-			app_window.activate(global.get_current_time()); //equivalent to Alt+tab
+			windows_list = windows_list.filter(element => element.get_meta_window().get_window_type() == 0); //filter out non-normal windows
+			let app_window = windows_list[windows_list.length - 2].get_meta_window(); //window to be focused is at the end of the list, just before player
+			app_window.activate(global.get_current_time());
 		}
 		else{
 			if(this.desktopApp){
