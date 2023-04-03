@@ -260,25 +260,23 @@ class Player {
 			this.proxy.PreviousRemote()
 	}
 	activatePlayer(){
-		let focused_window = global.display.get_focus_window();
-		let player_window = this._guessAppWindow(this.identity);
+		let focusedWindow = global.display.get_focus_window();
+		let playerWindow = this._guessAppWindow(this.identity);
 
-		if (!player_window)
+		if (!playerWindow)
 			return
 
-		if (focused_window == player_window){
-			if (this.player_window_minimized)
-				player_window.minimize();
+		if (focusedWindow == playerWindow && this.focusedApp){
+			if (this.playerWindowMinimized)
+				playerWindow.minimize();
 
-			let windows_list = global.get_window_actors();
-			windows_list = windows_list.filter(element => element.get_meta_window().get_window_type() == 0); //filter out non-normal windows
-			let app_window = windows_list[windows_list.length - 2].get_meta_window(); //window to be focused is at the end of the list, just before player
-			app_window.activate(global.get_current_time());
+			this.focusedApp.activate(global.get_current_time());
 		}
 		else{
 			if(this.desktopApp){
+				this.focusedApp = global.display.get_focus_window(); //save focused window
 				let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-				this.player_window_minimized = player_window.minimized;
+				this.playerWindowMinimized = playerWindow.minimized;
 				app.activate();
 			}
 		}
