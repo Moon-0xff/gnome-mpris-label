@@ -259,24 +259,24 @@ class Player {
 			this.proxy.PreviousRemote()
 	}
 	activatePlayer(){
-		if(this.desktopApp){
-			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-			let focused_window = global.display.get_focus_window();
-			let player_window = this._guessAppWindow(this.identity);
+		let focused_window = global.display.get_focus_window();
+		let player_window = this._guessAppWindow(this.identity);
 
-			if (!player_window)
-				return
+		if (!player_window)
+			return
 
-			if (focused_window == player_window){
-				if (this.player_window_minimized)
-					player_window.minimize();
+		if (focused_window == player_window){
+			if (this.player_window_minimized)
+				player_window.minimize();
 
-				//window to be focused is at the end of the list, just before player and Gnome-shell
-				let windows_list = global.get_window_actors();
-				let app_window = windows_list[windows_list.length - 3].get_meta_window();
-				app_window.activate(global.get_current_time()); //equivalent to Alt+tab
-			}
-			else{
+			//window to be focused is at the end of the list, just before player and Gnome-shell
+			let windows_list = global.get_window_actors();
+			let app_window = windows_list[windows_list.length - 3].get_meta_window();
+			app_window.activate(global.get_current_time()); //equivalent to Alt+tab
+		}
+		else{
+			if(this.desktopApp){
+				let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
 				this.player_window_minimized = player_window.minimized;
 				app.activate();
 			}
