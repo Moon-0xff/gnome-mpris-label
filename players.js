@@ -266,15 +266,15 @@ class Player {
 		if (!playerWindow)
 			return
 
-		if (focusedWindow == playerWindow && this.focusedApp){
+		if (focusedWindow == playerWindow){
 			if (this.playerWindowMinimized)
 				playerWindow.minimize();
 
-			this.focusedApp.activate(global.get_current_time());
+			let apps = Shell.AppSystem.get_default().get_running();
+			apps[1].activate(global.get_current_time());
 		}
 		else{
 			if(this.desktopApp){
-				this.focusedApp = global.display.get_focus_window(); //save focused window
 				this.playerWindowMinimized = playerWindow.minimized;
 				Shell.AppSystem.get_default().lookup_app(this.desktopApp).activate();
 			}
