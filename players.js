@@ -168,7 +168,6 @@ class Player {
 
 		const entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 		this.entryProxy = entryWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this._onEntryProxyReady.bind(this));
-
 	}
 	_onEntryProxyReady(){
 		this.identity = this.entryProxy.Identity;
@@ -195,6 +194,8 @@ class Player {
 			this.desktopApp = this._matchRunningApps(matchedEntries)
 
 		this.icon = this.getIcon(this.desktopApp);
+
+		this.playerWindow = this._guessAppWindow(this.identity);
 	}
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
@@ -262,14 +263,13 @@ class Player {
 		if(this.desktopApp){
 			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
 			let focused_window = global.display.get_focus_window();
-			let player_window = this._guessAppWindow(this.identity);
 
-			if (!player_window)
+			if (!this.playerWindow)
 				return
 
-			if (focused_window == player_window){
-				if (this.player_window_minimized)
-					player_window.minimize();
+			if (focused_window == this.playerWindow){
+				if (this.isWindowMinimized)
+					this.playerWindow.minimize();
 
 				//window to be focused is at the end of the list, just before player and Gnome-shell
 				let windows_list = global.get_window_actors();
@@ -277,7 +277,7 @@ class Player {
 				app_window.activate(global.get_current_time()); //equivalent to Alt+tab
 			}
 			else{
-				this.player_window_minimized = player_window.minimized;
+				this.isWindowMinimized = this.playerWindow.minimized;
 				app.activate();
 			}
 		}
