@@ -1,7 +1,6 @@
 const {Clutter,Gio,GLib,GObject,Shell,St,Meta} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
-const altTab = imports.ui.altTab;
 
 const mprisInterface = `
 <node>
