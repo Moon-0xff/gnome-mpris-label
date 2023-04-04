@@ -260,12 +260,14 @@ class Player {
 	}
 	activatePlayer(){
 		let focusedWindow = global.display.get_focus_window();
-		let playerWindow = this._guessAppWindow(this.identity);
 
-		if (!playerWindow)
+		if (!this.playerWindow)
+			this.playerWindow = this._guessAppWindow(this.identity);
+
+		if (!this.playerWindow)
 			return
 
-		if (focusedWindow == playerWindow){
+		if (focusedWindow == this.playerWindow){
 			if (this.playerWindowMinimized)
 				playerWindow.minimize();
 
@@ -274,8 +276,9 @@ class Player {
 		else{
 			if(this.desktopApp){
 				this.previousWindow = focusedWindow;
-				this.playerWindowMinimized = playerWindow.minimized;
+				this.playerWindowMinimized = this.playerWindow.minimized;
 				Shell.AppSystem.get_default().lookup_app(this.desktopApp).activate();
+				this.playerWindow = global.display.get_focus_window();
 			}
 		}
 	}
