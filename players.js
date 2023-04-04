@@ -260,25 +260,28 @@ class Player {
 	}
 	activatePlayer(){
 		let focusedWindow = global.display.get_focus_window();
+		let playerWindow = this._guessAppWindow(this.identity);
+		let currentWorkspace = global.workspace_manager.get_active_workspace();
 
-		if (!this.playerWindow)
-			this.playerWindow = this._guessAppWindow(this.identity);
-
-		if (!this.playerWindow)
+		if (!playerWindow)
 			return
 
-		if (focusedWindow == this.playerWindow){
-			if (this.playerWindowMinimized)
-				playerWindow.minimize();
+		if (focusedWindow == playerWindow){
+			if (currentWorkspace == this.previousWorkspace){ //go back to last workspace
+				if (this.playerWindowMinimized)
+					playerWindow.minimize();
 
-			this.previousWindow.activate(global.get_current_time());
+				this.previousWindow.activate(global.get_current_time());
+			}
+			else if (this.previousWorkspace)//focus window on current workspace
+				this.previousWorkspace.activate(global.get_current_time());
 		}
 		else{
 			if(this.desktopApp){
+				this.previousWorkspace = currentWorkspace;
 				this.previousWindow = focusedWindow;
-				this.playerWindowMinimized = this.playerWindow.minimized;
+				this.playerWindowMinimized = playerWindow.minimized;
 				Shell.AppSystem.get_default().lookup_app(this.desktopApp).activate();
-				this.playerWindow = global.display.get_focus_window();
 			}
 		}
 	}
