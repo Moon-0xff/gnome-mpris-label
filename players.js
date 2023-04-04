@@ -294,7 +294,7 @@ class Player {
 		for (const actor of windows_list) {//fallback approximate match
 			const window = actor.get_meta_window();
 			let wm_class = window.get_wm_class().toLowerCase();
-			if (wm_class.includes(identity) | identity.includes(wm_class))
+			if (wm_class.includes(identity) || identity.includes(wm_class))
 				return window;
 		}
 	}
