@@ -269,11 +269,17 @@ class Player {
 			if (this.playerWindowMinimized)
 				playerWindow.minimize();
 
-			let apps = Shell.AppSystem.get_default().get_running();
-			apps[1].activate(global.get_current_time());
+			let current_workspace = global.workspace_manager.get_active_workspace();
+			if (current_workspace != this.app_workspace) //go back to last workspace
+				this.app_workspace.activate(global.get_current_time());
+			else {//focus window on current workspace
+				let apps = Shell.AppSystem.get_default().get_running();
+				apps[1].activate(global.get_current_time());
+			}
 		}
 		else{
 			if(this.desktopApp){
+				this.app_workspace = global.workspace_manager.get_active_workspace();//save workspace
 				this.playerWindowMinimized = playerWindow.minimized;
 				Shell.AppSystem.get_default().lookup_app(this.desktopApp).activate();
 			}
