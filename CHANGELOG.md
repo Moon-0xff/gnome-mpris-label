@@ -31,3 +31,7 @@ Aditionally:
 - Increases the chance of finding the application icon
 - Adds bindable mouse controls
 - Improves performance (refresh time down from 5-9ms to 1ms or less)
+
+# Upcoming Version
+- Focuses the previously focused window when the 'open app' action is activated
+  and the currently focused window is the player window
