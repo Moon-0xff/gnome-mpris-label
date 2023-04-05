@@ -260,7 +260,7 @@ class Player {
 	}
 	activatePlayer(){
 		let focusedWindow = global.display.get_focus_window();
-		let playerWindow = this._guessAppWindow(this.identity);
+		let playerWindow = this._matchAppWindow();
 		let currentWorkspace = global.workspace_manager.get_active_workspace();
 
 		if (!playerWindow)
@@ -281,26 +281,21 @@ class Player {
 				this.previousWorkspace = currentWorkspace;
 				this.previousWindow = focusedWindow;
 				this.playerWindowMinimized = playerWindow.minimized;
-				Shell.AppSystem.get_default().lookup_app(this.desktopApp).activate();
+				playerWindow.activate(global.get_current_time());
 			}
 		}
 	}
-	_guessAppWindow(identity){//secondary best-guess method to match player with window
-		identity = identity.toLowerCase();
+	_matchAppWindow(){//match player with window
+		let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
+		let appPID = app.get_pids();
+
 		let windows_list = global.get_window_actors();
 		windows_list = windows_list.filter(element => element.get_meta_window().get_window_type() == 0); //only keep normal windows
 		
-		for (const actor of windows_list) {//first pass exact match
+		for (const actor of windows_list) {//match window based on pid
 			const window = actor.get_meta_window();
-			let wm_class = window.get_wm_class().toLowerCase();
-			if (wm_class == identity)
-				return window;
-		}
-		
-		for (const actor of windows_list) {//fallback approximate match
-			const window = actor.get_meta_window();
-			let wm_class = window.get_wm_class().toLowerCase();
-			if (wm_class.includes(identity) || identity.includes(wm_class))
+			let windowPID = window.get_pid();
+			if (appPID.includes(windowPID))
 				return window;
 		}
 	}
