@@ -8,6 +8,7 @@ const mprisInterface = `
 		<method name="PlayPause" />
 		<method name="Next" />
 		<method name="Previous" />
+		<method name="Stop" />
 		<property name="CanPlay" type="b" access="read" />
 		<property name="CanPause" type="b" access="read" />
 		<property name="CanGoNext" type="b" access="read" />
@@ -247,8 +248,14 @@ class Player {
 		return icon
 	}
 	toggleStatus() {
-		if (this.proxy.CanPlay && this.proxy.CanPause)
-			this.proxy.PlayPauseRemote()
+		if (this.proxy.CanPlay && this.proxy.CanPause){
+			this.proxy.PlayPauseRemote();
+			return
+		}
+		if (this.proxy.PlaybackStatus == "Playing"){ // fallback to "Stop"
+			this.proxy.StopRemote();
+			return
+		}
 	}
 	goNext(){
 		if (this.proxy.CanGoNext)
