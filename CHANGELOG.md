@@ -33,5 +33,7 @@ Aditionally:
 - Improves performance (refresh time down from 5-9ms to 1ms or less)
 
 # Upcoming Version
-- Focuses the previously focused window when the 'open app' action is activated
-  and the currently focused window is the player window
+- Action 'open app' will focus to the last window/workspace if the focused
+  window is the player window
+- Action 'play/pause' will send a 'Stop' signal to the player if the player is
+  active and 'Pause' isn't available
