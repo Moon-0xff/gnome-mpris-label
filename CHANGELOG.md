@@ -32,7 +32,7 @@ Aditionally:
 - Adds bindable mouse controls
 - Improves performance (refresh time down from 5-9ms to 1ms or less)
 
-# Upcoming Version
+# Version 14
 - Action 'open app' will focus to the last window/workspace if the focused
   window is the player window
 - Action 'play/pause' will send a 'Stop' signal to the player if the player is
