@@ -200,24 +200,13 @@ function buildPrefsWidget(){
 	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
-	let scrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',buttonActions,undefined);
-	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',buttonActions,undefined);
+	let scrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',{'volume up':'volume-up','none':'none'},undefined);
+	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',{'volume down':'volume-down','none':'none'},undefined);
 	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined);
 	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined);
 
-	//the scroll comboboxes are just for show (for now). Setting the sensitivity to OFF makes them non-interactive and gray.
-	scrollUpComboBox.set_button_sensitivity(Gtk.SensitivityType.OFF);
-	scrollDownComboBox.set_button_sensitivity(Gtk.SensitivityType.OFF);
-
 	addSubcategoryLabel(controlsPage,'Behaviour');
 	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
-
-	addButton(controlsPage,'Unbind scroll actions', () => {
-		settings.set_string('scroll-up-action','none');
-		settings.set_string('scroll-down-action','none');
-		scrollUpComboBox.set_active_id(settings.get_string('scroll-up-action'));
-		scrollDownComboBox.set_active_id(settings.get_string('scroll-down-action'));
-	});
 
 	addButton(controlsPage,'Reset controls settings',() => {
 		settings.reset('left-click-action');
@@ -302,7 +291,7 @@ function addLabel(widget,labelstring,labeltooltip){
 
 function buildStringComboBox(settings,setting,options){
 	let thisComboBox = new Gtk.ComboBoxText({
-		halign: Gtk.Align.END,
+		halign: Gtk.Align.FILL,
 		visible: true
 	});
 	for (let option in options){
