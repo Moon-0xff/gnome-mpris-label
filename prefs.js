@@ -212,16 +212,27 @@ function buildPrefsWidget(){
 	addSubcategoryLabel(controlsPage,'Behaviour');
 	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
 
+	addButton(controlsPage,'Unbind scroll actions', () => {
+		settings.set_string('scroll-up-action','none');
+		settings.set_string('scroll-down-action','none');
+		scrollUpComboBox.set_active_id(settings.get_string('scroll-up-action'));
+		scrollDownComboBox.set_active_id(settings.get_string('scroll-down-action'));
+	});
+
 	addButton(controlsPage,'Reset controls settings',() => {
 		settings.reset('left-click-action');
 		settings.reset('middle-click-action');
 		settings.reset('right-click-action');
+		settings.reset('scroll-up-action');
+		settings.reset('scroll-down-action');
 		settings.reset('thumb-forward-action');
 		settings.reset('thumb-backward-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		scrollUpComboBox.set_active_id(settings.get_string('scroll-up-action'));
+		scrollDownComboBox.set_active_id(settings.get_string('scroll-down-action'));
 		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
