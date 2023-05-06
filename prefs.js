@@ -200,8 +200,7 @@ function buildPrefsWidget(){
 	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
-	let scrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',{'volume up':'volume-up','none':'none'},undefined);
-	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',{'volume down':'volume-down','none':'none'},undefined);
+	let scrollComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up/down action:',{'volume controls':'volume-up','none':'none'},undefined);
 	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined);
 	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined);
 
@@ -213,15 +212,13 @@ function buildPrefsWidget(){
 		settings.reset('middle-click-action');
 		settings.reset('right-click-action');
 		settings.reset('scroll-up-action');
-		settings.reset('scroll-down-action');
 		settings.reset('thumb-forward-action');
 		settings.reset('thumb-backward-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
-		scrollUpComboBox.set_active_id(settings.get_string('scroll-up-action'));
-		scrollDownComboBox.set_active_id(settings.get_string('scroll-down-action'));
+		scrollComboBox.set_active_id(settings.get_string('scroll-up-action'));
 		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
