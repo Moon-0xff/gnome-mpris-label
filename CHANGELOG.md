@@ -37,3 +37,6 @@ Aditionally:
   window is the player window
 - Action 'play/pause' will send a 'Stop' signal to the player if the player is
   active and 'Pause' isn't available
+
+# Upcoming Version
+- Merges the scroll up/down actions and makes them optional
