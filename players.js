@@ -8,6 +8,7 @@ const mprisInterface = `
 		<method name="PlayPause" />
 		<method name="Next" />
 		<method name="Previous" />
+		<method name="Stop" />
 		<property name="CanPlay" type="b" access="read" />
 		<property name="CanPause" type="b" access="read" />
 		<property name="CanGoNext" type="b" access="read" />
@@ -247,8 +248,14 @@ class Player {
 		return icon
 	}
 	toggleStatus() {
-		if (this.proxy.CanPlay && this.proxy.CanPause)
-			this.proxy.PlayPauseRemote()
+		if (this.proxy.CanPlay && this.proxy.CanPause){
+			this.proxy.PlayPauseRemote();
+			return
+		}
+		if (this.proxy.PlaybackStatus == "Playing"){ // fallback to "Stop"
+			this.proxy.StopRemote();
+			return
+		}
 	}
 	goNext(){
 		if (this.proxy.CanGoNext)
@@ -259,9 +266,44 @@ class Player {
 			this.proxy.PreviousRemote()
 	}
 	activatePlayer(){
-		if(this.desktopApp){
-			let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
-			app.activate();
+		let focusedWindow = global.display.get_focus_window();
+		let playerWindow = this._matchAppWindow();
+		let currentWorkspace = global.workspace_manager.get_active_workspace();
+
+		if (!playerWindow)
+			return
+
+		if (focusedWindow == playerWindow){
+			if (currentWorkspace == this.previousWorkspace){ //go back to last workspace
+				if (this.playerWindowMinimized)
+					playerWindow.minimize();
+
+				this.previousWindow.activate(global.get_current_time());
+			}
+			else if (this.previousWorkspace)//focus window on current workspace
+				this.previousWorkspace.activate(global.get_current_time());
+		}
+		else{
+			if(this.desktopApp){
+				this.previousWorkspace = currentWorkspace;
+				this.previousWindow = focusedWindow;
+				this.playerWindowMinimized = playerWindow.minimized;
+				playerWindow.activate(global.get_current_time());
+			}
+		}
+	}
+	_matchAppWindow(){//match player with window
+		let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
+		let appPID = app.get_pids();
+
+		let windows_list = global.get_window_actors();
+		windows_list = windows_list.filter(element => element.get_meta_window().get_window_type() == 0); //only keep normal windows
+		
+		for (const actor of windows_list) {//match window based on pid
+			const window = actor.get_meta_window();
+			let windowPID = window.get_pid();
+			if (appPID.includes(windowPID))
+				return window;
 		}
 	}
 }
