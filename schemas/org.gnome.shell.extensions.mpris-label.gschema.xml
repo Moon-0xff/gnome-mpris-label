@@ -102,12 +102,8 @@
       <default>"application"</default>
     </key>
 
-    <key name="scroll-up-action" type="s">
-      <default>"volume-up"</default>
-    </key>
-
-    <key name="scroll-down-action" type="s">
-      <default>"volume-down"</default>
+    <key name="scroll-action" type="s">
+      <default>"volume-controls"</default>
     </key>
 
     <key name="thumb-forward-action" type="s">

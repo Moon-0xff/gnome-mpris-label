@@ -200,14 +200,9 @@ function buildPrefsWidget(){
 	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
 	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
 	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
-	let scrollUpComboBox = addStringComboBox(controlsPage,'scroll-up-action','Scroll up action:',buttonActions,undefined);
-	let scrollDownComboBox = addStringComboBox(controlsPage,'scroll-down-action','Scroll down action:',buttonActions,undefined);
+	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined);
 	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined);
 	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined);
-
-	//the scroll comboboxes are just for show (for now). Setting the sensitivity to OFF makes them non-interactive and gray.
-	scrollUpComboBox.set_button_sensitivity(Gtk.SensitivityType.OFF);
-	scrollDownComboBox.set_button_sensitivity(Gtk.SensitivityType.OFF);
 
 	addSubcategoryLabel(controlsPage,'Behaviour');
 	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
@@ -216,12 +211,14 @@ function buildPrefsWidget(){
 		settings.reset('left-click-action');
 		settings.reset('middle-click-action');
 		settings.reset('right-click-action');
+		settings.reset('scroll-action');
 		settings.reset('thumb-forward-action');
 		settings.reset('thumb-backward-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		scrollComboBox.set_active_id(settings.get_string('scroll-action'));
 		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
@@ -291,7 +288,7 @@ function addLabel(widget,labelstring,labeltooltip){
 
 function buildStringComboBox(settings,setting,options){
 	let thisComboBox = new Gtk.ComboBoxText({
-		halign: Gtk.Align.END,
+		halign: Gtk.Align.FILL,
 		visible: true
 	});
 	for (let option in options){

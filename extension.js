@@ -145,6 +145,11 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onScroll(event) {
+		const SCROLL_ACTION = this.settings.get_string('scroll-action');
+
+		if(SCROLL_ACTION == 'none')
+			return Clutter.EVENT_STOP
+
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
 
