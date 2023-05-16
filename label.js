@@ -36,8 +36,9 @@ var buildLabel = function buildLabel(players){
 	}
 
 	// metadata is a javascript object
-	// "fields" are enumerable string-keyed properties
-	// each "field" is a GLib.Variant object
+	// "fields" order is user-defined
+	// each "field" correspond to a string-keyed property on metadata
+	// each property contains a GLib.Variant object
 	let metadata = players.selected.metadata;
 
 	if(metadata == null)
@@ -46,7 +47,7 @@ var buildLabel = function buildLabel(players){
 	let labelstring = "";
 	let variant;
 	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
-	fields.filter(field => field != "");
+	fields.filter(field => field != ""); //discard fields that the user defined as empty(none)
 
 	fields.forEach(field => {
 		if (Object.keys(metadata).includes(field)){
@@ -59,7 +60,7 @@ var buildLabel = function buildLabel(players){
 		}
 	});
 
-	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
+	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length); //remove the trailing divider
 
 	if(labelstring.length === 0)
 		return placeholder
