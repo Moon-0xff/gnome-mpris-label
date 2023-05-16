@@ -22,7 +22,6 @@ command through GNOME's command prompt (shortcut `Alt+F2, r`)
 
 # Understanding the source code
 ## The label.js file:
-
 Most people will probably want to edit this file, it stores all
 the code that builds the string displayed on the top panel.
 
@@ -31,7 +30,6 @@ the player is paused or not) you will need to read the `players.js` file, or at
 least the description coming up next.
 
 ## The players.js file:
-
 This file declares two classes: `Players` and `Player` (don't confuse them!)
 
 The `Players` class manages the list of players (`players.list`), and the
@@ -46,7 +44,6 @@ Proxy object.
 The main reference for the entire file is GNOME's `mpris.js`
 
 ## The extension.js file:
-
 This file houses all the code that interfaces with gnome-shell, among other
 things.
 
@@ -63,7 +60,6 @@ We also use `SCREAMING_SNAKE_CASE` for option variables, as they were originally
 constants (in some files they still are)
 
 ## Documentation:
-
 * [Gnome's official GJS guides](https://gjs.guide/)
 * [GJS official documentation](https://gjs-docs.gnome.org/)
 * [Mozilla's JavaScript guides and documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -84,7 +80,6 @@ If you are having problems understanding the code or adding your changes please
 raise an issue!
 
 # Sharing your changes
-
 After successfully making your changes, if you think they are worthy of being
 shared please submit a PR!
 
