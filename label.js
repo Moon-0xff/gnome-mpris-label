@@ -78,10 +78,7 @@ function removeTextWhenPaused(player){
 }
 
 function parseMetadataField(data) {
-	if (data == undefined)
-		return ""
-
-	if (data.length == 0)
+	if (data == undefined || data.length == 0)
 		return ""
 
 	if (data.includes("xesam:") || data.includes("mpris:"))
