@@ -18,8 +18,6 @@ function getSettings(){
 	FIRST_FIELD = settings.get_string('first-field');
 	SECOND_FIELD = settings.get_string('second-field');
 	LAST_FIELD = settings.get_string('last-field');
-	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	DIVIDER_STRING = settings.get_string('divider-string');
 }
 
 var buildLabel = function buildLabel(players){
