@@ -50,6 +50,9 @@ things.
 This file is better explained by gjs.guide, the PRs that introduced the various
 features, the commit log, and the source code itself. (Sorry about that).
 
+## The pref.js file:
+This file is part of the standard extension structure an houses all the code that relates to the Prefences dialog and links to gsettings. See [GJS guide](https://gjs.guide/extensions/development/preferences.html#creating-the-schema) for details. Note that this files does not use the latest Adwaita style or functions for backward compatibility with older Gnome Shell versions.
+
 ## Coding style
 We loosely follow [gnome's coding style](https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/HACKING.md) except for two points:
 
@@ -72,9 +75,9 @@ With all the above information, and aided by the documentation you should be
 able to understand the source code and hopefully introduce your changes to it.
 
 After adding your changes to the source code test your changes by installing the
-modified version and restarting the shell:
-
-`$ ./install.sh` `Alt+F2, r`
+modified version `$ ./install.sh` and restarting the shell:
+* If using X11, you can restart the Gnome shell by typing `Alt+F2, r`
+* If using Wayland, you will need to log out and log back in for the changes to take effect.
 
 If you are having problems understanding the code or adding your changes please
 raise an issue!
