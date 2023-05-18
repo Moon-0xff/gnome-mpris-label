@@ -75,9 +75,11 @@ With all the above information, and aided by the documentation you should be
 able to understand the source code and hopefully introduce your changes to it.
 
 After adding your changes to the source code test your changes by installing the
-modified version `$ ./install.sh` and restarting the shell:
+modified version `$ ./install.sh` and restarting the shell for the changes to take effect:
 * If using X11, you can restart the Gnome shell by typing `Alt+F2, r`
-* If using Wayland, you will need to log out and log back in for the changes to take effect.
+* If using Wayland, you will need to log out and log back in
+
+Note that if you do a fork of an older version of the code and your revision has a lower revision number in `metadata.json` than the one in EGO, it will get overwritten in the background.
 
 If you are having problems understanding the code or adding your changes please
 raise an issue!
