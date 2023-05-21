@@ -51,12 +51,12 @@ This file is better explained by gjs.guide, the PRs that introduced the various
 features, the commit log, and the source code itself. (Sorry about that).
 
 ## The pref.js file:
-This file is part of the standard extension structure an houses all the code
+This file is part of the standard extension structure and houses all the code
 that relates to the Prefences dialog and links to Gsettings.  
 See [GJS guide](https://gjs.guide/extensions/development/preferences.html#creating-the-schema) for details.
 
-Note that this file does not use the latest Adwaita style or functions for
-backward compatibility with older gnome-shell versions.
+Note that this file does not use the latest Adwaita styles or functions for
+backwards compatibility with older gnome-shell versions.
 
 ## Coding style
 We loosely follow [gnome's coding style](https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/HACKING.md) except for two points:
@@ -83,10 +83,10 @@ After adding your changes to the source code test your changes by installing the
 modified version: `$ ./install.sh` 
 
 And restarting the shell for the changes to take effect:
-* If using Xorg, you can restart the gnome-shell by typing `Alt+F2, r`
+* If using Xorg, you can restart gnome-shell by typing `Alt+F2, r`
 * If using Wayland, you will need to log out and log back in
 
-Note that if you do a fork of an older version of the code and your revision
+Note that if you do a fork from an older version of the code and your revision
 has a lower revision number in `metadata.json` than the one in EGO, it will get
 overwritten in the background.
 
