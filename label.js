@@ -88,8 +88,8 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
+	if(REMOVE_REMASTER_TEXT)
+		data = data.replace(/(?:-|\(|\]).*(?:remaster).*(?:$|\)|\])/i,"");
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -104,28 +104,5 @@ function parseMetadataField(data) {
 	data += DIVIDER_STRING;
 
 	return data
-}
-
-function removeRemasterText(datastring) {
-	if(!REMOVE_REMASTER_TEXT)
-		return datastring
-
-	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
-
-	if (!matchedSubString)
-		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
-
-	if (!matchedSubString)
-		return datastring //returns <datastring> unaltered if both matches were not successful
-
-	if(!matchedSubString[0].match(/Remaster/i))
-		return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
-
-	datastring = datastring.replace(matchedSubString[0],"");
-
-	if (datastring.charAt(datastring.length-1) == " ")
-		datastring = datastring.substring(0,datastring.length-1);
-
-	return datastring
 }
 
