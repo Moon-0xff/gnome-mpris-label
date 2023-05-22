@@ -18,8 +18,6 @@ function getSettings(){
 	FIRST_FIELD = settings.get_string('first-field');
 	SECOND_FIELD = settings.get_string('second-field');
 	LAST_FIELD = settings.get_string('last-field');
-	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	DIVIDER_STRING = settings.get_string('divider-string');
 }
 
 var buildLabel = function buildLabel(players){
@@ -37,31 +35,22 @@ var buildLabel = function buildLabel(players){
 			return placeholder
 	}
 
-	// metadata is a javascript object
-	// "fields" are enumerable string-keyed properties
-	// each "field" is a GLib.Variant object
 	let metadata = players.selected.metadata;
 
 	if(metadata == null)
 		return placeholder
 
+	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD]; //order is user-defined
+	fields.filter(field => field != ""); //discard fields that the user defined as empty(none)
+
 	let labelstring = "";
-	let variant;
-	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
-	fields.filter(field => field != "");
-
 	fields.forEach(field => {
-		if (Object.keys(metadata).includes(field)){
-			variant = metadata[field];
-
-			if(variant.get_type().is_array())
-				labelstring = labelstring + parseMetadataField(variant.get_strv()[0]);
-			else
-				labelstring = labelstring + parseMetadataField(variant.get_string()[0]);
-		}
+		let fieldString = stringFromMetadata(field,metadata); //"extract" the string from metadata
+		fieldString = parseMetadataField(fieldString); //check, filter, customize and add divider to the extracted string
+		labelstring += fieldString; //add it to the string to be displayed
 	});
 
-	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length);
+	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length); //remove the trailing divider
 
 	if(labelstring.length === 0)
 		return placeholder
@@ -78,11 +67,23 @@ function removeTextWhenPaused(player){
 	}
 }
 
-function parseMetadataField(data) {
-	if (data == undefined)
-		return ""
+function stringFromMetadata(field,metadata) {
+	// metadata is a javascript object
+	// each "field" correspond to a string-keyed property on metadata
+	// each property contains a GLib.Variant object
+	if (Object.keys(metadata).includes(field)){
+		let variant = metadata[field];
 
-	if (data.length == 0)
+		if(variant.get_type().is_array())
+			return variant.get_strv()[0]
+		else
+			return variant.get_string()[0]
+	}
+	return ""
+}
+
+function parseMetadataField(data) {
+	if (data == undefined || data.length == 0)
 		return ""
 
 	if (data.includes("xesam:") || data.includes("mpris:"))
@@ -92,8 +93,8 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	if(data.match(/Remaster/i))
-		data = removeRemasterText(data);
+	if(REMOVE_REMASTER_TEXT)
+		data = data.replace(/(?:-|\(|\]).*(?:remaster).*(?:$|\)|\])/i,"");
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -108,28 +109,5 @@ function parseMetadataField(data) {
 	data += DIVIDER_STRING;
 
 	return data
-}
-
-function removeRemasterText(datastring) {
-	if(!REMOVE_REMASTER_TEXT)
-		return datastring
-
-	let matchedSubString = datastring.match(/\((.*?)\)/gi); //matches text between parentheses
-
-	if (!matchedSubString)
-		matchedSubString = datastring.match(/-(.*?)$/gi); //matches text between a hyphen(-) and the end of the string
-
-	if (!matchedSubString)
-		return datastring //returns <datastring> unaltered if both matches were not successful
-
-	if(!matchedSubString[0].match(/Remaster/i))
-		return datastring //returns <datastring> unaltered if our match doesn't contain 'remaster'
-
-	datastring = datastring.replace(matchedSubString[0],"");
-
-	if (datastring.charAt(datastring.length-1) == " ")
-		datastring = datastring.substring(0,datastring.length-1);
-
-	return datastring
 }
 
