@@ -35,29 +35,18 @@ var buildLabel = function buildLabel(players){
 			return placeholder
 	}
 
-	// metadata is a javascript object
-	// "fields" order is user-defined
-	// each "field" correspond to a string-keyed property on metadata
-	// each property contains a GLib.Variant object
 	let metadata = players.selected.metadata;
 
 	if(metadata == null)
 		return placeholder
 
-	let labelstring = "";
-	let variant;
-	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD];
+	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD]; //order is user-defined
 	fields.filter(field => field != ""); //discard fields that the user defined as empty(none)
 
+	let labelstring = "";
 	fields.forEach(field => {
-		if (Object.keys(metadata).includes(field)){
-			variant = metadata[field];
-
-			if(variant.get_type().is_array())
-				labelstring = labelstring + parseMetadataField(variant.get_strv()[0]);
-			else
-				labelstring = labelstring + parseMetadataField(variant.get_string()[0]);
-		}
+		let fieldString = stringFromMetadata(field,metadata); //"extract" the string from metadata
+		labelstring += parseMetadataField(fieldString); //check, filter and add the divider to the extracted string
 	});
 
 	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length); //remove the trailing divider
@@ -75,6 +64,21 @@ function removeTextWhenPaused(player){
 	if ( (player.statusTimestamp / 1000) + REMOVE_TEXT_PAUSED_DELAY <= new Date().getTime() / 1000){
 		return true
 	}
+}
+
+function stringFromMetadata(field,metadata) {
+	// metadata is a javascript object
+	// each "field" correspond to a string-keyed property on metadata
+	// each property contains a GLib.Variant object
+	if (Object.keys(metadata).includes(field)){
+		let variant = metadata[field];
+
+		if(variant.get_type().is_array())
+			return variant.get_strv()[0]
+		else
+			return variant.get_string()[0]
+	}
+	return ""
 }
 
 function parseMetadataField(data) {
