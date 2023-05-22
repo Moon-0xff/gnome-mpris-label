@@ -46,7 +46,8 @@ var buildLabel = function buildLabel(players){
 	let labelstring = "";
 	fields.forEach(field => {
 		let fieldString = stringFromMetadata(field,metadata); //"extract" the string from metadata
-		labelstring += parseMetadataField(fieldString); //check, filter and add the divider to the extracted string
+		fieldString = parseMetadataField(fieldString); //check, filter, customize and add divider to the extracted string
+		labelstring += fieldString; //add it to the string to be displayed
 	});
 
 	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length); //remove the trailing divider
