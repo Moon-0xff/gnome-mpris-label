@@ -97,7 +97,7 @@ function parseMetadataField(data) {
 		const filterlist = LABEL_FILTERED_LIST.toLowerCase().split(',');
 		filterlist.forEach(filter => { //go through each filter to look for a match
 			if (validRegex(filter)){
-				const regex = new RegExp("(?:-|\\(|\\[).*(?:" + filter + ").*(?:$|\\)|\\])","i")
+				const regex = new RegExp("(?:-|\\(|\\[).*(?:" + filter + ").*(?:$|\\)|\\])","i");
 				data = data.replace(regex,"");
 			}
 		});
