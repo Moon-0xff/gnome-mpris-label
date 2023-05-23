@@ -1,7 +1,7 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
+let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
 	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
 	MAX_STRING_LENGTH,DIVIDER_STRING;
@@ -11,7 +11,7 @@ function getSettings(){
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
-	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
+	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 	DIVIDER_STRING = settings.get_string('divider-string');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
@@ -93,8 +93,15 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	if(REMOVE_REMASTER_TEXT)
-		data = data.replace(/(?:-|\(|\]).*(?:remaster).*(?:$|\)|\])/i,"");
+	if(LABEL_FILTERED_LIST){
+		const filterlist = LABEL_FILTERED_LIST.toLowerCase().split(',');
+		filterlist.forEach(filter => { //go through each filter to look for a match
+			if (validRegex(filter)){
+				const regex = new RegExp("(?:-|\\(|\\[).*(?:" + filter + ").*(?:$|\\)|\\])","i")
+				data = data.replace(regex,"");
+			}
+		});
+	}
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -109,5 +116,15 @@ function parseMetadataField(data) {
 	data += DIVIDER_STRING;
 
 	return data
+}
+
+function validRegex(expression){
+	var isValid = true;
+	try {
+		new RegExp(expression,"i");
+	} catch(e) {
+		isValid = false;
+	}
+	return isValid
 }
 
