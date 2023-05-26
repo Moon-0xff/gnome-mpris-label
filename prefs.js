@@ -55,7 +55,7 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(labelPage,'Behaviour');
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addEntry(labelPage,'label-filtered-list','Filter titles containing:',"Separate entries with commas\n\nMatches the most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)\n\tExample [2023 Remastered]");
+	addEntry(labelPage,'label-filtered-list','Filter titles containing:',"Separate entries with commas, special characters will be removed\n\nMatches the most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)\n\tExample [2023 Remastered]");
 	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
 	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);

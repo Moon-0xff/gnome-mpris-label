@@ -94,7 +94,14 @@ function parseMetadataField(data) {
 		data = data.replace(/ \| /g, " / ");
 
 	if(LABEL_FILTERED_LIST){
-		const filterlist = LABEL_FILTERED_LIST.toLowerCase().split(',');
+		const filteredString = LABEL_FILTERED_LIST.replace(/[`~!@#$%^&*()_|+\-=?;:'".<>\{\}\[\]\\\/]/gi, '');
+
+		if (LABEL_FILTERED_LIST!=filteredString){
+			const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+			settings.set_string('label-filtered-list',filteredString);
+		}
+
+		const filterlist = filteredString.toLowerCase().split(',');
 		filterlist.forEach(filter => { //go through each filter to look for a match
 			filter = "(?:-|\\(|\\[).*(?:" + filter + ").*(?:$|\\)|\\])";
 			if (validRegex(filter)){
