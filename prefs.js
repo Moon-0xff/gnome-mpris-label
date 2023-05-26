@@ -35,7 +35,6 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
-
 	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
 		settings.reset('right-padding');
