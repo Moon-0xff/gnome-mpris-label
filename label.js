@@ -3,8 +3,8 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
-	MAX_STRING_LENGTH,DIVIDER_STRING;
+	REMOVE_TEXT_PAUSED_DELAY, FORMAT
+	MAX_STRING_LENGTH;
 
 function getSettings(){
 	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
@@ -12,12 +12,9 @@ function getSettings(){
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
-	DIVIDER_STRING = settings.get_string('divider-string');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
-	FIRST_FIELD = settings.get_string('first-field');
-	SECOND_FIELD = settings.get_string('second-field');
-	LAST_FIELD = settings.get_string('last-field');
+	FORMAT = settings.get_string("format");
 }
 
 var buildLabel = function buildLabel(players){
@@ -40,17 +37,22 @@ var buildLabel = function buildLabel(players){
 	if(metadata == null)
 		return placeholder
 
-	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD]; //order is user-defined
-	fields.filter(field => field != ""); //discard fields that the user defined as empty(none)
 
-	let labelstring = "";
-	fields.forEach(field => {
-		let fieldString = stringFromMetadata(field,metadata); //"extract" the string from metadata
-		fieldString = parseMetadataField(fieldString); //check, filter, customize and add divider to the extracted string
-		labelstring += fieldString; //add it to the string to be displayed
-	});
+    const substitutions = [
+        ["artist", "xesam:artist"],
+        ["album", "xesam:album"],
+        ["title", "xesam:title"],
+    ];
 
-	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length); //remove the trailing divider
+	let labelstring = FORMAT;
+    substitutions.forEach((field) => {
+        let fieldString = stringFromMetadata(field[1], metadata); //"extract" the string from metadata
+        fieldString = parseMetadataField(fieldString);
+        labelstring = labelstring.replace(
+            new RegExp(`%${field[0].toUpperCase()}%`, "g"),
+            fieldString
+        );
+    });
 
 	if(labelstring.length === 0)
 		return placeholder
@@ -105,8 +107,6 @@ function parseMetadataField(data) {
 
 		data = data.substring(0, lastIndex) + "...";
 	}
-
-	data += DIVIDER_STRING;
 
 	return data
 }

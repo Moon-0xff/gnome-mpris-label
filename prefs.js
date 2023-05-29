@@ -63,35 +63,21 @@ function buildPrefsWidget(){
 	addSubcategoryLabel(labelPage,'Appearance');
 	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
 	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
 
 	//visible fields is a bit more complex
-	addLabel(labelPage,'Visible fields and order:',undefined);
-
 	let visibleFieldsBox = new Gtk.Box({
-		spacing: 12,
+		spacing: 6,
 		visible: true
 	});
 
-	let fieldOptions = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
+	addEntry(labelPage, 'format', 'Format for the extension:', undefined);
+    addLabel(
+        labelPage,
+        '%ARTIST% - Artist\n%ALBUM% - Album\n%TITLE% - Title',
+        undefined
+    );
 
-	let firstFieldComboBox = buildStringComboBox(settings,'first-field',fieldOptions);
 
-	fieldOptions['none'] = '';
-
-	let secondFieldComboBox = buildStringComboBox(settings,'second-field',fieldOptions);
-	let lastFieldComboBox = buildStringComboBox(settings,'last-field',fieldOptions);
-
-	if(shellVersion < 40){
-		visibleFieldsBox.pack_start(firstFieldComboBox,true,true,0);
-		visibleFieldsBox.pack_start(secondFieldComboBox,true,true,0);
-		visibleFieldsBox.pack_start(lastFieldComboBox,true,true,0);
-	}
-	else {
-		visibleFieldsBox.append(firstFieldComboBox,true,true,0);
-		visibleFieldsBox.append(secondFieldComboBox,true,true,0);
-		visibleFieldsBox.append(lastFieldComboBox,true,true,0);
-	}
 	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;

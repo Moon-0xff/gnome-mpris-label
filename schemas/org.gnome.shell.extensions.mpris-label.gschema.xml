@@ -34,20 +34,8 @@
       <default>true</default>
     </key>
 
-    <key name="divider-string" type="s">
-      <default>" | "</default>
-    </key>
-
-    <key name="first-field" type="s">
-      <default>"xesam:artist"</default>
-    </key>
-
-    <key name="second-field" type="s">
-      <default>"xesam:album"</default>
-    </key>
-
-    <key name="last-field" type="s">
-      <default>"xesam:title"</default>
+    <key name="format" type="s">
+      <default>"%ARTIST% | %ALBUM% | %TITLE%"</default>
     </key>
 
     <key name="remove-text-when-paused" type="b">

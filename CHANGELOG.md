@@ -40,3 +40,6 @@ Aditionally:
 
 # Version 15
 - Merges the scroll up/down actions and makes them optional
+
+# Version 16
+- Change settings for label to add format, allowing for infinite customization
