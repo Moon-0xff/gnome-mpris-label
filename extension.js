@@ -8,7 +8,7 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
 
 const { Players } = CurrentExtension.imports.players;
-const { buildLabel } = CurrentExtension.imports.label;
+const { buildLabel, stringFromMetadata } = CurrentExtension.imports.label;
 
 let indicator = null;
 
@@ -60,6 +60,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
+		this.settings.connect('changed::use-album',this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -383,6 +384,7 @@ class MprisLabel extends PanelMenu.Button {
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
+		const USE_ALBUM = this.settings.get_boolean('use-album');
 
 		if(this.icon){
 			this.box.remove_child(this.icon);
@@ -392,7 +394,16 @@ class MprisLabel extends PanelMenu.Button {
 		if(!ICON_PLACE || !this.player || this.label.get_text() == "" || this.label.get_text() == PLACEHOLDER)
 			return
 
-		this.icon = this.player.icon
+			if(USE_ALBUM && this.player.metadata){
+				const iconGicon = Gio.Icon.new_for_string(stringFromMetadata("mpris:artUrl", this.player.metadata));
+				const icon = new St.Icon({
+					gicon: iconGicon,
+					style_class: 'system-status-icon',
+					icon_size: 32,
+				});
+				this.icon = icon
+			} else
+				this.icon = this.player.icon
 
 		if (this.icon != null | undefined){
 			if (ICON_PLACE == "right")

@@ -15,6 +15,7 @@ const mprisInterface = `
 		<property name="CanGoPrevious" type="b" access="read" />
 		<property name="Metadata" type="a{sv}" access="read"/>
 		<property name="PlaybackStatus" type="s" access="read"/>
+		<property name="ArtUrl" type="s" access="read"/>
 	</interface>
 
 </node>`

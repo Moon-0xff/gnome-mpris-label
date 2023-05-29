@@ -67,7 +67,7 @@ function removeTextWhenPaused(player){
 	}
 }
 
-function stringFromMetadata(field,metadata) {
+var stringFromMetadata = function stringFromMetadata(field,metadata) {
 	// metadata is a javascript object
 	// each "field" correspond to a string-keyed property on metadata
 	// each property contains a GLib.Variant object

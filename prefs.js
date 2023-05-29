@@ -96,6 +96,9 @@ function buildPrefsWidget(){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
+	addSwitch(labelPage,'use-album','Use album art when available:',undefined);
+
+
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
 	addButton(labelPage,'Reset label settings', () => {
@@ -111,6 +114,7 @@ function buildPrefsWidget(){
 		settings.reset('remove-text-paused-delay');
 		settings.reset('auto-switch-to-most-recent');
 		settings.reset('show-icon');
+		settings.reset('use-album');
 		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
