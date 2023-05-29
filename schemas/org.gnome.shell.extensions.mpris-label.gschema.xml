@@ -54,6 +54,10 @@
       <default>true</default>
     </key>
 
+    <key name="album-size" type="i">
+      <default>32</default>
+    </key>
+
     <key name="remove-text-when-paused" type="b">
       <default>true</default>
     </key>

@@ -61,6 +61,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
+		this.settings.connect('changed::album-size',this._setIcon.bind(this))
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -385,6 +386,7 @@ class MprisLabel extends PanelMenu.Button {
 		const ICON_PLACE = this.settings.get_string('show-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
 		const USE_ALBUM = this.settings.get_boolean('use-album');
+		const ABLUM_SIZE = this.settings.get_int('album-size')
 
 		if(this.icon){
 			this.box.remove_child(this.icon);
@@ -399,7 +401,7 @@ class MprisLabel extends PanelMenu.Button {
 				const icon = new St.Icon({
 					gicon: iconGicon,
 					style_class: 'system-status-icon',
-					icon_size: 32,
+					icon_size: ABLUM_SIZE,
 				});
 				this.icon = icon
 			} else
