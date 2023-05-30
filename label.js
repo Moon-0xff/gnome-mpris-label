@@ -45,7 +45,7 @@ var buildLabel = function buildLabel(players){
 
 	let labelString = LABEL_FORMAT;
 
-	substitutions.forEach( (value,key) => labelString = labelString.replace(key,value));
+	substitutions.forEach( (value,key) => labelString = labelString.replaceAll(key,value));
 
 	if (labelString.length === 0)
 		return placeholder
