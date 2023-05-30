@@ -71,10 +71,7 @@ function buildPrefsWidget(){
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
 		settings.reset('remove-remaster-text');
-		settings.reset('divider-string');
-		settings.reset('first-field');
-		settings.reset('second-field');
-		settings.reset('last-field');
+		settings.reset('label-format');
 		settings.reset('remove-text-when-paused');
 		settings.reset('remove-text-paused-delay');
 		settings.reset('auto-switch-to-most-recent');
