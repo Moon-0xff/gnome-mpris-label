@@ -385,7 +385,8 @@ class MprisLabel extends PanelMenu.Button {
 		const ICON_PLACE = this.settings.get_string('show-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
 		const USE_ALBUM = this.settings.get_boolean('use-album');
-		const ALBUM_SIZE = this.settings.get_int('album-size')
+		const ALBUM_SIZE = this.settings.get_int('album-size');
+		const ALBUM_WHITELIST = this.settings.get_string('album-whitelist').trim();
 
 		if(this.icon){
 			this.box.remove_child(this.icon);
@@ -397,7 +398,11 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(USE_ALBUM && this.player.metadata){
 			const url = stringFromMetadata("mpris:artUrl", this.player.metadata);
-			if(url.length!=0) {
+			const whitelist = ALBUM_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
+			if(url.length!=0&&
+				(ALBUM_WHITELIST=='' ||
+					whitelist.includes(this.player.identity.toLowerCase()))
+				) {
 				const iconGicon = Gio.Icon.new_for_string(url);
 				const icon = new St.Icon({
 					gicon: iconGicon,

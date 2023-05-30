@@ -158,31 +158,15 @@ function buildPrefsWidget(){
 	});
 
 	addSubcategoryLabel(filtersPage,'Ignore list:');
-	let blacklistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(blacklistEntry,0,position,1,1);
-	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	blacklistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
-
+	addEntry(filtersPage,'mpris-sources-blacklist',undefined,undefined).set_placeholder_text('Separate entries with commas')
+	
 	addSubcategoryLabel(filtersPage,'Allow list:');
-	let whitelistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(whitelistEntry,0,position,1,1);
-	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	whitelistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
-
-	//using addSwitch messes up the layout for the other widgets in the page
-	let whitelistLabel = buildLabel('Ignore all sources except allowed ones:');
-	whitelistLabel.set_tooltip_text("This option is ignored if the allow list is empty");
-	filtersPage.attach(whitelistLabel,0,position,1,1);
-	let whitelistSwitch = new Gtk.Switch({
-		valign: Gtk.Align.END,
-		halign: Gtk.Align.END,
-		visible: true
-	});
-	filtersPage.attach(whitelistSwitch,0,position,1,1);
-	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
-	position++;
+	addEntry(filtersPage,'mpris-sources-whitelist',undefined,undefined).set_placeholder_text('Separate entries with commas');
+	
+	addSwitch(filtersPage,'use-whitelisted-sources-only','Ignore all sources except allowed ones:','Separate entries with commas')
+	
+	addSubcategoryLabel(filtersPage,'Use album as icon whitelist:').set_tooltip_text('If empty, all apps will be used');
+	addEntry(filtersPage,'album-whitelist',undefined,undefined).set_placeholder_text('Separate entries with commas');
 
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
@@ -306,13 +290,16 @@ function addSwitch(widget,setting,labelstring,labeltooltip){
 }
 
 function addEntry(widget,setting,labelstring,labeltooltip){
-	addLabel(widget,labelstring,labeltooltip);
+	let col = 1
+	if(labelstring) addLabel(widget,labelstring,labeltooltip);
+	else col = 0
 	let thisEntry = new Gtk.Entry({
 		visible: true
 	});
-	widget.attach(thisEntry,1,position,1,1);
+	widget.attach(thisEntry,col,position,1,1);
 	widget._settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	position++;
+	return thisEntry
 }
 
 function addLabel(widget,labelstring,labeltooltip){
@@ -381,6 +368,7 @@ function addSubcategoryLabel(widget,labelstring){
 	widget.attach(thisLabel,0,position,1,1);
 	thisLabel.use_markup = true;
 	position++;
+	return thisLabel;
 }
 
 function buildLabel(labelstring){ //don't confuse with label.js buildLabel

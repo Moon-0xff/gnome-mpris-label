@@ -90,6 +90,10 @@
       <default>""</default>
     </key>
 
+    <key name="album-whitelist" type="s">
+      <default>""</default>
+    </key>
+
     <key name="use-whitelisted-sources-only" type="b">
       <default>false</default>
     </key>
