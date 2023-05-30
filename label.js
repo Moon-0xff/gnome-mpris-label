@@ -36,34 +36,14 @@ var buildLabel = function buildLabel(players){
 	if(metadata == null)
 		return placeholder
 
-
-	const substitutions = [ 	// [value to replace, value in metadata]
-        ["artist", "xesam:artist"],
-        ["album", "xesam:album"],
-        ["title", "xesam:title"],
-    ];
+	const substitutions = new Map();
+	substitutions.set("%ARTIST%", parseMetadataField(stringFromMetadata("xesam:artist",metadata)));
+	substitutions.set("%ALBUM%", parseMetadataField(stringFromMetadata("xesam:album",metadata)));
+	substitutions.set("%TITLE%", parseMetadataField(stringFromMetadata("xesam:title",metadata)));
 
 	let labelString = LABEL_FORMAT;
-	let hasSubstitutions = false; // if no substitutions, render placeholder
-	let hasEmptySubstitutions = true; // if all substitutions are empty, render placeholder
 
-	substitutions.forEach((value) => {
-		let fieldString = stringFromMetadata(value[1], metadata); //"extract" the string from metadata
-		fieldString = parseMetadataField(fieldString);
-
-		const regex = new RegExp(`%${value[0].toUpperCase()}%`, "g"); //generate regex for value
-
-		// test if there any substitutions
-		if(regex.test(labelString)){
-			// if there are replace them
-			labelString = labelString.replace(regex, fieldString)
-			hasSubstitutions = true
-			if(fieldString.length != 0) hasEmptySubstitutions = false
-		}
-	});
-
-	if(!hasSubstitutions || hasEmptySubstitutions)
-		return placeholder
+	substitutions.forEach( (value,key) => labelString = labelString.replace(key,value));
 
 	return labelString
 }
