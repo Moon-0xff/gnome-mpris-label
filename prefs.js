@@ -97,7 +97,7 @@ function buildPrefsWidget(){
 	position++;
 
 	addSwitch(labelPage,'use-album','Use album art when available:',undefined);
-	addSpinButton(labelPage,'album-size','Album size:',40,100,'Album size as a %');
+	addScale(labelPage, 'album-size', 'Album size:',50,250,[50,75,100,125,150,175,200,225,250],'%',undefined);
 
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
@@ -236,6 +236,20 @@ function buildPrefsWidget(){
 
 //functions starting with 'add' adds a widget to the selected grid(or widget)
 //functions starting with 'build' creates the "generic" widget and returns it
+function addScale(widget,setting,labelstring,lower,upper,markers,markerSuffix,labeltooltip){
+	addLabel(widget, labelstring, labeltooltip);
+    let thisScale = new Gtk.Scale({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        adjustment: new Gtk.Adjustment({ lower: lower, upper: upper, step_increment: 1 }),
+        visible: true
+    });
+	markers.forEach((marker) => {
+        thisScale.add_mark(marker, Gtk.PositionType.BOTTOM, marker + markerSuffix);
+    });
+    widget.attach(thisScale, 1, position, 1, 1);
+    widget._settings.bind(setting, thisScale.get_adjustment(), 'value', Gio.SettingsBindFlags.DEFAULT);
+    position++;
+}	
 
 function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
 	addLabel(widget,labelstring,labeltooltip);
