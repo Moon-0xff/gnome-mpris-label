@@ -97,7 +97,7 @@ function buildPrefsWidget(){
 	position++;
 
 	addSwitch(labelPage,'use-album','Use album art when available:',undefined);
-	addSpinButton(labelPage,'album-size','Album size:',1,128,undefined);
+	addSpinButton(labelPage,'album-size','Album size:',40,100,'Album size as a %');
 
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
