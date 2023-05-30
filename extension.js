@@ -398,16 +398,18 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(USE_ALBUM && this.player.metadata){
 			const url = stringFromMetadata("mpris:artUrl", this.player.metadata);
-			if(!url) this.icon = this.player.icon;
-			const iconGicon = Gio.Icon.new_for_string(url);
-			const icon = new St.Icon({
-				gicon: iconGicon,
-				style_class: 'system-status-icon',
-				icon_size: Math.floor(Main.panel.height*ALBUM_SIZE/100),
-			});
-			this.icon = icon;
-		} else
-			this.icon = this.player.icon;
+			if(url.length!=0) {
+				const iconGicon = Gio.Icon.new_for_string(url);
+				const icon = new St.Icon({
+					gicon: iconGicon,
+					style_class: 'system-status-icon',
+					icon_size: Math.floor(Main.panel.height*ALBUM_SIZE/100),
+				});
+				this.icon = icon;
+			}
+		} 
+
+		if(this.icon==null)	this.icon = this.player.icon;
 
 		if (this.icon != null | undefined){
 			if (ICON_PLACE == "right")
