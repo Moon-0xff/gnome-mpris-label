@@ -44,22 +44,24 @@ var buildLabel = function buildLabel(players){
         ["title", "xesam:title"],
     ];
 
-	let labelstring = FORMAT;
-	let substitutionsLength = 0
-    substitutions.forEach((field) => {
-        let fieldString = stringFromMetadata(field[1], metadata); //"extract" the string from metadata
-        fieldString = parseMetadataField(fieldString);
-		substitutionsLength += fieldString.length
-        labelstring = labelstring.replace(
-            new RegExp(`%${field[0].toUpperCase()}%`, "g"),
-            fieldString
-        );
-    });
+	let labelString = FORMAT;
+	let hasSubstitutions = false
+	let hasEmptySubstitutions = true
+	substitutions.forEach((field) => {
+		let fieldString = stringFromMetadata(field[1], metadata); //"extract" the string from metadata
+		fieldString = parseMetadataField(fieldString);
+		const regex = new RegExp(`%${field[0].toUpperCase()}%`, "g");
+		if(regex.test(labelString)){
+			labelString = labelString.replace(regex, fieldString)
+			hasSubstitutions = true
+			if(fieldString.length != 0) hasEmptySubstitutions = false
+		}
+	});
 
-	if(substitutionsLength === 0)
+	if(!hasSubstitutions || hasEmptySubstitutions) 
 		return placeholder
 
-	return labelstring
+	return labelString
 }
 
 function removeTextWhenPaused(player){
