@@ -40,10 +40,15 @@ var buildLabel = function buildLabel(players){
 	substitutions.set("%ARTIST%", parseMetadataField(stringFromMetadata("xesam:artist",metadata)));
 	substitutions.set("%ALBUM%", parseMetadataField(stringFromMetadata("xesam:album",metadata)));
 	substitutions.set("%TITLE%", parseMetadataField(stringFromMetadata("xesam:title",metadata)));
+	substitutions.set("%IDENTITY%", players.selected.identity);
+	substitutions.set("%STATUS%", players.selected.playbackStatus);
 
 	let labelString = LABEL_FORMAT;
 
 	substitutions.forEach( (value,key) => labelString = labelString.replace(key,value));
+
+	if (labelString.length === 0)
+		return placeholder
 
 	return labelString
 }
