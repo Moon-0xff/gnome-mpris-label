@@ -398,8 +398,6 @@ class MprisLabel extends PanelMenu.Button {
 
 			if(USE_ALBUM && this.player.metadata){
 				const iconGicon = Gio.Icon.new_for_string(stringFromMetadata("mpris:artUrl", this.player.metadata));
-				log(Main.panel.height)
-				log(Main.panel.height*0.8)
 				const icon = new St.Icon({
 					gicon: iconGicon,
 					style_class: 'system-status-icon',
