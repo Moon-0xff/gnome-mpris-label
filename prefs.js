@@ -98,9 +98,24 @@ function buildPrefsWidget(){
 
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 	
-	addSwitch(labelPage,'use-album','Use album art as icon when available:',undefined);
-	addScale(labelPage, 'album-size', 'Album size:',50,250,[50,75,100,150,200,250],'%',undefined);
+	let albumSwitch = addSwitch(labelPage,'use-album','Use album art as icon when available:',undefined);
+	let albumScale = addScale(labelPage, 'album-size', 'Album size:',50,250,[50,75,100,150,200,250],'%',undefined);
+	
+	const disableScaleIconComboBox = () => {
+		const isActive = showIconComboBox.get_active_text() !== 'off';
+		albumSwitch.set_sensitive(isActive);
+		albumScale.set_sensitive(isActive&& albumSwitch.get_active());
+	  };
 
+	showIconComboBox.connect('changed', disableScaleIconComboBox);
+	disableScaleIconComboBox();
+
+	const disableScaleAlbumSwitch = () => {
+		albumScale.set_sensitive(albumSwitch.get_active());
+	};
+
+	albumSwitch.connect('state-set', disableScaleAlbumSwitch);
+	disableScaleAlbumSwitch();
 
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
@@ -250,6 +265,7 @@ function addScale(widget,setting,labelstring,lower,upper,markers,markerSuffix,la
     widget.attach(thisScale, 1, position, 1, 1);
     widget._settings.bind(setting, thisScale.get_adjustment(), 'value', Gio.SettingsBindFlags.DEFAULT);
     position++;
+	return thisScale
 }	
 
 function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
@@ -286,6 +302,7 @@ function addSwitch(widget,setting,labelstring,labeltooltip){
 	widget.attach(thisSwitch,1,position,1,1);
 	widget._settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
+	return thisSwitch
 }
 
 function addEntry(widget,setting,labelstring,labeltooltip){
