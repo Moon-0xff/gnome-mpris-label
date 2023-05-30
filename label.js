@@ -3,8 +3,7 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY, FORMAT
-	MAX_STRING_LENGTH;
+	REMOVE_TEXT_PAUSED_DELAY, LABEL_FORMAT
 
 function getSettings(){
 	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
@@ -14,7 +13,7 @@ function getSettings(){
 	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
-	FORMAT = settings.get_string("format");
+	LABEL_FORMAT = settings.get_string("label-format");
 }
 
 var buildLabel = function buildLabel(players){
@@ -44,7 +43,7 @@ var buildLabel = function buildLabel(players){
         ["title", "xesam:title"],
     ];
 
-	let labelString = FORMAT;
+	let labelString = LABEL_FORMAT;
 	let hasSubstitutions = false; // if no substitutions, render placeholder
 	let hasEmptySubstitutions = true; // if all substitutions are empty, render placeholder
 

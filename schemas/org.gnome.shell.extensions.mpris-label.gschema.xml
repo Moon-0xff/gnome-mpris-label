@@ -34,7 +34,7 @@
       <default>true</default>
     </key>
 
-    <key name="format" type="s">
+    <key name="label-format" type="s">
       <default>"%ARTIST% | %ALBUM% | %TITLE%"</default>
     </key>
 

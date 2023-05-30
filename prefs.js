@@ -65,7 +65,7 @@ function buildPrefsWidget(){
 	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
 
 
-	addEntry(labelPage, 'format', 'Format for the extension:', '%ARTIST% - Artist\n%ALBUM% - Album\n%TITLE% - Title',140);
+	addEntry(labelPage, 'label-format', 'Format for the label:', '%ARTIST% - Artist\n%ALBUM% - Album\n%TITLE% - Title',140);
 
 
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
