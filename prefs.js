@@ -96,10 +96,11 @@ function buildPrefsWidget(){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	addSwitch(labelPage,'use-album','Use album art when available:',undefined);
-	addScale(labelPage, 'album-size', 'Album size:',50,250,[50,75,100,125,150,175,200,225,250],'%',undefined);
-
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+	
+	addSwitch(labelPage,'use-album','Use album art as icon when available:',undefined);
+	addScale(labelPage, 'album-size', 'Album size:',50,250,[50,75,100,150,200,250],'%',undefined);
+
 
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
@@ -240,7 +241,7 @@ function addScale(widget,setting,labelstring,lower,upper,markers,markerSuffix,la
 	addLabel(widget, labelstring, labeltooltip);
     let thisScale = new Gtk.Scale({
         orientation: Gtk.Orientation.HORIZONTAL,
-        adjustment: new Gtk.Adjustment({ lower: lower, upper: upper, step_increment: 1 }),
+        adjustment: new Gtk.Adjustment({ lower: lower, upper: upper, step_increment: 5 }),
         visible: true
     });
 	markers.forEach((marker) => {
