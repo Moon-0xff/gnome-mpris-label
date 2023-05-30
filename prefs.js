@@ -63,7 +63,7 @@ function buildPrefsWidget(){
 	addSubcategoryLabel(labelPage,'Appearance');
 	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
 	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(labelPage, 'label-format', 'Format for the label:', 'Substitutions available:\n\t%ARTIST%: Artist\n\t%ALBUM%: Album\n\t%TITLE%: Title');
+	addEntry(labelPage, 'label-format', 'Format for the label:', 'Substitutions available:\n\t%ARTIST%: Artist\n\t%ALBUM%: Album\n\t%TITLE%: Title\n\t%IDENTITY%: Reported name of the selected player\n\t%STATUS%: Reported status of the selected player (paused,stopped,playing,etc)');
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
 	addButton(labelPage,'Reset label settings', () => {
