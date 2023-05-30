@@ -63,7 +63,7 @@ function buildPrefsWidget(){
 	addSubcategoryLabel(labelPage,'Appearance');
 	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
 	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(labelPage, 'label-format', 'Format for the label:', 'Substitutions available:\n\t%ARTIST%: Artist\n\t%ALBUM%: Album\n\t%TITLE%: Title',140);
+	addEntry(labelPage, 'label-format', 'Format for the label:', 'Substitutions available:\n\t%ARTIST%: Artist\n\t%ALBUM%: Album\n\t%TITLE%: Title');
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
 	addButton(labelPage,'Reset label settings', () => {
@@ -236,12 +236,11 @@ function addSwitch(widget,setting,labelstring,labeltooltip){
 	position++;
 }
 
-function addEntry(widget,setting,labelstring,labeltooltip,max){
+function addEntry(widget,setting,labelstring,labeltooltip){
 	addLabel(widget,labelstring,labeltooltip);
 	let thisEntry = new Gtk.Entry({
 		visible: true
 	});
-	if(max) thisEntry.set_max_length(max)
 	widget.attach(thisEntry,1,position,1,1);
 	widget._settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	position++;
