@@ -45,16 +45,18 @@ var buildLabel = function buildLabel(players){
     ];
 
 	let labelstring = FORMAT;
+	let substitutionsLength = 0
     substitutions.forEach((field) => {
         let fieldString = stringFromMetadata(field[1], metadata); //"extract" the string from metadata
         fieldString = parseMetadataField(fieldString);
+		substitutionsLength += fieldString.length
         labelstring = labelstring.replace(
             new RegExp(`%${field[0].toUpperCase()}%`, "g"),
             fieldString
         );
     });
 
-	if(labelstring.length === 0)
+	if(substitutionsLength === 0)
 		return placeholder
 
 	return labelstring
