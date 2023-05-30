@@ -53,7 +53,7 @@ var buildLabel = function buildLabel(players){
 		fieldString = parseMetadataField(fieldString);
 
 		const regex = new RegExp(`%${value[0].toUpperCase()}%`, "g"); //generate regex for value
-		
+
 		// test if there any substitutions
 		if(regex.test(labelString)){
 			// if there are replace them
@@ -63,7 +63,7 @@ var buildLabel = function buildLabel(players){
 		}
 	});
 
-	if(!hasSubstitutions || hasEmptySubstitutions) 
+	if(!hasSubstitutions || hasEmptySubstitutions)
 		return placeholder
 
 	return labelString
