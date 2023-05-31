@@ -75,7 +75,6 @@ var buildLabel = function buildLabel(players){
 					break;
 				// If reached end of string, and there are no values OR There are no substitutions, and we are using the any keyword, set to empty string
 				}  else if ((i==substitutionKeys.length-1&&key!='EMPTY'&&key!='ANY')|| (key=='ANY' && !hasSubstitutions)){
-					log(hasSubstitutions)
 					substring[0] = ''
 					break;
 				}
