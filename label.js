@@ -64,7 +64,7 @@ var buildLabel = function buildLabel(players){
 			for(let i = 0; i < substitutionKeys.length; i++){
 				const substitution = substitutions.get(substitutionKeys[i])
 				if(substitution && substitution.length > 0){
-					substring[0] = substring[0].replace('VALUE',substitution).replaceAll('\\{','{').replaceAll('\\}','}')
+					substring[0] = substring[0].replace('VALUE',substitution)
 					break;
 				// Special case, empty string if no value is found
 				} else if (substitutionKeys[i]=='EMPTY'){
@@ -78,7 +78,7 @@ var buildLabel = function buildLabel(players){
 	if (labelString.length === 0)
 		return placeholder
 
-	return labelString
+	return labelString.replaceAll('\\{','{').replaceAll('\\}','}')
 }
 
 function removeTextWhenPaused(player){
