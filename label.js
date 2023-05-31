@@ -45,7 +45,13 @@ var buildLabel = function buildLabel(players){
 
 	let labelString = LABEL_FORMAT;
 
-	substitutions.forEach( (value,key) => labelString = labelString.replaceAll(`%${key}%`,value));
+	let hasSubstitutions = false
+
+	substitutions.forEach( (value,key) => {
+		// To be used later to see if there are any successful substitutions for any keyword
+		if(labelString.includes(key) && value.length>0) hasSubstitutions = true
+		labelString = labelString.replaceAll(`%${key}%`,value)
+	});
 
 	// FORMAT: {{string}}{{replacement vales}}
 	// Regex allows for escape characters: \{ and \}
@@ -62,12 +68,14 @@ var buildLabel = function buildLabel(players){
 			// Find the substitution keys, and replace them in the string
 			let substitutionKeys = substring[1].split(/\|/g)
 			for(let i = 0; i < substitutionKeys.length; i++){
-				const substitution = substitutions.get(substitutionKeys[i])
+				const key = substitutionKeys[i]
+				const substitution = substitutions.get(key)
 				if(substitution && substitution.length > 0){
 					substring[0] = substring[0].replace('VALUE',substitution)
 					break;
-				// Special case, empty string if no value is found
-				} else if (i==substitutionKeys.length-1){
+				// If reached end of string, and there are no values OR There are no substitutions, and we are using the any keyword, set to empty string
+				}  else if ((i==substitutionKeys.length-1&&key!='EMPTY'&&key!='ANY')|| (key=='ANY' && !hasSubstitutions)){
+					log(hasSubstitutions)
 					substring[0] = ''
 					break;
 				}
