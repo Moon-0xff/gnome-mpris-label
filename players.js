@@ -48,6 +48,7 @@ var Players = class Players {
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		this._listeners = []
 	}
 	pick(){
 		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
@@ -84,6 +85,12 @@ var Players = class Players {
 		this.selected = bestChoice;
 		return this.selected
 	}
+	_emitListChanged() {
+		this._listeners.forEach(listener => listener());
+	}
+	onListChanged(listener) {
+		this._listeners.push(listener);
+	}
 	next(){
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
@@ -113,14 +120,15 @@ var Players = class Players {
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
 		this.unfilteredList = [];
-		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
+		dBusList.forEach(address => this.unfilteredList.push(new Player(address).onProxyChange(()=>this._emitListChanged())));
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
 			if(newOwner && !oldOwner){ //add player
-				let player = new Player(name);
+				let player = new Player(name).onProxyChange(()=>this._emitListChanged());
+
 				this.unfilteredList.push(player);
 			}
 			else if (!newOwner && oldOwner){ //delete player
@@ -150,12 +158,17 @@ var Players = class Players {
 	}
 	updateActiveList(){
 		let actives = [];
+		log(actives)
+		log("one")
 		this.list.forEach(player => {
-			if(player.playbackStatus == "Playing")
+			if(player.playbackStatus == "Playing"){
 				actives.push(player);
+				log(JSON.stringify(player))
+				// player.onProxyChange(()=>{this._emitListChanged()})
+			}
 		});
 		this.activePlayers = actives;
-	}
+	}	
 }
 
 class Player {
@@ -166,10 +179,19 @@ class Player {
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
 		this.proxy.connect('g-properties-changed', this.update.bind(this));
-
+		this.proxy.connect('g-properties-changed', this._emitProxyChange.bind(this))
 		const entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 		this.entryProxy = entryWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this._onEntryProxyReady.bind(this));
-
+		this._listeners = []
+	}
+	_emitProxyChange() {
+		log("TEST_")
+		this._listeners.forEach(listener => listener());
+	}
+	onProxyChange(listener) {
+		log("TEST_3")
+		this._listeners.push(listener);
+		return this
 	}
 	_onEntryProxyReady(){
 		this.identity = this.entryProxy.Identity;
