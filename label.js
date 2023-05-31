@@ -37,15 +37,43 @@ var buildLabel = function buildLabel(players){
 		return placeholder
 
 	const substitutions = new Map();
-	substitutions.set("%ARTIST%", parseMetadataField(stringFromMetadata("xesam:artist",metadata)));
-	substitutions.set("%ALBUM%", parseMetadataField(stringFromMetadata("xesam:album",metadata)));
-	substitutions.set("%TITLE%", parseMetadataField(stringFromMetadata("xesam:title",metadata)));
-	substitutions.set("%IDENTITY%", players.selected.identity);
-	substitutions.set("%STATUS%", players.selected.playbackStatus);
+	substitutions.set("ARTIST", parseMetadataField(stringFromMetadata("xesam:artist",metadata)));
+	substitutions.set("ALBUM", parseMetadataField(stringFromMetadata("xesam:album",metadata)));
+	substitutions.set("TITLE", parseMetadataField(stringFromMetadata("xesam:title",metadata)));
+	substitutions.set("IDENTITY", players.selected.identity);
+	substitutions.set("STATUS", players.selected.playbackStatus);
 
 	let labelString = LABEL_FORMAT;
 
-	substitutions.forEach( (value,key) => labelString = labelString.replaceAll(key,value));
+	substitutions.forEach( (value,key) => labelString = labelString.replaceAll(`%${key}%`,value));
+
+	// FORMAT: {{string}}{{replacement vales}}
+	// Regex allows for escape characters: \{ and \}
+	const setRegex = /\{\{(?:[^}\\]|\\(?=\})|\\.)+\}\}\{\{.{1,}?\}\}/g
+	
+	// Find sets in string
+	const sets = labelString.match(setRegex)
+	if(sets)
+		sets.forEach((substring)=>{
+			// Keep original for later, and split the set
+			const original = substring
+			substring = substring.slice(2).slice(0,-2).split("}}{{")
+			
+			// Find the substitution keys, and replace them in the string
+			let substitutionKeys = substring[1].split(/\|/g)
+			for(let i = 0; i < substitutionKeys.length; i++){
+				const substitution = substitutions.get(substitutionKeys[i])
+				if(substitution && substitution.length > 0){
+					substring[0] = substring[0].replace('VALUE',substitution)
+					break;
+				// Special case, empty string if no value is found
+				} else if (substitutionKeys[i]=='EMPTY'){
+					substring[0] = ''
+					break;
+				}
+			}
+			labelString = labelString.replace(original, substring[0])
+		})
 
 	if (labelString.length === 0)
 		return placeholder
