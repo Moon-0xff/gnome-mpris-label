@@ -163,7 +163,7 @@ function buildPrefsWidget(){
 	addSubcategoryLabel(filtersPage,'Allow list:');
 	addEntry(filtersPage,'mpris-sources-whitelist',undefined,undefined).set_placeholder_text('Separate entries with commas');
 	
-	addSwitch(filtersPage,'use-whitelisted-sources-only','Ignore all sources except allowed ones:','Separate entries with commas')
+	addSwitch(filtersPage,'use-whitelisted-sources-only','Ignore all sources except allowed ones:','Separate entries with commas',0)
 	
 	addSubcategoryLabel(filtersPage,'Use album as icon whitelist:').set_tooltip_text('If empty, all apps will be used');
 	addEntry(filtersPage,'album-whitelist',undefined,undefined).set_placeholder_text('Separate entries with commas');
@@ -276,14 +276,15 @@ function addStringComboBox(widget,setting,labelstring,options,labeltooltip){
 	return thisComboBox //necessary to reset position when the reset button is clicked
 }
 
-function addSwitch(widget,setting,labelstring,labeltooltip){
+function addSwitch(widget,setting,labelstring,labeltooltip,col){
 	addLabel(widget,labelstring,labeltooltip);
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.END,
 		halign: Gtk.Align.END,
 		visible: true
 	});
-	widget.attach(thisSwitch,1,position,1,1);
+	if(col==undefined)col=1
+	widget.attach(thisSwitch,col,position,1,1);
 	widget._settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 	return thisSwitch
