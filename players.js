@@ -181,6 +181,7 @@ class Player {
 		this._listeners = []
 	}
 	_emitProxyChange() {
+		if(this.playbackStatus=='Playing')
 		this._listeners.forEach(listener => listener());
 	}
 	onProxyChange(listener) {
