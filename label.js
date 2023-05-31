@@ -57,7 +57,7 @@ var buildLabel = function buildLabel(players){
 		sets.forEach((substring)=>{
 			// Keep original for later, and split the set
 			const original = substring
-			substring = substring.slice(2).slice(0,-2).split("}}{{")
+			substring = substring.slice(2,-2).split("}}{{")
 			
 			// Find the substitution keys, and replace them in the string
 			let substitutionKeys = substring[1].split(/\|/g)
@@ -67,7 +67,7 @@ var buildLabel = function buildLabel(players){
 					substring[0] = substring[0].replace('VALUE',substitution)
 					break;
 				// Special case, empty string if no value is found
-				} else if (substitutionKeys[i]=='EMPTY'){
+				} else if (i==substitutionKeys.length-1){
 					substring[0] = ''
 					break;
 				}
