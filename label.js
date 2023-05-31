@@ -49,7 +49,7 @@ var buildLabel = function buildLabel(players){
 
 	// FORMAT: {{string}}{{replacement vales}}
 	// Regex allows for escape characters: \{ and \}
-	const setRegex = /\{\{(?:[^}\\]|\\(?=\})|\\.)+\}\}\{\{.{1,}?\}\}/g
+	const setRegex = /(\{\{.{1,}?\}\}){2}/g
 	
 	// Find sets in string
 	const sets = labelString.match(setRegex)
