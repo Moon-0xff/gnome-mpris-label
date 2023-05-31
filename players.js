@@ -158,13 +158,9 @@ var Players = class Players {
 	}
 	updateActiveList(){
 		let actives = [];
-		log(actives)
-		log("one")
 		this.list.forEach(player => {
 			if(player.playbackStatus == "Playing"){
 				actives.push(player);
-				log(JSON.stringify(player))
-				// player.onProxyChange(()=>{this._emitListChanged()})
 			}
 		});
 		this.activePlayers = actives;
@@ -185,11 +181,9 @@ class Player {
 		this._listeners = []
 	}
 	_emitProxyChange() {
-		log("TEST_")
 		this._listeners.forEach(listener => listener());
 	}
 	onProxyChange(listener) {
-		log("TEST_3")
 		this._listeners.push(listener);
 		return this
 	}

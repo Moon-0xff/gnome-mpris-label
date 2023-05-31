@@ -357,7 +357,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
-
+		log("This is a player that is fully event based!")
 		let prevPlayer = this.player;
 
 		try {
