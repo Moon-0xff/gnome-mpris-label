@@ -99,7 +99,7 @@ function buildPrefsWidget(){
 	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 	
 	let albumSwitch = addSwitch(labelPage,'use-album','Use album art as icon when available:',undefined);
-	let albumScale = addScale(labelPage, 'album-size', 'Album size:',50,250,[50,75,100,150,200,250],'%',undefined);
+	let albumScale = addScale(labelPage, 'album-size', 'Album size:',50,250,[50,100,150,200,250],'%',undefined);
 	
 	const disableScaleIconComboBox = () => {
 		const isActive = showIconComboBox.get_active_text() !== 'off';

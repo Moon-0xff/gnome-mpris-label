@@ -8,7 +8,7 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
 
 const { Players } = CurrentExtension.imports.players;
-const { buildLabel, stringFromMetadata } = CurrentExtension.imports.label;
+const { buildLabel } = CurrentExtension.imports.label;
 
 let indicator = null;
 
@@ -61,12 +61,17 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
-
+		
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
-
+		
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
-
+		
 		this._refresh();
+
+		this.settings.connect('changed::album-size',()=>{
+			this.player.update()
+			this._setIcon()
+		});
 	}
 
 	_onPaddingChanged(){
@@ -385,7 +390,6 @@ class MprisLabel extends PanelMenu.Button {
 		const ICON_PLACE = this.settings.get_string('show-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
 		const USE_ALBUM = this.settings.get_boolean('use-album');
-		const ALBUM_SIZE = this.settings.get_int('album-size');
 		const ALBUM_WHITELIST = this.settings.get_string('album-whitelist').trim();
 
 		if(this.icon){
@@ -396,21 +400,10 @@ class MprisLabel extends PanelMenu.Button {
 		if(!ICON_PLACE || !this.player || this.label.get_text() == "" || this.label.get_text() == PLACEHOLDER)
 			return;
 
-		if(USE_ALBUM && this.player.metadata){
-			const url = stringFromMetadata("mpris:artUrl", this.player.metadata);
+		if(USE_ALBUM && this.player.albumArt != null){
 			const whitelist = ALBUM_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
-			if(url.length!=0&&
-				(ALBUM_WHITELIST=='' ||
-					whitelist.includes(this.player.identity.toLowerCase()))
-				) {
-				const iconGicon = Gio.Icon.new_for_string(url);
-				const icon = new St.Icon({
-					gicon: iconGicon,
-					style_class: 'system-status-icon',
-					icon_size: Math.floor(Main.panel.height*ALBUM_SIZE/100),
-				});
-				this.icon = icon;
-			}
+			if(ALBUM_WHITELIST=='' || whitelist.includes(this.player.identity.toLowerCase())) 
+				this.icon = this.player.albumArt;
 		} 
 
 		if(this.icon==null)	this.icon = this.player.icon;
