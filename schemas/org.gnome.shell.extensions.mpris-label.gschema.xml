@@ -90,7 +90,7 @@
       <default>""</default>
     </key>
 
-    <key name="album-whitelist" type="s">
+    <key name="album-blacklist" type="s">
       <default>""</default>
     </key>
 
