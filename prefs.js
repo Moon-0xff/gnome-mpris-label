@@ -165,8 +165,8 @@ function buildPrefsWidget(){
 	
 	addSwitch(filtersPage,'use-whitelisted-sources-only','Ignore all sources except allowed ones:','Separate entries with commas',0)
 	
-	addSubcategoryLabel(filtersPage,'Use album as icon whitelist:').set_tooltip_text('If empty, all apps will be used');
-	addEntry(filtersPage,'album-whitelist',undefined,undefined).set_placeholder_text('Separate entries with commas');
+	addSubcategoryLabel(filtersPage,'Use album as icon blacklist:').set_tooltip_text('If empty, all apps will be used');
+	addEntry(filtersPage,'album-blacklist',undefined,undefined).set_placeholder_text('Separate entries with commas');
 
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
