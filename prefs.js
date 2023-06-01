@@ -49,24 +49,37 @@ function buildPrefsWidget(){
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
 
 //label page:
-	let labelPage = buildGrid(shellVersion,settings);
+	let behaviourPage = buildGrid(shellVersion,settings);
 
 	position = 0; //this line this line seems to be unnecessary
 
-	addSubcategoryLabel(labelPage,'Behaviour');
-	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(labelPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
-	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
-	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
-	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
+	addSwitch(behaviourPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
+	addSwitch(behaviourPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
+	addSwitch(behaviourPage,'remove-text-when-paused','Hide when paused:',undefined);
+	addSpinButton(behaviourPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
+	addSpinButton(behaviourPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
 
-	addSubcategoryLabel(labelPage,'Appearance');
-	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
 
-	//visible fields is a bit more complex
-	addLabel(labelPage,'Visible fields and order:',undefined);
+
+	addButton(behaviourPage,'Reset behaviour settings', () => {
+		settings.reset('refresh-rate');
+		settings.reset('remove-remaster-text');
+		settings.reset('remove-text-when-paused');
+		settings.reset('remove-text-paused-delay');
+		settings.reset('auto-switch-to-most-recent');
+	});
+
+	prefsWidget.append_page(behaviourPage, buildLabel('Behaviour'));
+
+// Appearance page:
+	let appearancePage = buildGrid(shellVersion,settings);
+
+	addSpinButton(appearancePage,'max-string-length','Max string length (each field):',1,150,undefined);
+	addEntry(appearancePage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	addEntry(appearancePage,'divider-string','Divider string (you can use spaces):',undefined);
+
+	// visible fields is a bit more complex
+	addLabel(appearancePage,'Visible fields and order:',undefined);
 
 	let visibleFieldsBox = new Gtk.Box({
 		spacing: 12,
@@ -93,13 +106,13 @@ function buildPrefsWidget(){
 		visibleFieldsBox.append(lastFieldComboBox,true,true,0);
 	}
 	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
-	labelPage.attach(visibleFieldsBox,1,position,1,1);
+	appearancePage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+	let showIconComboBox = addStringComboBox(appearancePage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 	
-	let albumSwitch = addSwitch(labelPage,'use-album','Use album art as icon when available:',undefined);
-	let albumScale = addScale(labelPage, 'album-size', 'Album size:',50,250,[50,100,150,200,250],'%',undefined);
+	let albumSwitch = addSwitch(appearancePage,'use-album','Use album art as icon when available:',undefined);
+	let albumScale = addScale(appearancePage, 'album-size', 'Album size:',50,250,[50,100,150,200,250],'%',undefined);
 	
 	const disableScaleIconComboBox = () => {
 		const isActive = showIconComboBox.get_active_text() !== 'off';
@@ -117,18 +130,14 @@ function buildPrefsWidget(){
 	albumSwitch.connect('state-set', disableScaleAlbumSwitch);
 	disableScaleAlbumSwitch();
 
-	addButton(labelPage,'Reset label settings', () => {
-		settings.reset('max-string-length');
-		settings.reset('refresh-rate');
+
+	addButton(appearancePage,'Reset appearance settings', () => {
 		settings.reset('button-placeholder');
-		settings.reset('remove-remaster-text');
 		settings.reset('divider-string');
+		settings.reset('max-string-length');
 		settings.reset('first-field');
 		settings.reset('second-field');
 		settings.reset('last-field');
-		settings.reset('remove-text-when-paused');
-		settings.reset('remove-text-paused-delay');
-		settings.reset('auto-switch-to-most-recent');
 		settings.reset('show-icon');
 		settings.reset('use-album');
 		settings.reset('album-size')
@@ -138,7 +147,7 @@ function buildPrefsWidget(){
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
-	prefsWidget.append_page(labelPage, buildLabel('Label'));
+	prefsWidget.append_page(appearancePage, buildLabel('Appearance'));
 
 //filters page:
 	let filtersPage = buildGrid(shellVersion,settings);
