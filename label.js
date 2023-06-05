@@ -125,14 +125,3 @@ function parseMetadataField(data) {
 
 	return data
 }
-
-function validRegex(expression){
-	var isValid = true;
-	try {
-		new RegExp(expression,"i");
-	} catch(e) {
-		isValid = false;
-	}
-	return isValid
-}
-
