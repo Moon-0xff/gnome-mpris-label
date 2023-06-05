@@ -94,21 +94,17 @@ function parseMetadataField(data) {
 		data = data.replace(/ \| /g, " / ");
 
 	if(LABEL_FILTERED_LIST){
-		const filteredString = LABEL_FILTERED_LIST.replace(/[`~!@#$%^&*()_|+\-=?;:'".<>\{\}\[\]\\\/]/gi, '');
+		const GraphCharactersRegex = new RegExp('[!"\\$%&\'\\(\\)\\*\\+-\\.\\/:;<=>\\?@\\[\\\\\\]\\^_`{\\|}~]','gi');
+		const sanitizedInput = LABEL_FILTERED_LIST.replace(GraphCharactersRegex,"")
 
-		if (LABEL_FILTERED_LIST!=filteredString){
+		if(sanitizedInput != LABEL_FILTERED_LIST){
 			const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-			settings.set_string('label-filtered-list',filteredString);
+			settings.set_string('label-filtered-list',sanitizedInput);
 		}
 
-		const filterlist = filteredString.toLowerCase().split(',');
-		filterlist.forEach(filter => { //go through each filter to look for a match
-			filter = "(?:-|\\(|\\[).*(?:" + filter + ").*(?:$|\\)|\\])";
-			if (validRegex(filter)){
-				const regex = new RegExp(filter,"i");
-				data = data.replace(regex,"");
-			}
-		});
+		const filterRegex = new RegExp("(?:-|\\(|\\[).*(?:" + sanitizedInput.replace(",","|") + ").*(?:$|\\)|\\])","gi");
+
+		data = data.replace(filterRegex,"");
 	}
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
