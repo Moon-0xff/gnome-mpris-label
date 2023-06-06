@@ -94,7 +94,7 @@ function parseMetadataField(data) {
 		data = data.replace(/ \| /g, " / ");
 
 	if(LABEL_FILTERED_LIST){
-		const GraphCharactersRegex = new RegExp(/[`~!@#$%^&*()_|+\-=?;:'".<>\{\}\[\]\\\/]/, 'gi');
+		const GraphCharactersRegex = new RegExp(/[.?*+^$[\]\\(){}|-]/, 'gi');
 		const sanitizedInput = LABEL_FILTERED_LIST.replace(GraphCharactersRegex,"")
 
 		if(sanitizedInput != LABEL_FILTERED_LIST){
