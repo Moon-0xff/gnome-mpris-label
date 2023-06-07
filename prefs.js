@@ -27,6 +27,8 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(panelPage,'Icon');
 	let showIconComboBox = addStringComboBox(panelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+	addSwitch(panelPage,'use-album','Use album art as icon when available:',undefined);
+	addSpinButton(panelPage,'album-size','Icon scaling (in %):',50,250,undefined);
 
 	addSubcategoryLabel(panelPage,'Position');
 	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
