@@ -40,3 +40,7 @@ Aditionally:
 
 # Version 15
 - Merges the scroll up/down actions and makes them optional
+
+# Upcoming Version
+- Changes the 'Remove remaster text' option for a user-definable list of
+  strings that trigger the filter
