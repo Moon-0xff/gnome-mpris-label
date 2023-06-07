@@ -162,6 +162,13 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
+	addSubcategoryLabel(filtersPage,'Players excluded from using album art as icon:');
+	let albumBlacklistEntry = new Gtk.Entry({ visible: true });
+	filtersPage.attach(albumBlacklistEntry,0,position,1,1);
+	filtersPage._settings.bind('album-blacklist',albumBlacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	albumBlacklistEntry.set_placeholder_text('Separate entries with commas');
+	position++;
+
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
 		filtersPageSubGrid.margin = 0;
@@ -178,6 +185,7 @@ function buildPrefsWidget(){
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
+		settings.reset('album-blacklist');
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment
