@@ -30,8 +30,8 @@
       <default>"＿"</default>
     </key>
 
-    <key name="remove-remaster-text" type="b">
-      <default>true</default>
+    <key name="label-filtered-list" type="s">
+      <default>"remaster,remix,featuring,live"</default>
     </key>
 
     <key name="divider-string" type="s">
@@ -48,14 +48,6 @@
 
     <key name="last-field" type="s">
       <default>"xesam:title"</default>
-    </key>
-
-    <key name="use-album" type="b">
-      <default>true</default>
-    </key>
-
-    <key name="album-size" type="i">
-      <default>100</default>
     </key>
 
     <key name="remove-text-when-paused" type="b">
@@ -87,10 +79,6 @@
     </key>
 
     <key name="mpris-sources-whitelist" type="s">
-      <default>""</default>
-    </key>
-
-    <key name="album-blacklist" type="s">
       <default>""</default>
     </key>
 

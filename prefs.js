@@ -35,7 +35,6 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
-
 	addButton(panelPage,'Reset panel settings', () => {
 		settings.reset('left-padding');
 		settings.reset('right-padding');
@@ -49,37 +48,24 @@ function buildPrefsWidget(){
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
 
 //label page:
-	let behaviourPage = buildGrid(shellVersion,settings);
+	let labelPage = buildGrid(shellVersion,settings);
 
 	position = 0; //this line this line seems to be unnecessary
 
-	addSwitch(behaviourPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(behaviourPage,'remove-remaster-text','Remove remaster text:',"Matches the two most common \"formats\" of remastered text:\n\tExample - 2023 Remastered\n\tExample (2023 Remastered)");
-	addSwitch(behaviourPage,'remove-text-when-paused','Hide when paused:',undefined);
-	addSpinButton(behaviourPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
-	addSpinButton(behaviourPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
+	addSubcategoryLabel(labelPage,'Behaviour');
+	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
+	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
+	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
+	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
+	addEntry(labelPage,'label-filtered-list','Filter segments containing:',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
+	addSubcategoryLabel(labelPage,'Appearance');
+	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
+	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
 
-
-	addButton(behaviourPage,'Reset behaviour settings', () => {
-		settings.reset('refresh-rate');
-		settings.reset('remove-remaster-text');
-		settings.reset('remove-text-when-paused');
-		settings.reset('remove-text-paused-delay');
-		settings.reset('auto-switch-to-most-recent');
-	});
-
-	prefsWidget.append_page(behaviourPage, buildLabel('Behaviour'));
-
-// Appearance page:
-	let appearancePage = buildGrid(shellVersion,settings);
-
-	addSpinButton(appearancePage,'max-string-length','Max string length (each field):',1,150,undefined);
-	addEntry(appearancePage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(appearancePage,'divider-string','Divider string (you can use spaces):',undefined);
-
-	// visible fields is a bit more complex
-	addLabel(appearancePage,'Visible fields and order:',undefined);
+	//visible fields is a bit more complex
+	addLabel(labelPage,'Visible fields and order:',undefined);
 
 	let visibleFieldsBox = new Gtk.Box({
 		spacing: 12,
@@ -106,48 +92,31 @@ function buildPrefsWidget(){
 		visibleFieldsBox.append(lastFieldComboBox,true,true,0);
 	}
 	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
-	appearancePage.attach(visibleFieldsBox,1,position,1,1);
+	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	let showIconComboBox = addStringComboBox(appearancePage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
-	let albumSwitch = addSwitch(appearancePage,'use-album','Use album art as icon when available:',undefined);
-	let albumScale = addScale(appearancePage, 'album-size', 'Album size:',50,250,[50,100,150,200,250],'%',undefined);
-
-	const disableScaleIconComboBox = () => {
-		const isActive = showIconComboBox.get_active_text() !== 'off';
-		albumSwitch.set_sensitive(isActive);
-		albumScale.set_sensitive(isActive&& albumSwitch.get_active());
-	  };
-
-	showIconComboBox.connect('changed', disableScaleIconComboBox);
-	disableScaleIconComboBox();
-
-	const disableScaleAlbumSwitch = () => {
-		albumScale.set_sensitive(albumSwitch.get_active());
-	};
-
-	albumSwitch.connect('state-set', disableScaleAlbumSwitch);
-	disableScaleAlbumSwitch();
-
-
-	addButton(appearancePage,'Reset appearance settings', () => {
-		settings.reset('button-placeholder');
-		settings.reset('divider-string');
+	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
+		settings.reset('refresh-rate');
+		settings.reset('button-placeholder');
+		settings.reset('label-filtered-list');
+		settings.reset('divider-string');
 		settings.reset('first-field');
 		settings.reset('second-field');
 		settings.reset('last-field');
+		settings.reset('remove-text-when-paused');
+		settings.reset('remove-text-paused-delay');
+		settings.reset('auto-switch-to-most-recent');
 		settings.reset('show-icon');
-		settings.reset('use-album');
-		settings.reset('album-size')
 		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
-	prefsWidget.append_page(appearancePage, buildLabel('Appearance'));
+	prefsWidget.append_page(labelPage, buildLabel('Label'));
 
 //filters page:
 	let filtersPage = buildGrid(shellVersion,settings);
@@ -167,15 +136,31 @@ function buildPrefsWidget(){
 	});
 
 	addSubcategoryLabel(filtersPage,'Ignore list:');
-	addEntry(filtersPage,'mpris-sources-blacklist',undefined,undefined).set_placeholder_text('Separate entries with commas')
+	let blacklistEntry = new Gtk.Entry({ visible: true });
+	filtersPage.attach(blacklistEntry,0,position,1,1);
+	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	blacklistEntry.set_placeholder_text('Separate entries with commas');
+	position++;
 
 	addSubcategoryLabel(filtersPage,'Allow list:');
-	addEntry(filtersPage,'mpris-sources-whitelist',undefined,undefined).set_placeholder_text('Separate entries with commas');
+	let whitelistEntry = new Gtk.Entry({ visible: true });
+	filtersPage.attach(whitelistEntry,0,position,1,1);
+	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	whitelistEntry.set_placeholder_text('Separate entries with commas');
+	position++;
 
-	addSwitch(filtersPage,'use-whitelisted-sources-only','Ignore all sources except allowed ones:','Separate entries with commas',0)
-
-	addSubcategoryLabel(filtersPage,'Use album as icon blacklist:').set_tooltip_text('If empty, all apps will be used');
-	addEntry(filtersPage,'album-blacklist',undefined,undefined).set_placeholder_text('Separate entries with commas');
+	//using addSwitch messes up the layout for the other widgets in the page
+	let whitelistLabel = buildLabel('Ignore all sources except allowed ones:');
+	whitelistLabel.set_tooltip_text("This option is ignored if the allow list is empty");
+	filtersPage.attach(whitelistLabel,0,position,1,1);
+	let whitelistSwitch = new Gtk.Switch({
+		valign: Gtk.Align.END,
+		halign: Gtk.Align.END,
+		visible: true
+	});
+	filtersPage.attach(whitelistSwitch,0,position,1,1);
+	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+	position++;
 
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
@@ -245,21 +230,6 @@ function buildPrefsWidget(){
 
 //functions starting with 'add' adds a widget to the selected grid(or widget)
 //functions starting with 'build' creates the "generic" widget and returns it
-function addScale(widget,setting,labelstring,lower,upper,markers,markerSuffix,labeltooltip){
-	addLabel(widget, labelstring, labeltooltip);
-    let thisScale = new Gtk.Scale({
-        orientation: Gtk.Orientation.HORIZONTAL,
-        adjustment: new Gtk.Adjustment({ lower: lower, upper: upper, step_increment: 5 }),
-        visible: true
-    });
-	markers.forEach((marker) => {
-        thisScale.add_mark(marker, Gtk.PositionType.BOTTOM, marker + markerSuffix);
-    });
-    widget.attach(thisScale, 1, position, 1, 1);
-    widget._settings.bind(setting, thisScale.get_adjustment(), 'value', Gio.SettingsBindFlags.DEFAULT);
-    position++;
-	return thisScale
-}
 
 function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
 	addLabel(widget,labelstring,labeltooltip);
@@ -285,31 +255,26 @@ function addStringComboBox(widget,setting,labelstring,options,labeltooltip){
 	return thisComboBox //necessary to reset position when the reset button is clicked
 }
 
-function addSwitch(widget,setting,labelstring,labeltooltip,col){
+function addSwitch(widget,setting,labelstring,labeltooltip){
 	addLabel(widget,labelstring,labeltooltip);
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.END,
 		halign: Gtk.Align.END,
 		visible: true
 	});
-	if(col==undefined)col=1
-	widget.attach(thisSwitch,col,position,1,1);
+	widget.attach(thisSwitch,1,position,1,1);
 	widget._settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
-	return thisSwitch
 }
 
 function addEntry(widget,setting,labelstring,labeltooltip){
-	let col = 1
-	if(labelstring) addLabel(widget,labelstring,labeltooltip);
-	else col = 0
+	addLabel(widget,labelstring,labeltooltip);
 	let thisEntry = new Gtk.Entry({
 		visible: true
 	});
-	widget.attach(thisEntry,col,position,1,1);
+	widget.attach(thisEntry,1,position,1,1);
 	widget._settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	position++;
-	return thisEntry
 }
 
 function addLabel(widget,labelstring,labeltooltip){
@@ -378,7 +343,6 @@ function addSubcategoryLabel(widget,labelstring){
 	widget.attach(thisLabel,0,position,1,1);
 	thisLabel.use_markup = true;
 	position++;
-	return thisLabel;
 }
 
 function buildLabel(labelstring){ //don't confuse with label.js buildLabel
