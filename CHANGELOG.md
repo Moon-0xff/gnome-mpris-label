@@ -41,5 +41,5 @@ Aditionally:
 # Version 15
 - Merges the scroll up/down actions and makes them optional
 
-# Version 16
+# Upcoming Version
 - Add album art
