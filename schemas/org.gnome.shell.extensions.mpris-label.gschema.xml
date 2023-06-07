@@ -114,5 +114,17 @@
       <default>"prev-track"</default>
     </key>
 
+    <key name="use-album" type="b">
+      <default>true</default>
+    </key>
+
+    <key name="album-size" type="i">
+      <default>100</default>
+    </key>
+
+    <key name="album-blacklist" type="s">
+      <default>""</default>
+    </key>
+
   </schema>
 </schemalist>
