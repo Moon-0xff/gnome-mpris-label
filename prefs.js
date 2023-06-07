@@ -25,6 +25,9 @@ function buildPrefsWidget(){
 //panel page:
 	let panelPage = buildGrid(shellVersion,settings);
 
+	addSubcategoryLabel(panelPage,'Icon');
+	let showIconComboBox = addStringComboBox(panelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+
 	addSubcategoryLabel(panelPage,'Position');
 	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(panelPage,'extension-index','Extension index:',0,20,"Set widget location within with respect to other adjacent widgets");
@@ -36,6 +39,7 @@ function buildPrefsWidget(){
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
 	addButton(panelPage,'Reset panel settings', () => {
+		settings.reset('show-icon');
 		settings.reset('left-padding');
 		settings.reset('right-padding');
 		settings.reset('extension-index');
@@ -43,6 +47,7 @@ function buildPrefsWidget(){
 		settings.reset('reposition-delay');
 		settings.reset('reposition-on-button-press');
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
+		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
@@ -95,7 +100,6 @@ function buildPrefsWidget(){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
@@ -109,11 +113,9 @@ function buildPrefsWidget(){
 		settings.reset('remove-text-when-paused');
 		settings.reset('remove-text-paused-delay');
 		settings.reset('auto-switch-to-most-recent');
-		settings.reset('show-icon');
 		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
-		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
 	prefsWidget.append_page(labelPage, buildLabel('Label'));
