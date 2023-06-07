@@ -30,8 +30,8 @@
       <default>"＿"</default>
     </key>
 
-    <key name="remove-remaster-text" type="b">
-      <default>true</default>
+    <key name="label-filtered-list" type="s">
+      <default>"remaster,remix,featuring,live"</default>
     </key>
 
     <key name="divider-string" type="s">
