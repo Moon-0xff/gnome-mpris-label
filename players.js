@@ -228,7 +228,7 @@ class Player {
 		}
 
 		const url = stringFromMetadata("mpris:artUrl",this.metadata);
-		if(url.length>0) 
+		if(url.length>0)
 			this.albumArt = new St.Icon({
 				gicon: Gio.Icon.new_for_string(url),
 				style_class: 'system-status-icon',

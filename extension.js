@@ -61,11 +61,11 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
-		
+
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
-		
+
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
-		
+
 		this._refresh();
 
 		this.settings.connect('changed::album-size',()=>{
@@ -402,9 +402,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(USE_ALBUM && this.player.albumArt != null){
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
-			if(!blacklist.includes(this.player.identity.toLowerCase())) 
+			if(!blacklist.includes(this.player.identity.toLowerCase()))
 				this.icon = this.player.albumArt;
-		} 
+		}
 
 		if(this.icon==null)	this.icon = this.player.icon;
 

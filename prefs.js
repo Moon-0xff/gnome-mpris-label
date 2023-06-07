@@ -110,10 +110,10 @@ function buildPrefsWidget(){
 	position++;
 
 	let showIconComboBox = addStringComboBox(appearancePage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
-	
+
 	let albumSwitch = addSwitch(appearancePage,'use-album','Use album art as icon when available:',undefined);
 	let albumScale = addScale(appearancePage, 'album-size', 'Album size:',50,250,[50,100,150,200,250],'%',undefined);
-	
+
 	const disableScaleIconComboBox = () => {
 		const isActive = showIconComboBox.get_active_text() !== 'off';
 		albumSwitch.set_sensitive(isActive);
@@ -168,12 +168,12 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(filtersPage,'Ignore list:');
 	addEntry(filtersPage,'mpris-sources-blacklist',undefined,undefined).set_placeholder_text('Separate entries with commas')
-	
+
 	addSubcategoryLabel(filtersPage,'Allow list:');
 	addEntry(filtersPage,'mpris-sources-whitelist',undefined,undefined).set_placeholder_text('Separate entries with commas');
-	
+
 	addSwitch(filtersPage,'use-whitelisted-sources-only','Ignore all sources except allowed ones:','Separate entries with commas',0)
-	
+
 	addSubcategoryLabel(filtersPage,'Use album as icon blacklist:').set_tooltip_text('If empty, all apps will be used');
 	addEntry(filtersPage,'album-blacklist',undefined,undefined).set_placeholder_text('Separate entries with commas');
 
@@ -259,7 +259,7 @@ function addScale(widget,setting,labelstring,lower,upper,markers,markerSuffix,la
     widget._settings.bind(setting, thisScale.get_adjustment(), 'value', Gio.SettingsBindFlags.DEFAULT);
     position++;
 	return thisScale
-}	
+}
 
 function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
 	addLabel(widget,labelstring,labeltooltip);
