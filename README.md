@@ -39,4 +39,4 @@ Feel free to submit an issue if you have encountered a bug, want to ask somethin
 
 Feel free to submit a pull request for a bug you squashed, a feature you added, or anything you want merged to this repo.
 
-If you want to help with the development of this extension then check out the [issues marked with the development tag](https://github.com/Moon-0xff/gnome-mpris-label/issues?q=is%3Aissue+is%3Aopen+label%3A%22development%22)
+Checkout [HACKING.md](https://github.com/Moon-0xff/gnome-mpris-label/blob/main/HACKING.md) for a quick guide on editing the source code.
