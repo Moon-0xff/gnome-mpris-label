@@ -394,7 +394,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		if(!ICON_PLACE || !this.player || this.label.get_text() == "" || this.label.get_text() == PLACEHOLDER)
-			return;
+			return
 
 		if(USE_ALBUM){
 			const ALBUM_SIZE = this.settings.get_int('album-size');
