@@ -1,7 +1,6 @@
 const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
-const { stringFromMetadata } = CurrentExtension.imports.label
 
 const mprisInterface = `
 <node>
@@ -213,7 +212,6 @@ class Player {
 
 		return matchedEntries[0]
 	}
-
 	update(){
 		this.metadata = this.proxy.Metadata;
 
@@ -224,8 +222,22 @@ class Player {
 			this.statusTimestamp = new Date().getTime();
 		}
 	}
+	stringFromMetadata(field) {
+		// metadata is a javascript object
+		// each "field" correspond to a string-keyed property on metadata
+		// each property contains a GLib.Variant object
+		if (Object.keys(this.metadata).includes(field)){
+			let variant = this.metadata[field];
+
+			if(variant.get_type().is_array())
+				return variant.get_strv()[0]
+			else
+				return variant.get_string()[0]
+		}
+		return ""
+	}
 	getArtUrlIcon(size){
-		const url = stringFromMetadata("mpris:artUrl",this.metadata);
+		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
 		if(url.length>0)
 			this.albumArt = new St.Icon({
 				gicon: Gio.Icon.new_for_string(url),
