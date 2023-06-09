@@ -48,6 +48,8 @@ function buildPrefsWidget(){
 		settings.reset('extension-place');
 		settings.reset('reposition-delay');
 		settings.reset('reposition-on-button-press');
+		settings.reset('use-album');
+		settings.reset('album-size');
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
