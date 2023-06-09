@@ -61,17 +61,13 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
+		this.settings.connect('changed::album-size',this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
 		this._refresh();
-
-		this.settings.connect('changed::album-size',()=>{
-			this.player.update()
-			this._setIcon()
-		});
 	}
 
 	_onPaddingChanged(){
@@ -400,13 +396,17 @@ class MprisLabel extends PanelMenu.Button {
 		if(!ICON_PLACE || !this.player || this.label.get_text() == "" || this.label.get_text() == PLACEHOLDER)
 			return;
 
-		if(USE_ALBUM && this.player.albumArt != null){
+		if(USE_ALBUM){
+			const ALBUM_SIZE = this.settings.get_int('album-size');
+			let size = Math.floor(Main.panel.height*ALBUM_SIZE/100);
+
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
-				this.icon = this.player.albumArt;
+				this.icon = this.player.getArtUrlIcon(size);
 		}
 
-		if(this.icon==null)	this.icon = this.player.icon;
+		if(this.icon == null)
+			this.icon = this.player.icon;
 
 		if (this.icon != null | undefined){
 			if (ICON_PLACE == "right")

@@ -1,5 +1,4 @@
 const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
-const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const { stringFromMetadata } = CurrentExtension.imports.label
@@ -217,8 +216,6 @@ class Player {
 
 	update(){
 		this.metadata = this.proxy.Metadata;
-		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-		const ALBUM_SIZE = settings.get_int('album-size');
 
 		let playbackStatus = this.proxy.PlaybackStatus;
 
@@ -226,15 +223,18 @@ class Player {
 			this.playbackStatus = playbackStatus;
 			this.statusTimestamp = new Date().getTime();
 		}
-
+	}
+	getArtUrlIcon(size){
 		const url = stringFromMetadata("mpris:artUrl",this.metadata);
 		if(url.length>0)
 			this.albumArt = new St.Icon({
 				gicon: Gio.Icon.new_for_string(url),
 				style_class: 'system-status-icon',
-				icon_size: Math.floor(Main.panel.height*ALBUM_SIZE/100),
+				icon_size: size
 			})
 		else this.albumArt = null;
+
+		return this.albumArt
 	}
 	getIcon(desktopApp){
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
@@ -254,8 +254,6 @@ class Player {
 			fallback_icon_name: 'audio-volume-high',
 			style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 		});
-
-
 
 		if(desktopApp == null | undefined)
 			return icon
