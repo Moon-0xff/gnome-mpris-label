@@ -16,9 +16,9 @@ function buildPrefsWidget(){
 
 	if(shellVersion >= 40){ //workaround taken directly from gjs.guide
 		prefsWidget.connect('realize', () => {
-		    let window = prefsWidget.get_root();
-		    window.default_width = 600;
-		    window.default_height = 700;
+			let window = prefsWidget.get_root();
+			window.default_width = 600;
+			window.default_height = 700;
 		});
 	}
 
