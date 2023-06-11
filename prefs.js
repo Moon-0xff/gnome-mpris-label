@@ -16,14 +16,19 @@ function buildPrefsWidget(){
 
 	if(shellVersion >= 40){ //workaround taken directly from gjs.guide
 		prefsWidget.connect('realize', () => {
-		    let window = prefsWidget.get_root();
-		    window.default_width = 600;
-		    window.default_height = 700;
+			let window = prefsWidget.get_root();
+			window.default_width = 600;
+			window.default_height = 700;
 		});
 	}
 
 //panel page:
 	let panelPage = buildGrid(shellVersion,settings);
+
+	addSubcategoryLabel(panelPage,'Icon');
+	let showIconComboBox = addStringComboBox(panelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+	addSwitch(panelPage,'use-album','Use album art as icon when available:',undefined);
+	addSpinButton(panelPage,'album-size','Album art scaling (in %):',50,250,undefined);
 
 	addSubcategoryLabel(panelPage,'Position');
 	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
@@ -36,13 +41,17 @@ function buildPrefsWidget(){
 	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
 
 	addButton(panelPage,'Reset panel settings', () => {
+		settings.reset('show-icon');
 		settings.reset('left-padding');
 		settings.reset('right-padding');
 		settings.reset('extension-index');
 		settings.reset('extension-place');
 		settings.reset('reposition-delay');
 		settings.reset('reposition-on-button-press');
+		settings.reset('use-album');
+		settings.reset('album-size');
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
+		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
 	prefsWidget.append_page(panelPage, buildLabel('Panel'));
@@ -95,7 +104,6 @@ function buildPrefsWidget(){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-	let showIconComboBox = addStringComboBox(labelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
 
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
@@ -109,11 +117,9 @@ function buildPrefsWidget(){
 		settings.reset('remove-text-when-paused');
 		settings.reset('remove-text-paused-delay');
 		settings.reset('auto-switch-to-most-recent');
-		settings.reset('show-icon');
 		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
-		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
 	prefsWidget.append_page(labelPage, buildLabel('Label'));
@@ -162,6 +168,13 @@ function buildPrefsWidget(){
 	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 
+	addSubcategoryLabel(filtersPage,'Players excluded from using album art as icon:');
+	let albumBlacklistEntry = new Gtk.Entry({ visible: true });
+	filtersPage.attach(albumBlacklistEntry,0,position,1,1);
+	filtersPage._settings.bind('album-blacklist',albumBlacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+	albumBlacklistEntry.set_placeholder_text('Separate entries with commas');
+	position++;
+
 	let filtersPageSubGrid = buildGrid(shellVersion,settings);
 	if(shellVersion < 40){
 		filtersPageSubGrid.margin = 0;
@@ -178,6 +191,7 @@ function buildPrefsWidget(){
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
+		settings.reset('album-blacklist');
 	});
 
 	let placeholderLabel = buildLabel('')//for alignment

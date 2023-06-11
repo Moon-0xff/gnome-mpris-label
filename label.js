@@ -45,7 +45,7 @@ var buildLabel = function buildLabel(players){
 
 	let labelstring = "";
 	fields.forEach(field => {
-		let fieldString = stringFromMetadata(field,metadata); //"extract" the string from metadata
+		let fieldString = players.selected.stringFromMetadata(field,metadata); //"extract" the string from metadata
 		fieldString = parseMetadataField(fieldString); //check, filter, customize and add divider to the extracted string
 		labelstring += fieldString; //add it to the string to be displayed
 	});
@@ -65,21 +65,6 @@ function removeTextWhenPaused(player){
 	if ( (player.statusTimestamp / 1000) + REMOVE_TEXT_PAUSED_DELAY <= new Date().getTime() / 1000){
 		return true
 	}
-}
-
-function stringFromMetadata(field,metadata) {
-	// metadata is a javascript object
-	// each "field" correspond to a string-keyed property on metadata
-	// each property contains a GLib.Variant object
-	if (Object.keys(metadata).includes(field)){
-		let variant = metadata[field];
-
-		if(variant.get_type().is_array())
-			return variant.get_strv()[0]
-		else
-			return variant.get_string()[0]
-	}
-	return ""
 }
 
 function parseMetadataField(data) {
