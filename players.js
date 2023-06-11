@@ -41,131 +41,138 @@ const dBusInterface = `
 	</interface>
 </node>`
 
-var Players = class Players {
-	constructor(){
-		this.list = [];
-		this.activePlayers= [];
-		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
-		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-		this._listeners = []
-	}
-	pick(){
-		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
-		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+var Players = GObject.registerClass({
+	Signals: {
+        'list-changed': {},
+    },
+},
+    class Players extends GObject.Object {
+        constructor() {
+			super();
+			log("HELLO WORLD")
+            this.list = [];
+            this.activePlayers = [];
+            const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
+            this.dBusProxy = dBusProxyWrapper(Gio.DBus.session, "org.freedesktop.DBus", "/org/freedesktop/DBus", this._initList.bind(this));
+            this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+        }
 
-		if(this.list.length == 0){
-			this.selected = null;
-			return this.selected
-		}
+        pick() {
+            const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+            const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
-		if(!this.list.includes(this.selected))
-			this.selected = null
+            if (this.list.length == 0) {
+                this.selected = null;
+                return this.selected;
+            }
 
-		if(this.list.includes(this.selected) && !AUTO_SWITCH_TO_MOST_RECENT)
-			return this.selected
+            if (!this.list.includes(this.selected))
+                this.selected = null;
 
-		let newestTimestamp = 0;
-		let bestChoice = this.list[0];
-		let list = this.list;
+            if (this.list.includes(this.selected) && !AUTO_SWITCH_TO_MOST_RECENT)
+                return this.selected;
 
-		if(AUTO_SWITCH_TO_MOST_RECENT){
-			if(this.activePlayers.length == 0)
-				return this.selected
+            let newestTimestamp = 0;
+            let bestChoice = this.list[0];
+            let list = this.list;
 
-			list = this.activePlayers;
-		}
+            if (AUTO_SWITCH_TO_MOST_RECENT) {
+                if (this.activePlayers.length == 0)
+                    return this.selected;
 
-		list.forEach(player => {
-			if(player.statusTimestamp > newestTimestamp){
-				newestTimestamp = player.statusTimestamp;
-				bestChoice = player;
-			}
-		});
-		this.selected = bestChoice;
-		return this.selected
-	}
-	_emitListChanged() {
-		this._listeners.forEach(listener => listener());
-	}
-	onListChanged(listener) {
-		this._listeners.push(listener);
-	}
-	next(){
-		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+                list = this.activePlayers;
+            }
 
-		let list = this.list;
+            list.forEach(player => {
+                if (player.statusTimestamp > newestTimestamp) {
+                    newestTimestamp = player.statusTimestamp;
+                    bestChoice = player;
+                }
+            });
+            this.selected = bestChoice;
+            return this.selected;
+        }
 
-		if(AUTO_SWITCH_TO_MOST_RECENT)
-			list = this.activePlayers;
+        next() {
+            const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
-		if(list.length < 2)
-			return this.selected
+            let list = this.list;
 
-		let newIndex = list.indexOf(this.selected)+1;
+            if (AUTO_SWITCH_TO_MOST_RECENT)
+                list = this.activePlayers;
 
-		if(this.selected == list[list.length-1])
-			newIndex = 0;
+            if (list.length < 2)
+                return this.selected;
 
-		this.selected = list[newIndex];
+            let newIndex = list.indexOf(this.selected) + 1;
 
-		if(AUTO_SWITCH_TO_MOST_RECENT){
-			this.selected.statusTimestamp = new Date().getTime();
-		}
+            if (this.selected == list[list.length - 1])
+                newIndex = 0;
 
-		return this.selected
-	}
-	_initList(){
-		let dBusList = this.dBusProxy.ListNamesSync()[0];
-		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
+            this.selected = list[newIndex];
 
-		this.unfilteredList = [];
-		dBusList.forEach(address => this.unfilteredList.push(new Player(address).onProxyChange(()=>this._emitListChanged())));
+            if (AUTO_SWITCH_TO_MOST_RECENT) {
+                this.selected.statusTimestamp = new Date().getTime();
+            }
 
-		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
-	}
-	_updateList(proxy, sender, [name,oldOwner,newOwner]){
-		if(name.startsWith("org.mpris.MediaPlayer2")){
-			if(newOwner && !oldOwner){ //add player
-				let player = new Player(name).onProxyChange(()=>this._emitListChanged());
+            return this.selected;
+        }
 
-				this.unfilteredList.push(player);
-			}
-			else if (!newOwner && oldOwner){ //delete player
-				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
-			}
-		}
-	}
-	updateFilterList(){
-		if(!this.unfilteredList)
-			return
+        _initList() {
+            let dBusList = this.dBusProxy.ListNamesSync()[0];
+            dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
-		const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
-		const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
-		let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
+            this.unfilteredList = [];
+            dBusList.forEach(address => this.unfilteredList.push(new Player(address).onProxyChange(() => this.emit('list-changed'))));
 
-		if(!SOURCES_BLACKLIST || !SOURCES_WHITELIST)
-			this.list = this.unfilteredList;
+            this.dBusProxy.connectSignal('NameOwnerChanged', this._updateList.bind(this));
+        }
 
-		const blacklist = SOURCES_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
-		const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ','').split(',');
+        _updateList(proxy, sender, [name, oldOwner, newOwner]) {
+            if (name.startsWith("org.mpris.MediaPlayer2")) {
+                if (newOwner && !oldOwner) { //add player
+                    let player = new Player(name).onProxyChange(() => this.emit('list-changed'));
 
-		if(USE_WHITELIST && SOURCES_WHITELIST)
-			this.list = this.unfilteredList.filter(element => whitelist.includes(element.identity.toLowerCase().replaceAll(' ','')));
+                    this.unfilteredList.push(player);
+                }
+                else if (!newOwner && oldOwner) { //delete player
+                    this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
+                }
+            }
+        }
 
-		if(!USE_WHITELIST && SOURCES_BLACKLIST)
-			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
-	}
-	updateActiveList(){
-		let actives = [];
-		this.list.forEach(player => {
-			if(player.playbackStatus == "Playing"){
-				actives.push(player);
-			}
-		});
-		this.activePlayers = actives;
-	}	
-}
+        updateFilterList() {
+            if (!this.unfilteredList)
+                return;
+
+            const SOURCES_BLACKLIST = this.settings.get_string('mpris-sources-blacklist');
+            const SOURCES_WHITELIST = this.settings.get_string('mpris-sources-whitelist');
+            let USE_WHITELIST = this.settings.get_boolean('use-whitelisted-sources-only');
+
+            if (!SOURCES_BLACKLIST || !SOURCES_WHITELIST)
+                this.list = this.unfilteredList;
+
+            const blacklist = SOURCES_BLACKLIST.toLowerCase().replaceAll(' ', '').split(',');
+            const whitelist = SOURCES_WHITELIST.toLowerCase().replaceAll(' ', '').split(',');
+
+            if (USE_WHITELIST && SOURCES_WHITELIST)
+                this.list = this.unfilteredList.filter(element => whitelist.includes(element.identity.toLowerCase().replaceAll(' ', '')));
+
+            if (!USE_WHITELIST && SOURCES_BLACKLIST)
+                this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ', '')));
+        }
+
+        updateActiveList() {
+            let actives = [];
+            this.list.forEach(player => {
+                if (player.playbackStatus == "Playing") {
+                    actives.push(player);
+                }
+            });
+            this.activePlayers = actives;
+        }
+    }
+);
 
 class Player {
 	constructor(address){

@@ -66,7 +66,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
 		this._refresh()
-		this.players.onListChanged(()=>this._refresh())
+		this.players.connect('list-changed',()=>this._refresh())
 	}
 
 	_onPaddingChanged(){
