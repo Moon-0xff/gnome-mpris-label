@@ -2,7 +2,6 @@ const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
-const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
@@ -357,7 +356,6 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_refresh() {
-		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 		log("This is a label that is fully event based! - " + Date.now())
 		let prevPlayer = this.player;
 		try {
@@ -375,8 +373,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._setText();
 		this._setIcon();
-		this._removeTimeout();
-		if(!this.player) this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
 
@@ -427,13 +423,6 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_removeTimeout() {
-		if(this._timeout) {
-			Mainloop.source_remove(this._timeout);
-			this._timeout = null;
-		}
-	}
-
 	vfunc_event(event){
 		return Clutter.EVENT_PROPAGATE;
 	}
@@ -444,7 +433,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.box.remove_child(this.label);
 		this.remove_child(this.box);
-		this._removeTimeout();
 
 		if (this._repositionTimeout){
 			GLib.Source.remove(this._repositionTimeout);

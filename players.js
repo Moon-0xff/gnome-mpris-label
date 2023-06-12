@@ -128,7 +128,10 @@ var Players = GObject.registerClass({
 				this.unfilteredList.push(player);
 			})
 
-            this.dBusProxy.connectSignal('NameOwnerChanged', this._updateList.bind(this));
+            this.dBusProxy.connectSignal('NameOwnerChanged', ()=>{
+				this._updateList.bind(this)
+				this.emit('list-changed')
+			});
         }
 
         _updateList(proxy, sender, [name, oldOwner, newOwner]) {
