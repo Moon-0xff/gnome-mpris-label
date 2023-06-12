@@ -75,8 +75,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
-		this._refresh()
-		this.players.connect('list-changed',()=>this._refresh())
+		this._refresh();
+		this.players.connect('list-changed',()=>this._refresh());
 	}
 
 	_onPaddingChanged(){
@@ -421,8 +421,8 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setText() {
 		try{
-			if(this.player == null || undefined){
-				this.label.set_text("")}
+			if(this.player == null || undefined)
+				this.label.set_text("");
 			else
 				this.label.set_text(buildLabel(this.players));
 		}
