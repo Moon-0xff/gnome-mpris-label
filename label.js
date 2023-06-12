@@ -36,7 +36,6 @@ var buildLabel = function buildLabel(players){
 	}
 
 	let metadata = players.selected.metadata;
-
 	if(metadata == null)
 		return placeholder
 

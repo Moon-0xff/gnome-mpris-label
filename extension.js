@@ -403,8 +403,8 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setText() {
 		try{
-			if(this.player == null || undefined)
-				this.label.set_text("")
+			if(this.player == null || undefined){
+				this.label.set_text("")}
 			else
 				this.label.set_text(buildLabel(this.players));
 		}
