@@ -1,7 +1,7 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
+let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
 	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
 	MAX_STRING_LENGTH,DIVIDER_STRING;
@@ -11,7 +11,7 @@ function getSettings(){
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
-	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
+	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 	DIVIDER_STRING = settings.get_string('divider-string');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
@@ -44,7 +44,7 @@ var buildLabel = function buildLabel(players){
 
 	let labelstring = "";
 	fields.forEach(field => {
-		let fieldString = stringFromMetadata(field,metadata); //"extract" the string from metadata
+		let fieldString = players.selected.stringFromMetadata(field,metadata); //"extract" the string from metadata
 		fieldString = parseMetadataField(fieldString); //check, filter, customize and add divider to the extracted string
 		labelstring += fieldString; //add it to the string to be displayed
 	});
@@ -66,21 +66,6 @@ function removeTextWhenPaused(player){
 	}
 }
 
-function stringFromMetadata(field,metadata) {
-	// metadata is a javascript object
-	// each "field" correspond to a string-keyed property on metadata
-	// each property contains a GLib.Variant object
-	if (Object.keys(metadata).includes(field)){
-		let variant = metadata[field];
-
-		if(variant.get_type().is_array())
-			return variant.get_strv()[0]
-		else
-			return variant.get_string()[0]
-	}
-	return ""
-}
-
 function parseMetadataField(data) {
 	if (data == undefined || data.length == 0)
 		return ""
@@ -92,8 +77,19 @@ function parseMetadataField(data) {
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
 
-	if(REMOVE_REMASTER_TEXT)
-		data = data.replace(/(?:-|\(|\]).*(?:remaster).*(?:$|\)|\])/i,"");
+	if(LABEL_FILTERED_LIST){
+		const CtrlCharactersRegex = new RegExp(/[.?*+^$[\]\\(){}|-]/, 'gi');
+		const sanitizedInput = LABEL_FILTERED_LIST.replace(CtrlCharactersRegex,"")
+
+		if(sanitizedInput != LABEL_FILTERED_LIST){
+			const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+			settings.set_string('label-filtered-list',sanitizedInput);
+		}
+
+		const filterRegex = new RegExp("(?:-|\\(|\\[).*(?:" + sanitizedInput.replace(",","|") + ").*(?:$|\\)|\\])","gi");
+
+		data = data.replace(filterRegex,"");
+	}
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
@@ -109,4 +105,3 @@ function parseMetadataField(data) {
 
 	return data
 }
-

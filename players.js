@@ -244,15 +244,41 @@ const Player = GObject.registerClass({
 
 			let playbackStatus = this.proxy.PlaybackStatus;
 
-			if(this.playbackStatus != playbackStatus){
-				this.playbackStatus = playbackStatus;
-				this.statusTimestamp = new Date().getTime();
-			}
+		if(this.playbackStatus != playbackStatus){
+			this.playbackStatus = playbackStatus;
+			this.statusTimestamp = new Date().getTime();
 		}
-		getIcon(desktopApp){
-			const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-			const ICON_PLACE = settings.get_string('show-icon');
-			const Config = imports.misc.config;
+	}
+	stringFromMetadata(field) {
+		// metadata is a javascript object
+		// each "field" correspond to a string-keyed property on metadata
+		// each property contains a GLib.Variant object
+		if (Object.keys(this.metadata).includes(field)){
+			let variant = this.metadata[field];
+
+			if(variant.get_type().is_array())
+				return variant.get_strv()[0]
+			else
+				return variant.get_string()[0]
+		}
+		return ""
+	}
+	getArtUrlIcon(size){
+		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
+		if(url.length>0)
+			this.albumArt = new St.Icon({
+				gicon: Gio.Icon.new_for_string(url),
+				style_class: 'system-status-icon',
+				icon_size: size
+			})
+		else this.albumArt = null;
+
+		return this.albumArt
+	}
+	getIcon(desktopApp){
+		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		const ICON_PLACE = settings.get_string('show-icon');
+		const Config = imports.misc.config;
 
 			let icon_left_padding = 0;
 			let icon_right_padding = 0;
