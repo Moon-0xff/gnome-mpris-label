@@ -54,7 +54,8 @@ var Players = GObject.registerClass({
             const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
             this.dBusProxy = dBusProxyWrapper(Gio.DBus.session, "org.freedesktop.DBus", "/org/freedesktop/DBus", this._initList.bind(this));
             this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-        }
+			this.hideTimeout = -1
+		}
 
         pick() {
             const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
@@ -177,6 +178,26 @@ var Players = GObject.registerClass({
             });
             this.activePlayers = actives;
         }
+
+		removeTextWhenPaused() {
+			const { selected: player } = this
+			const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused')
+			if(!REMOVE_TEXT_WHEN_PAUSED) return false
+			const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
+			
+			if(player.playbackStatus == "Playing"){
+				if(this.hideTimeout != -1) {
+					clearTimeout(this.hideTimeout)
+					this.hideTimeout = -1
+				}
+				return false
+			}	
+			else if (this.hideTimeout == -1){
+				this.hideTimeout = setTimeout(() => this.emit('list-changed'), REMOVE_TEXT_PAUSED_DELAY*1000)
+				return false
+			}
+			else return true	
+		}
     }
 );
 
@@ -194,14 +215,13 @@ const Player = GObject.registerClass({
 			const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 			this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
 			this.proxy.connect('g-properties-changed', this.update.bind(this));
-			this.proxy.connect('g-properties-changed', this._emitProxyChange.bind(this))
+			// this.proxy.connect('g-properties-changed', this._emitProxyChange.bind(this))
 			const entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 			this.entryProxy = entryWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this._onEntryProxyReady.bind(this));
 		}
-		_emitProxyChange() {
-			if(this.playbackStatus=='Playing')
-				this.emit('proxy-change');
-		}
+		// _emitProxyChange() {
+
+		// }
 		_onEntryProxyReady(){
 			this.identity = this.entryProxy.Identity;
 			this.desktopEntry = this.entryProxy.DesktopEntry;
@@ -246,10 +266,12 @@ const Player = GObject.registerClass({
 
 			let playbackStatus = this.proxy.PlaybackStatus;
 
-		if(this.playbackStatus != playbackStatus){
-			this.playbackStatus = playbackStatus;
-			this.statusTimestamp = new Date().getTime();
-		}
+			if(this.playbackStatus != playbackStatus){
+				this.playbackStatus = playbackStatus;
+				this.statusTimestamp = new Date().getTime();
+			}
+
+			this.emit('proxy-change');
 	}
 	stringFromMetadata(field) {
 		// metadata is a javascript object
