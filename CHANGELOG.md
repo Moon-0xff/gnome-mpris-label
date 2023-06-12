@@ -41,5 +41,9 @@ Aditionally:
 # Version 15
 - Merges the scroll up/down actions and makes them optional
 
+# Version 16
+- Changes the 'Remove remaster text' option for a user-definable list of
+  strings that trigger the filter
+
 # Upcoming Version
-- Change settings for label to add format, allowing for infinite customization
+- Add album art

@@ -1,7 +1,7 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
-let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,REMOVE_REMASTER_TEXT,
+let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
 	REMOVE_TEXT_PAUSED_DELAY, LABEL_FORMAT
 
@@ -10,7 +10,6 @@ function getSettings(){
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
-	REMOVE_REMASTER_TEXT = settings.get_boolean('remove-remaster-text');
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
 	LABEL_FORMAT = settings.get_string("label-format");
@@ -122,9 +121,6 @@ function parseMetadataField(data) {
 	//Replaces every instance of " | "
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
-
-	if(REMOVE_REMASTER_TEXT)
-		data = data.replace(/(?:-|\(|\]).*(?:remaster).*(?:$|\)|\])/i,"");
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
