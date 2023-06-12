@@ -128,18 +128,17 @@ var Players = GObject.registerClass({
 				this.unfilteredList.push(player);
 			})
 
-            this.dBusProxy.connectSignal('NameOwnerChanged', ()=>{
-				this._updateList.bind(this)
+            this.dBusProxy.connectSignal('NameOwnerChanged', (...args)=>{
+				this._updateList(...args)
 				this.emit('list-changed')
 			});
         }
 
-        _updateList(proxy, sender, [name, oldOwner, newOwner]) {
+        _updateList(proxy, sender, [name, oldOwner, newOwner]) {			
             if (name.startsWith("org.mpris.MediaPlayer2")) {
                 if (newOwner && !oldOwner) { //add player
                     const player = new Player(name)
 					player.connect('proxy-change', () => this.emit('list-changed'));
-
                     this.unfilteredList.push(player);
                 }
                 else if (!newOwner && oldOwner) { //delete player

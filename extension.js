@@ -300,7 +300,6 @@ class MprisLabel extends PanelMenu.Button {
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this.menu.removeAll(); //start by deleting everything
-
 	//player selection submenu:
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
