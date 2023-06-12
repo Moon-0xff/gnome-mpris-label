@@ -21,11 +21,7 @@
     <key name="extension-place" type="s">
       <default>"right"</default>
     </key>
-
-    <key name="refresh-rate" type="i">
-      <default>300</default>
-    </key>
-
+    
     <key name="button-placeholder" type="s">
       <default>"＿"</default>
     </key>
