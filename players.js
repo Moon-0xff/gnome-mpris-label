@@ -215,13 +215,10 @@ const Player = GObject.registerClass({
 			const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 			this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
 			this.proxy.connect('g-properties-changed', this.update.bind(this));
-			// this.proxy.connect('g-properties-changed', this._emitProxyChange.bind(this))
 			const entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 			this.entryProxy = entryWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this._onEntryProxyReady.bind(this));
 		}
-		// _emitProxyChange() {
 
-		// }
 		_onEntryProxyReady(){
 			this.identity = this.entryProxy.Identity;
 			this.desktopEntry = this.entryProxy.DesktopEntry;
