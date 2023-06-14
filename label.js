@@ -3,7 +3,8 @@ const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY, LABEL_FORMAT
+	REMOVE_TEXT_PAUSED_DELAY, LABEL_FORMAT, 
+	LABEL_FILTERED_LIST
 
 function getSettings(){
 	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
@@ -13,6 +14,7 @@ function getSettings(){
 	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
 	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
 	LABEL_FORMAT = settings.get_string("label-format");
+	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 }
 
 var buildLabel = function buildLabel(players){
@@ -121,6 +123,17 @@ function parseMetadataField(data) {
 	//Replaces every instance of " | "
 	if(data.includes(" | "))
 		data = data.replace(/ \| /g, " / ");
+
+	if(LABEL_FILTERED_LIST){
+		const CtrlCharactersRegex = new RegExp(/[.?*+^$[\]\\(){}|-]/, 'gi');
+		const sanitizedInput = LABEL_FILTERED_LIST.replace(CtrlCharactersRegex,"")
+		if(sanitizedInput != LABEL_FILTERED_LIST){
+			const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+			settings.set_string('label-filtered-list',sanitizedInput);
+		}
+		const filterRegex = new RegExp("(?:-|\\(|\\[).*(?:" + sanitizedInput.replace(",","|") + ").*(?:$|\\)|\\])","gi");
+		data = data.replace(filterRegex,"");
+	}
 
 	//Cut string if it's longer than MAX_STRING_LENGTH, preferably in a space
 	if (data.length > MAX_STRING_LENGTH){
