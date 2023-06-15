@@ -235,18 +235,16 @@ class Player {
 		}
 		return ""
 	}
-	getArtUrlIcon(size, leftPadding, rightPadding){
-		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+	getArtUrlIcon(size, iconPlace, leftPadding, rightPadding){
 		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
-		const ICON_PLACE = settings.get_string('show-icon');
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
 
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
 		if (shellVersion >= 3)
-			if (ICON_PLACE == "right")
+			if (iconPlace == "right")
 				icon_left_padding = leftPadding
-			else if (ICON_PLACE == "left")
+			else if (iconPlace == "left")
 				icon_right_padding = rightPadding
 
 		if(url.length>0)
@@ -260,17 +258,15 @@ class Player {
 
 		return this.albumArt
 	}
-	getIcon(desktopApp, symbolicIcon, leftPadding, rightPadding){
-		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-		const ICON_PLACE = settings.get_string('show-icon');
+	getIcon(desktopApp, iconPlace, symbolicIcon, leftPadding, rightPadding){
 		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
 
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
 		if (shellVersion >= 3)
-			if (ICON_PLACE == "right")
+			if (iconPlace == "right")
 				icon_left_padding = leftPadding
-			else if (ICON_PLACE == "left")
+			else if (iconPlace == "left")
 				icon_right_padding = rightPadding
 
 		let icon = new St.Icon({

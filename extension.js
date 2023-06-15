@@ -407,9 +407,9 @@ class MprisLabel extends PanelMenu.Button {
 
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
-				this.icon = this.player.getArtUrlIcon(size, ICON_LEFT_PADDING, ICON_RIGHT_PADDING);
+				this.icon = this.player.getArtUrlIcon(size, ICON_PLACE, ICON_LEFT_PADDING, ICON_RIGHT_PADDING);
 		} else {
-			this.icon = this.player.getIcon(this.player.desktopApp, SYMBOLIC_ICON, ICON_LEFT_PADDING, ICON_RIGHT_PADDING);
+			this.icon = this.player.getIcon(this.player.desktopApp, ICON_PLACE, SYMBOLIC_ICON, ICON_LEFT_PADDING, ICON_RIGHT_PADDING);
 		}
 
 		if (this.icon != null | undefined){
