@@ -46,7 +46,7 @@ GObject.registerClass(
 	{
 		Signals: {'list-changed': {},}
 	},
-class Players {
+class Players extends GObject.Object {
 	constructor(){
 		super();
 		this.list = [];
@@ -194,7 +194,7 @@ const Player = GObject.registerClass({
 		'proxy-change': {},
 	},
 },
-class Player {
+class Player extends GObject.Object {
 	constructor(address){
 		super();
 		this.address = address;
