@@ -235,22 +235,19 @@ class Player {
 		}
 		return ""
 	}
-	getArtUrlIcon(size){
+	getArtUrlIcon(size, leftPadding, rightPadding){
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
 		const ICON_PLACE = settings.get_string('show-icon');
-		const ICON_LEFT_PADDING = settings.get_int('left-padding-icon');
-		const ICON_RIGHT_PADDING = settings.get_int('right-padding-icon');
-		const Config = imports.misc.config;
-		const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
 
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
 		if (shellVersion >= 3)
 			if (ICON_PLACE == "right")
-				icon_left_padding = ICON_LEFT_PADDING
+				icon_left_padding = leftPadding
 			else if (ICON_PLACE == "left")
-				icon_right_padding = ICON_RIGHT_PADDING
+				icon_right_padding = rightPadding
 
 		if(url.length>0)
 			this.albumArt = new St.Icon({
@@ -263,22 +260,19 @@ class Player {
 
 		return this.albumArt
 	}
-	getIcon(desktopApp){
+	getIcon(desktopApp, leftPadding, rightPadding){
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		const ICON_PLACE = settings.get_string('show-icon');
 		const SYMBOLIC_ICON = settings.get_boolean('symbolic-source-icon');
-		const ICON_LEFT_PADDING = settings.get_int('left-padding-icon');
-		const ICON_RIGHT_PADDING = settings.get_int('right-padding-icon');
-		const Config = imports.misc.config;
-		const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
+		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
 
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
 		if (shellVersion >= 3)
 			if (ICON_PLACE == "right")
-				icon_left_padding = ICON_LEFT_PADDING
+				icon_left_padding = leftPadding
 			else if (ICON_PLACE == "left")
-				icon_right_padding = ICON_RIGHT_PADDING
+				icon_right_padding = rightPadding
 
 		let icon = new St.Icon({
 			style_class: 'system-status-icon',

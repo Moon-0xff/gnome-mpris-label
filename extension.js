@@ -386,6 +386,8 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
+		const ICON_LEFT_PADDING = this.settings.get_int('left-padding-icon');
+		const ICON_RIGHT_PADDING = this.settings.get_int('right-padding-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
 		const USE_ALBUM = this.settings.get_boolean('use-album');
 		const ALBUM_BLACKLIST = this.settings.get_string('album-blacklist').trim();
@@ -404,7 +406,7 @@ class MprisLabel extends PanelMenu.Button {
 
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
-				this.icon = this.player.getArtUrlIcon(size);
+				this.icon = this.player.getArtUrlIcon(size, ICON_LEFT_PADDING, ICON_RIGHT_PADDING);
 		} else {
 			this.icon = this.player.getIcon(this.player.desktopApp);
 		}
