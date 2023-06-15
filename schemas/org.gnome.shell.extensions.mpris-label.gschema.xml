@@ -29,7 +29,7 @@
     <key name="button-placeholder" type="s">
       <default>"＿"</default>
     </key>
-    
+
     <key name="label-filtered-list" type="s">
       <default>"remaster,remix,featuring,live"</default>
     </key>
