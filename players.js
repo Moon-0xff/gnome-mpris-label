@@ -260,10 +260,9 @@ class Player {
 
 		return this.albumArt
 	}
-	getIcon(desktopApp, leftPadding, rightPadding){
+	getIcon(desktopApp, symbolicIcon, leftPadding, rightPadding){
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		const ICON_PLACE = settings.get_string('show-icon');
-		const SYMBOLIC_ICON = settings.get_boolean('symbolic-source-icon');
 		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
 
 		let icon_left_padding = 0;
@@ -280,7 +279,7 @@ class Player {
 			style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 		});
 
-		if (SYMBOLIC_ICON) {
+		if (symbolicIcon) {
 			icon.set_style(icon.get_style() + '-st-icon-style: symbolic;');
 		}
 
