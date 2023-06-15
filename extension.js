@@ -406,9 +406,10 @@ class MprisLabel extends PanelMenu.Button {
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
 				this.icon = this.player.getArtUrlIcon(size, ICON_PLACE, ICON_PADDING);
-		} else {
-			this.icon = this.player.getIcon(ICON_PLACE, SYMBOLIC_ICON, ICON_PADDING);
 		}
+
+		if(this.icon == null)
+			this.icon = this.player.getIcon(ICON_PLACE, SYMBOLIC_ICON, ICON_PADDING);
 
 		if (this.icon != null | undefined){
 			if (ICON_PLACE == "right")
