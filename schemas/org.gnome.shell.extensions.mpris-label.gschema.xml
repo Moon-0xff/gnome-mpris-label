@@ -65,15 +65,15 @@
     <key name="show-icon" type="s">
       <default>"left"</default>
     </key>
-    
+
     <key name="symbolic-source-icon" type="b">
       <default>false</default>
     </key>
-    
+
     <key name="left-padding-icon" type="i">
       <default>5</default>
     </key>
-    
+
     <key name="right-padding-icon" type="i">
       <default>5</default>
     </key>

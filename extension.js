@@ -409,7 +409,7 @@ class MprisLabel extends PanelMenu.Button {
 			this.player._updateSourceIcon();
 			this.icon = this.player.icon;
 		}
-		
+
 		if (this.icon != null | undefined){
 			if (ICON_PLACE == "right")
 				this.box.add_child(this.icon);

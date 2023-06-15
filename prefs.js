@@ -90,7 +90,7 @@ function buildPrefsWidget(){
 	let fieldOptions = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
 
 	let firstFieldComboBox = buildStringComboBox(settings,'first-field',fieldOptions);
-	
+
 	fieldOptions['none'] = '';
 
 	let secondFieldComboBox = buildStringComboBox(settings,'second-field',fieldOptions);

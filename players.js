@@ -243,7 +243,7 @@ class Player {
 		const Config = imports.misc.config;
 		const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
-		
+
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
 		if (shellVersion >= 3)
@@ -251,7 +251,7 @@ class Player {
 				icon_left_padding = ICON_LEFT_PADDING
 			else if (ICON_PLACE == "left")
 				icon_right_padding = ICON_RIGHT_PADDING
-		
+
 		if(url.length>0)
 			this.albumArt = new St.Icon({
 				gicon: Gio.Icon.new_for_string(url),
