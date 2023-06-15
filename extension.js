@@ -62,8 +62,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
-		this.settings.connect('changed::left-padding-icon', this._setIcon.bind(this));
-		this.settings.connect('changed::right-padding-icon', this._setIcon.bind(this));
+		this.settings.connect('changed::padding-icon', this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -386,8 +385,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
-		const ICON_LEFT_PADDING = this.settings.get_int('left-padding-icon');
-		const ICON_RIGHT_PADDING = this.settings.get_int('right-padding-icon');
+		const ICON_PADDING = this.settings.get_int('padding-icon');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
 		const SYMBOLIC_ICON = this.settings.get_boolean('symbolic-source-icon');
 		const USE_ALBUM = this.settings.get_boolean('use-album');
@@ -407,9 +405,9 @@ class MprisLabel extends PanelMenu.Button {
 
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
-				this.icon = this.player.getArtUrlIcon(size, ICON_PLACE, ICON_LEFT_PADDING, ICON_RIGHT_PADDING);
+				this.icon = this.player.getArtUrlIcon(size, ICON_PLACE, ICON_PADDING);
 		} else {
-			this.icon = this.player.getIcon(this.player.desktopApp, ICON_PLACE, SYMBOLIC_ICON, ICON_LEFT_PADDING, ICON_RIGHT_PADDING);
+			this.icon = this.player.getIcon(this.player.desktopApp, ICON_PLACE, SYMBOLIC_ICON, ICON_PADDING);
 		}
 
 		if (this.icon != null | undefined){

@@ -235,7 +235,7 @@ class Player {
 		}
 		return ""
 	}
-	getArtUrlIcon(size, iconPlace, leftPadding, rightPadding){
+	getArtUrlIcon(size, iconPlace, padding){
 		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
 
@@ -243,9 +243,9 @@ class Player {
 		let icon_right_padding = 0;
 		if (shellVersion >= 3)
 			if (iconPlace == "right")
-				icon_left_padding = leftPadding
+				icon_left_padding = padding
 			else if (iconPlace == "left")
-				icon_right_padding = rightPadding
+				icon_right_padding = padding
 
 		if(url.length>0)
 			this.albumArt = new St.Icon({
@@ -258,16 +258,16 @@ class Player {
 
 		return this.albumArt
 	}
-	getIcon(desktopApp, iconPlace, symbolicIcon, leftPadding, rightPadding){
+	getIcon(desktopApp, iconPlace, symbolicIcon, padding){
 		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
 
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
 		if (shellVersion >= 3)
 			if (iconPlace == "right")
-				icon_left_padding = leftPadding
+				icon_left_padding = padding
 			else if (iconPlace == "left")
-				icon_right_padding = rightPadding
+				icon_right_padding = padding
 
 		let icon = new St.Icon({
 			style_class: 'system-status-icon',
