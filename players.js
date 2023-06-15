@@ -258,7 +258,7 @@ class Player {
 
 		return this.albumArt
 	}
-	getIcon(desktopApp, iconPlace, symbolicIcon, padding){
+	getIcon(iconPlace, symbolicIcon, padding){
 		const shellVersion = Number.parseInt(imports.misc.config.PACKAGE_VERSION.split('.'));
 
 		let icon_left_padding = 0;
@@ -279,10 +279,10 @@ class Player {
 			icon.set_style(icon.get_style() + '-st-icon-style: symbolic;');
 		}
 
-		if(desktopApp == null | undefined)
+		if(this.desktopApp == null | undefined)
 			return icon
 
-		let entry = Gio.DesktopAppInfo.new(desktopApp);
+		let entry = Gio.DesktopAppInfo.new(this.desktopApp);
 		let gioIcon = entry.get_icon();
 		icon.set_gicon(gioIcon);
 		return icon
