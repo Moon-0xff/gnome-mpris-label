@@ -129,10 +129,7 @@ var Players = GObject.registerClass({
 				this.unfilteredList.push(player);
 			})
 
-            this.dBusProxy.connectSignal('NameOwnerChanged', (...args)=>{
-				this._updateList(...args)
-				this.emit('list-changed')
-			});
+            this.dBusProxy.connectSignal('NameOwnerChanged', this._updateList.bind(this));
         }
 
         _updateList(proxy, sender, [name, oldOwner, newOwner]) {			
@@ -145,6 +142,7 @@ var Players = GObject.registerClass({
                 else if (!newOwner && oldOwner) { //delete player
                     this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
                 }
+				this.emit('list-changed')
             }
         }
 
