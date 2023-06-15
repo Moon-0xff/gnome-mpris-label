@@ -406,8 +406,7 @@ class MprisLabel extends PanelMenu.Button {
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
 				this.icon = this.player.getArtUrlIcon(size);
 		} else {
-			this.player._updateSourceIcon();
-			this.icon = this.player.icon;
+			this.icon = this.player.getIcon(this.player.desktopApp);
 		}
 
 		if (this.icon != null | undefined){
