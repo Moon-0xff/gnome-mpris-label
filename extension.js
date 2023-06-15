@@ -384,7 +384,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
-		const ICON_PADDING = this.settings.get_int('padding-icon');
+		const ICON_PADDING = this.settings.get_int('icon-padding');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
 		const SYMBOLIC_ICON = this.settings.get_boolean('symbolic-source-icon');
 		const USE_ALBUM = this.settings.get_boolean('use-album');

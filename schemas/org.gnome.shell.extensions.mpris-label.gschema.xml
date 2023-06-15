@@ -70,7 +70,7 @@
       <default>false</default>
     </key>
 
-    <key name="padding-icon" type="i">
+    <key name="icon-padding" type="i">
       <default>5</default>
     </key>
 
