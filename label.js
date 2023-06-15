@@ -26,7 +26,6 @@ var buildLabel = function buildLabel(players){
 	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing")
 		placeholder = BUTTON_PLACEHOLDER;
 
-	// if(REMOVE_TEXT_WHEN_PAUSED){
 		if(players.removeTextWhenPaused())
 			return placeholder
 	
