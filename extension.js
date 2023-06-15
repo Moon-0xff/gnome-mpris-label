@@ -61,6 +61,9 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
+		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
+		this.settings.connect('changed::left-padding-icon', this._setIcon.bind(this));
+		this.settings.connect('changed::right-padding-icon', this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -402,11 +405,11 @@ class MprisLabel extends PanelMenu.Button {
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
 				this.icon = this.player.getArtUrlIcon(size);
-		}
-
-		if(this.icon == null)
+		} else {
+			this.player._updateSourceIcon();
 			this.icon = this.player.icon;
-
+		}
+		
 		if (this.icon != null | undefined){
 			if (ICON_PLACE == "right")
 				this.box.add_child(this.icon);

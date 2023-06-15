@@ -236,36 +236,62 @@ class Player {
 		return ""
 	}
 	getArtUrlIcon(size){
+		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		const ICON_PLACE = settings.get_string('show-icon');
+		const ICON_LEFT_PADDING = settings.get_int('left-padding-icon');
+		const ICON_RIGHT_PADDING = settings.get_int('right-padding-icon');
+		const Config = imports.misc.config;
+		const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
+		
+		let icon_left_padding = 0;
+		let icon_right_padding = 0;
+		if (shellVersion >= 3)
+			if (ICON_PLACE == "right")
+				icon_left_padding = ICON_LEFT_PADDING
+			else if (ICON_PLACE == "left")
+				icon_right_padding = ICON_RIGHT_PADDING
+		
 		if(url.length>0)
 			this.albumArt = new St.Icon({
 				gicon: Gio.Icon.new_for_string(url),
 				style_class: 'system-status-icon',
 				icon_size: size,
-				style: "padding: 0px;"
+				style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 			})
 		else this.albumArt = null;
 
 		return this.albumArt
 	}
+	_updateSourceIcon() {
+		this.icon = this.getIcon(this.desktopApp);
+	}
 	getIcon(desktopApp){
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		const ICON_PLACE = settings.get_string('show-icon');
+		const SYMBOLIC_ICON = settings.get_boolean('symbolic-source-icon');
+		const ICON_LEFT_PADDING = settings.get_int('left-padding-icon');
+		const ICON_RIGHT_PADDING = settings.get_int('right-padding-icon');
 		const Config = imports.misc.config;
+		const shellVersion = Number.parseInt(Config.PACKAGE_VERSION.split('.'));
 
 		let icon_left_padding = 0;
 		let icon_right_padding = 0;
-		if (Config.PACKAGE_VERSION.startsWith("3."))
+		if (shellVersion >= 3)
 			if (ICON_PLACE == "right")
-				icon_left_padding = 3
+				icon_left_padding = ICON_LEFT_PADDING
 			else if (ICON_PLACE == "left")
-				icon_right_padding = 3
+				icon_right_padding = ICON_RIGHT_PADDING
 
-			let icon = new St.Icon({
+		let icon = new St.Icon({
 			style_class: 'system-status-icon',
 			fallback_icon_name: 'audio-volume-high',
 			style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
 		});
+
+		if (SYMBOLIC_ICON) {
+			icon.set_style(icon.get_style() + '-st-icon-style: symbolic;');
+		}
 
 		if(desktopApp == null | undefined)
 			return icon
