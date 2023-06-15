@@ -263,9 +263,6 @@ class Player {
 
 		return this.albumArt
 	}
-	_updateSourceIcon() {
-		this.icon = this.getIcon(this.desktopApp);
-	}
 	getIcon(desktopApp){
 		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		const ICON_PLACE = settings.get_string('show-icon');
