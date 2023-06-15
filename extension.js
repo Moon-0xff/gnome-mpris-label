@@ -21,7 +21,7 @@ function disable(){
 	indicator = null;
 }
 
-// TODO: REMOVE THIS, SIMPLY FOR DEBUGGING PURPOSES
+// README: REMOVE THIS, SIMPLY FOR DEBUGGING PURPOSES
 function formatDateToMilliseconds(date) {
 	var hours = date.getHours().toString().padStart(2, '0');
 	var minutes = date.getMinutes().toString().padStart(2, '0');
@@ -70,6 +70,8 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
+		this.settings.connect('changed::album-size',this._setIcon.bind(this))
+		this.settings.connect('changed::album-blacklist',this._setIcon.bind(this))
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
