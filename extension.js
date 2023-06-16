@@ -404,17 +404,24 @@ class MprisLabel extends PanelMenu.Button {
 
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!blacklist.includes(this.player.identity.toLowerCase()))
-				this.icon = this.player.getArtUrlIcon(size, ICON_PLACE, ICON_PADDING);
+				this.icon = this.player.getArtUrlIcon(size);
 		}
 
-		if(this.icon == null)
-			this.icon = this.player.getIcon(ICON_PLACE, SYMBOLIC_ICON, ICON_PADDING);
+		if(this.icon == null){
+			this.icon = this.player.getIcon(SYMBOLIC_ICON);
+			if (SYMBOLIC_ICON)
+				this.icon.set_style('-st-icon-style: symbolic;');
+		}
 
 		if (this.icon != null | undefined){
-			if (ICON_PLACE == "right")
+			if (ICON_PLACE == "right"){
+				this.icon.set_style(this.icon.get_style() + "padding-left: " + ICON_PADDING + "px;padding-right: 0px;");
 				this.box.add_child(this.icon);
-			else if (ICON_PLACE == "left")
+			}
+			else if (ICON_PLACE == "left"){
+				this.icon.set_style(this.icon.get_style() + "padding-left: 0px;padding-right: " + ICON_PADDING + "px;");
 				this.box.insert_child_at_index(this.icon,0);
+			}
 		}
 	}
 

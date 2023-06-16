@@ -235,36 +235,25 @@ class Player {
 		}
 		return ""
 	}
-	getArtUrlIcon(size, iconPlace, padding){
+	getArtUrlIcon(size){
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
-
-		let icon_left_padding = 0;
-		let icon_right_padding = 0;
 
 		if(url.length>0)
 			this.albumArt = new St.Icon({
 				gicon: Gio.Icon.new_for_string(url),
 				style_class: 'system-status-icon',
 				icon_size: size,
-				style: "padding: 0px; padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
+				style: "padding: 0px;"
 			})
 		else this.albumArt = null;
 
 		return this.albumArt
 	}
-	getIcon(iconPlace, symbolicIcon, padding){
-		let icon_left_padding = 0;
-		let icon_right_padding = 0;
-
+	getIcon(){
 		let icon = new St.Icon({
 			style_class: 'system-status-icon',
-			fallback_icon_name: 'audio-volume-high',
-			style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
+			fallback_icon_name: 'audio-volume-high'
 		});
-
-		if (symbolicIcon) {
-			icon.set_style(icon.get_style() + '-st-icon-style: symbolic;');
-		}
 
 		if(this.desktopApp == null | undefined)
 			return icon
