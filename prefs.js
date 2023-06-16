@@ -18,7 +18,7 @@ function buildPrefsWidget(){
 		prefsWidget.connect('realize', () => {
 			let window = prefsWidget.get_root();
 			window.default_width = 600;
-			window.default_height = 700;
+			window.default_height = 775;
 		});
 	}
 
