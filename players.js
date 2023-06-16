@@ -276,6 +276,7 @@ class Player extends GObject.Object {
 	}
 	getArtUrlIcon(size){
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
+
 		if(url.length>0)
 			this.albumArt = new St.Icon({
 				gicon: Gio.Icon.new_for_string(url),
@@ -287,29 +288,16 @@ class Player extends GObject.Object {
 
 		return this.albumArt
 	}
-	getIcon(desktopApp){
-		const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-		const ICON_PLACE = settings.get_string('show-icon');
-		const Config = imports.misc.config;
-
-		let icon_left_padding = 0;
-		let icon_right_padding = 0;
-		if (Config.PACKAGE_VERSION.startsWith("3."))
-			if (ICON_PLACE == "right")
-				icon_left_padding = 3
-			else if (ICON_PLACE == "left")
-				icon_right_padding = 3
-
-			let icon = new St.Icon({
+	getIcon(){
+		let icon = new St.Icon({
 			style_class: 'system-status-icon',
-			fallback_icon_name: 'audio-volume-high',
-			style: "padding-left: " + icon_left_padding + "px;padding-right: " + icon_right_padding + "px;"
+			fallback_icon_name: 'audio-volume-high'
 		});
 
-		if(desktopApp == null | undefined)
+		if(this.desktopApp == null | undefined)
 			return icon
 
-		let entry = Gio.DesktopAppInfo.new(desktopApp);
+		let entry = Gio.DesktopAppInfo.new(this.desktopApp);
 		let gioIcon = entry.get_icon();
 		icon.set_gicon(gioIcon);
 		return icon

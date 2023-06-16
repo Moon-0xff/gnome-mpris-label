@@ -18,7 +18,7 @@ function buildPrefsWidget(){
 		prefsWidget.connect('realize', () => {
 			let window = prefsWidget.get_root();
 			window.default_width = 600;
-			window.default_height = 700;
+			window.default_height = 775;
 		});
 	}
 
@@ -27,6 +27,8 @@ function buildPrefsWidget(){
 
 	addSubcategoryLabel(panelPage,'Icon');
 	let showIconComboBox = addStringComboBox(panelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
+	addSpinButton(panelPage, 'icon-padding', 'Icon padding:', 0, 50, undefined);
+	addSwitch(panelPage, 'symbolic-source-icon', 'Use symbolic source icon:', "Uses an icon that follows the shell's color scheme");
 	addSwitch(panelPage,'use-album','Use album art as icon when available:',undefined);
 	addSpinButton(panelPage,'album-size','Album art scaling (in %):',50,250,undefined);
 
@@ -50,6 +52,8 @@ function buildPrefsWidget(){
 		settings.reset('reposition-on-button-press');
 		settings.reset('use-album');
 		settings.reset('album-size');
+		settings.reset('symbolic-source-icon');
+		settings.reset('icon-padding');
 		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
