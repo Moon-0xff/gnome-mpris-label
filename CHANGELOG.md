@@ -46,4 +46,8 @@ Aditionally:
   strings that trigger the filter
 
 # Upcoming Version
-- Add album art
+Includes new options to customize the icon alongside the label:
+- Icon padding: adjust the distance between the label text and icon
+- Use symbolic icon: Use the simplified, monochromatic version of the app icon
+- Use album art as icon when available
+- Album art scaling: adjust the size of the album art image on the panel
