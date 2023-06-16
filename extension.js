@@ -61,6 +61,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
+		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -383,7 +384,9 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setIcon(){
 		const ICON_PLACE = this.settings.get_string('show-icon');
+		const ICON_PADDING = this.settings.get_int('icon-padding');
 		const PLACEHOLDER = this.settings.get_string('button-placeholder');
+		const SYMBOLIC_ICON = this.settings.get_boolean('symbolic-source-icon');
 		const USE_ALBUM = this.settings.get_boolean('use-album');
 		const ALBUM_BLACKLIST = this.settings.get_string('album-blacklist').trim();
 
@@ -404,14 +407,21 @@ class MprisLabel extends PanelMenu.Button {
 				this.icon = this.player.getArtUrlIcon(size);
 		}
 
-		if(this.icon == null)
-			this.icon = this.player.icon;
+		if(this.icon == null){
+			this.icon = this.player.getIcon(SYMBOLIC_ICON);
+			if (SYMBOLIC_ICON)
+				this.icon.set_style('-st-icon-style: symbolic;');
+		}
 
 		if (this.icon != null | undefined){
-			if (ICON_PLACE == "right")
+			if (ICON_PLACE == "right"){
+				this.icon.set_style(this.icon.get_style() + "padding-left: " + ICON_PADDING + "px;padding-right: 0px;");
 				this.box.add_child(this.icon);
-			else if (ICON_PLACE == "left")
+			}
+			else if (ICON_PLACE == "left"){
+				this.icon.set_style(this.icon.get_style() + "padding-left: 0px;padding-right: " + ICON_PADDING + "px;");
 				this.box.insert_child_at_index(this.icon,0);
+			}
 		}
 	}
 
