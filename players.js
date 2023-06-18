@@ -121,7 +121,7 @@ class Players extends GObject.Object {
 		this.unfilteredList = [];
 		dBusList.forEach(address => {
 			const player = new Player(address)
-			player.connect('proxy-change', () => this.emit('list-changed'))
+			player.connect('updated', () => this.emit('list-changed'))
 			this.unfilteredList.push(player);
 		})
 
@@ -131,7 +131,7 @@ class Players extends GObject.Object {
 		if(name.startsWith("org.mpris.MediaPlayer2")){
 			if(newOwner && !oldOwner){ //add player
 				const player = new Player(name);
-				player.connect('proxy-change', ()=> this.emit('list-changed'))
+				player.connect('updated', ()=> this.emit('list-changed'))
 				this.unfilteredList.push(player);
 			}
 			else if (!newOwner && oldOwner){ //delete player
