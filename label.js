@@ -28,7 +28,7 @@ var buildLabel = function buildLabel(players){
 
 		if(players.removeTextWhenPaused())
 			return placeholder
-	
+
 
 	let metadata = players.selected.metadata;
 	if(metadata == null)
