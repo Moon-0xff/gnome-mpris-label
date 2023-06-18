@@ -43,9 +43,7 @@ const dBusInterface = `
 
 var Players =
 GObject.registerClass(
-	{
-		Signals: {'list-changed': {},}
-	},
+	{ Signals: {'list-changed': {},} },
 class Players extends GObject.Object {
 	constructor(){
 		super();
@@ -171,10 +169,7 @@ class Players extends GObject.Object {
 });
 
 const Player = GObject.registerClass({
-	Signals: {
-		'updated': {},
-	},
-},
+	Signals: { 'updated': {}, }, },
 class Player extends GObject.Object {
 	constructor(address){
 		super();
