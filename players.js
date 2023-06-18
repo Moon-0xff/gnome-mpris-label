@@ -191,7 +191,7 @@ class Players extends GObject.Object {
 
 const Player = GObject.registerClass({
 	Signals: {
-		'proxy-change': {},
+		'updated': {},
 	},
 },
 class Player extends GObject.Object {
@@ -258,7 +258,7 @@ class Player extends GObject.Object {
 			this.statusTimestamp = new Date().getTime();
 		}
 
-		this.emit('proxy-change');
+		this.emit('updated');
 	}
 	stringFromMetadata(field) {
 		// metadata is a javascript object
