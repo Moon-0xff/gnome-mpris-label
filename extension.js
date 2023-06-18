@@ -21,16 +21,6 @@ function disable(){
 	indicator = null;
 }
 
-// README: REMOVE THIS, SIMPLY FOR DEBUGGING PURPOSES
-function formatDateToMilliseconds(date) {
-	var hours = date.getHours().toString().padStart(2, '0');
-	var minutes = date.getMinutes().toString().padStart(2, '0');
-	var seconds = date.getSeconds().toString().padStart(2, '0');
-	var milliseconds = date.getMilliseconds().toString().padStart(3, '0');
-  
-	return hours + ':' + minutes + ':' + seconds + ':' + milliseconds;
-}
-
 var MprisLabel = GObject.registerClass(
 	{ GTypeName: 'MprisLabel' },
 class MprisLabel extends PanelMenu.Button {
@@ -376,7 +366,6 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_refresh() {
-		log("This is a label that is fully event based! - " + formatDateToMilliseconds(new Date()))
 		let prevPlayer = this.player;
 		try {
 			this.players.updateFilterList();
