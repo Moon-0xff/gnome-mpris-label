@@ -2,7 +2,6 @@ const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
-const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
@@ -20,6 +19,16 @@ function disable(){
 	indicator._disable();
 	indicator.destroy();
 	indicator = null;
+}
+
+// README: REMOVE THIS, SIMPLY FOR DEBUGGING PURPOSES
+function formatDateToMilliseconds(date) {
+	var hours = date.getHours().toString().padStart(2, '0');
+	var minutes = date.getMinutes().toString().padStart(2, '0');
+	var seconds = date.getSeconds().toString().padStart(2, '0');
+	var milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+  
+	return hours + ':' + minutes + ':' + seconds + ':' + milliseconds;
 }
 
 var MprisLabel = GObject.registerClass(
@@ -61,13 +70,24 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
+		this.settings.connect('changed::album-size',this._setIcon.bind(this));
+		this.settings.connect('changed::album-blacklist',this._setIcon.bind(this));
+		this.settings.connect('changed::divider-string',this._setText.bind(this))
+		this.settings.connect('changed::first-field',this._setText.bind(this));
+		this.settings.connect('changed::second-field',this._setText.bind(this));
+		this.settings.connect('changed::third-field',this._setText.bind(this));
+		this.settings.connect('changed::mpris-sources-blacklist',this._refresh.bind(this));
+		this.settings.connect('changed::mpris-sources-whitelist',this._refresh.bind(this));
+		this.settings.connect('changed::use-whitelist-sources-only',this._refresh.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
+		this.settings.connect('changed::icon-padding', this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
 		this._refresh();
+		this.players.connect('list-changed',()=>this._refresh());
 	}
 
 	_onPaddingChanged(){
@@ -301,7 +321,6 @@ class MprisLabel extends PanelMenu.Button {
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this.menu.removeAll(); //start by deleting everything
-
 	//player selection submenu:
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
@@ -357,10 +376,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_refresh() {
-		const REFRESH_RATE = this.settings.get_int('refresh-rate');
-
+		log("This is a label that is fully event based! - " + formatDateToMilliseconds(new Date()))
 		let prevPlayer = this.player;
-
 		try {
 			this.players.updateFilterList();
 			this.players.updateActiveList();
@@ -376,9 +393,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._setText();
 		this._setIcon();
-		this._removeTimeout();
-
-		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
 		return true;
 	}
 
@@ -428,20 +442,13 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.label.set_text("")
+				this.label.set_text("");
 			else
 				this.label.set_text(buildLabel(this.players));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
 			this.label.set_text("");
-		}
-	}
-
-	_removeTimeout() {
-		if(this._timeout) {
-			Mainloop.source_remove(this._timeout);
-			this._timeout = null;
 		}
 	}
 
@@ -455,7 +462,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.box.remove_child(this.label);
 		this.remove_child(this.box);
-		this._removeTimeout();
 
 		if (this._repositionTimeout){
 			GLib.Source.remove(this._repositionTimeout);

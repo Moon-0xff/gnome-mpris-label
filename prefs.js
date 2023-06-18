@@ -69,7 +69,6 @@ function buildPrefsWidget(){
 	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
 	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
 	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
-	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
 	addEntry(labelPage,'label-filtered-list','Filter segments containing:',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
 	addSubcategoryLabel(labelPage,'Appearance');
@@ -111,7 +110,6 @@ function buildPrefsWidget(){
 
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
-		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
 		settings.reset('label-filtered-list');
 		settings.reset('divider-string');

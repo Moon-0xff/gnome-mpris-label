@@ -41,8 +41,14 @@ const dBusInterface = `
 	</interface>
 </node>`
 
-var Players = class Players {
+var Players = 
+GObject.registerClass(
+	{
+		Signals: {'list-changed': {},}
+	},
+class Players extends GObject.Object {
 	constructor(){
+		super();
 		this.list = [];
 		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
@@ -113,19 +119,25 @@ var Players = class Players {
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
 		this.unfilteredList = [];
-		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
+		dBusList.forEach(address => {
+			const player = new Player(address)
+			player.connect('proxy-change', () => this.emit('list-changed'))
+			this.unfilteredList.push(player);
+		})
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
 			if(newOwner && !oldOwner){ //add player
-				let player = new Player(name);
+				const player = new Player(name);
+				player.connect('proxy-change', ()=> this.emit('list-changed'))
 				this.unfilteredList.push(player);
 			}
 			else if (!newOwner && oldOwner){ //delete player
 				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
 			}
+			this.emit('list-changed')
 		}
 	}
 	updateFilterList(){
@@ -156,10 +168,35 @@ var Players = class Players {
 		});
 		this.activePlayers = actives;
 	}
-}
+	removeTextWhenPaused() {
+		const { selected: player } = this
+		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused')
+		if(!REMOVE_TEXT_WHEN_PAUSED) return false
+		const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
+		
+		if(player.playbackStatus == "Playing"){
+			if(this.hideTimeout != -1) {
+				clearTimeout(this.hideTimeout)
+				this.hideTimeout = -1
+			}
+			return false
+		}	
+		else if (this.hideTimeout == -1){
+			this.hideTimeout = setTimeout(() => this.emit('list-changed'), REMOVE_TEXT_PAUSED_DELAY*1000)
+			return false
+		}
+		else return true	
+	}
+})
 
-class Player {
+const Player = GObject.registerClass({
+	Signals: {
+		'proxy-change': {},
+	},
+},
+class Player extends GObject.Object {
 	constructor(address){
+		super();
 		this.address = address;
 		this.statusTimestamp = new Date().getTime();
 		this.albumArt = null;
@@ -220,6 +257,8 @@ class Player {
 			this.playbackStatus = playbackStatus;
 			this.statusTimestamp = new Date().getTime();
 		}
+
+		this.emit('proxy-change');
 	}
 	stringFromMetadata(field) {
 		// metadata is a javascript object
@@ -322,5 +361,5 @@ class Player {
 				return window;
 		}
 	}
-}
+})
 
