@@ -202,8 +202,7 @@ class MprisLabel extends PanelMenu.Button {
 				this.menu.toggle();
 				break;
 			case 'next-player':
-				this.player = this.players.next();
-				this._refresh();
+				this.players.next();
 				break;
 			case 'volume-up':
 				this._changeVolume(1);
@@ -340,8 +339,7 @@ class MprisLabel extends PanelMenu.Button {
 				if (AUTO_SWITCH_TO_MOST_RECENT)
 					this.settings.set_boolean('auto-switch-to-most-recent',false);
 
-				this.players.selected = player; //this.player should sync with this on the next refresh
-				this._refresh();                //so let's refresh right away
+				this.players.setSelected(player);
 			});
 
 			this.menu.addMenuItem(settingsMenuItem);
