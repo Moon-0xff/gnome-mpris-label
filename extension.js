@@ -66,18 +66,19 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::first-field',this._setText.bind(this));
 		this.settings.connect('changed::second-field',this._setText.bind(this));
 		this.settings.connect('changed::third-field',this._setText.bind(this));
-		this.settings.connect('changed::mpris-sources-blacklist',this._refresh.bind(this));
-		this.settings.connect('changed::mpris-sources-whitelist',this._refresh.bind(this));
-		this.settings.connect('changed::use-whitelist-sources-only',this._refresh.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
 		this.settings.connect('changed::icon-padding', this._setIcon.bind(this));
+
+		this.players.connect('selected-changed', () => {
+			this.player = this.players.selected;
+			this._getStream();
+			this._setText();
+			this._setIcon();
+		});
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
-
-		this._refresh();
-		this.players.connect('list-changed',()=>this._refresh());
 	}
 
 	_onPaddingChanged(){
@@ -363,26 +364,6 @@ class MprisLabel extends PanelMenu.Button {
 
 	//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
-	}
-
-	_refresh() {
-		let prevPlayer = this.player;
-		try {
-			this.players.updateFilterList();
-			this.players.updateActiveList();
-		}
-		catch {
-			; //do nothing
-		}
-
-		this.player = this.players.pick();
-
-		if(this.player != prevPlayer)
-			this._getStream();
-
-		this._setText();
-		this._setIcon();
-		return true;
 	}
 
 	_setIcon(){
