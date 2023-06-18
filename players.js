@@ -168,26 +168,7 @@ class Players extends GObject.Object {
 		});
 		this.activePlayers = actives;
 	}
-	removeTextWhenPaused() {
-		const { selected: player } = this
-		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused')
-		if(!REMOVE_TEXT_WHEN_PAUSED) return false
-		const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
-
-		if(player.playbackStatus == "Playing"){
-			if(this.hideTimeout != -1) {
-				clearTimeout(this.hideTimeout)
-				this.hideTimeout = -1
-			}
-			return false
-		}
-		else if (this.hideTimeout == -1){
-			this.hideTimeout = setTimeout(() => this.emit('list-changed'), REMOVE_TEXT_PAUSED_DELAY*1000)
-			return false
-		}
-		else return true
-	}
-})
+});
 
 const Player = GObject.registerClass({
 	Signals: {
@@ -361,5 +342,5 @@ class Player extends GObject.Object {
 				return window;
 		}
 	}
-})
+});
 
