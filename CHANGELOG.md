@@ -45,7 +45,7 @@ Aditionally:
 - Changes the 'Remove remaster text' option for a user-definable list of
   strings that trigger the filter
 
-# Upcoming Version
+# Version 17
 Includes new options to customize the icon alongside the label:
 - Icon padding: adjust the distance between the label text and icon
 - Use symbolic icon: Use the simplified, monochromatic version of the app icon
