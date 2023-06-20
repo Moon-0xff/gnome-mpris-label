@@ -43,10 +43,10 @@ const dBusInterface = `
 
 var Players =
 GObject.registerClass(
-	{ Signals: {'list-changed': {},} },
+	{ Signals: {'selected-changed': {},} },
 class Players extends GObject.Object {
-	constructor(){
-		super();
+	_init(){
+		super._init();
 		this.list = [];
 		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
@@ -86,6 +86,9 @@ class Players extends GObject.Object {
 			}
 		});
 		this.selected = bestChoice;
+
+		this.emit('selected-changed');
+
 		return this.selected
 	}
 	next(){
@@ -110,6 +113,8 @@ class Players extends GObject.Object {
 			this.selected.statusTimestamp = new Date().getTime();
 		}
 
+		this.emit('selected-changed');
+
 		return this.selected
 	}
 	_initList(){
@@ -118,9 +123,7 @@ class Players extends GObject.Object {
 
 		this.unfilteredList = [];
 		dBusList.forEach(address => {
-			const player = new Player(address)
-			player.connect('updated', () => this.emit('list-changed'))
-			this.unfilteredList.push(player);
+			this._connectPlayer(address);
 		})
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
@@ -128,15 +131,23 @@ class Players extends GObject.Object {
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
 			if(newOwner && !oldOwner){ //add player
-				const player = new Player(name);
-				player.connect('updated', ()=> this.emit('list-changed'))
-				this.unfilteredList.push(player);
+				this._connectPlayer(name);
 			}
 			else if (!newOwner && oldOwner){ //delete player
 				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
+				this.updateFilterList();
+
+				if(name == this.selected.address){
+					this.pick();
+				}
 			}
-			this.emit('list-changed')
 		}
+	}
+	_connectPlayer(address){
+		const player = new Player(address);
+		player.connect('updated', (player) => this._updateActiveList.bind(this));
+		this.unfilteredList.push(player);
+		this.updateFilterList();
 	}
 	updateFilterList(){
 		if(!this.unfilteredList)
@@ -158,21 +169,24 @@ class Players extends GObject.Object {
 		if(!USE_WHITELIST && SOURCES_BLACKLIST)
 			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 	}
-	updateActiveList(){
-		let actives = [];
-		this.list.forEach(player => {
-			if(player.playbackStatus == "Playing")
-				actives.push(player);
-		});
-		this.activePlayers = actives;
+	_updateActiveList(player){
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+
+		if(player.playbackStatus == "Playing" && !this.activePlayers.includes(player))
+			this.activePlayers.push(player);
+		else if(player.playbackStatus != "Playing" && this.activePlayers.includes(player))
+			this.activePlayers.filter(storedPlayer => storedPlayer == player);
+
+		if(AUTO_SWITCH_TO_MOST_RECENT)
+			this.pick();
 	}
 });
 
 const Player = GObject.registerClass({
 	Signals: { 'updated': {}, }, },
 class Player extends GObject.Object {
-	constructor(address){
-		super();
+	_init(address){
+		super._init();
 		this.address = address;
 		this.statusTimestamp = new Date().getTime();
 		this.albumArt = null;
