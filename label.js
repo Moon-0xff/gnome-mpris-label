@@ -30,8 +30,11 @@ var buildLabel = function buildLabel(players){
 	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing")
 		placeholder = BUTTON_PLACEHOLDER;
 
-	if(REMOVE_TEXT_WHEN_PAUSED){
-		if(removeTextWhenPaused(players.selected))
+	if(REMOVE_TEXT_WHEN_PAUSED && players.selected.playbackStatus != "Playing"){
+		const statusTimestamp = players.selected.statusTimestamp / 1000;
+		const currentTimestamp = new Date().getTime() / 1000;
+
+		if(statusTimestamp + REMOVE_TEXT_PAUSED_DELAY <= currentTimestamp)
 			return placeholder
 	}
 
@@ -56,15 +59,6 @@ var buildLabel = function buildLabel(players){
 		return placeholder
 
 	return labelstring
-}
-
-function removeTextWhenPaused(player){
-	if (player.playbackStatus == "Playing")
-		return false
-
-	if ( (player.statusTimestamp / 1000) + REMOVE_TEXT_PAUSED_DELAY <= new Date().getTime() / 1000){
-		return true
-	}
 }
 
 function parseMetadataField(data) {
