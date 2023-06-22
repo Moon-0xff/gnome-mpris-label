@@ -9,7 +9,6 @@ let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
 function getSettings(){
 	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 	DIVIDER_STRING = settings.get_string('divider-string');
