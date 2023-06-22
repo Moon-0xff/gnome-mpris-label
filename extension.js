@@ -71,6 +71,10 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players.connect('selected-changed', () => {
 			this.player = this.players.selected;
+			this.player.connect('updated', () => {
+				this._setText();
+				this._setIcon();
+			});
 			this._getStream();
 			this._setText();
 			this._setIcon();
