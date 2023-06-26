@@ -183,7 +183,7 @@ class Players extends GObject.Object {
 });
 
 const Player = GObject.registerClass({
-	Signals: { 'updated': {}, }, },
+	Signals: { 'updated': {}, 'entry-ready': {} }, },
 class Player extends GObject.Object {
 	_init(address){
 		super._init();
@@ -224,6 +224,8 @@ class Player extends GObject.Object {
 			this.desktopApp = this._matchRunningApps(matchedEntries)
 
 		this.icon = this.getIcon(this.desktopApp);
+
+		this.emit('entry-ready');
 	}
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();

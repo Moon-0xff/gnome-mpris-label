@@ -71,13 +71,18 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players.connect('selected-changed', () => {
 			this.player = this.players.selected;
+
+			this._setText();
+
 			this.player.connect('updated', () => {
 				this._setText();
 				this._setIcon();
 			});
-			this._getStream();
-			this._setText();
-			this._setIcon();
+
+			this.player.connect('entry-ready', () => {
+				this._getStream();
+				this._setIcon();
+			});
 		});
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
