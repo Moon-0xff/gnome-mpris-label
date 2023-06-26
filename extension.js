@@ -46,6 +46,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.box.add_child(this.label);
 
 		this.players = new Players();
+		this.players.connect('selected-changed',this._onSelectedChanged.bind(this));
 
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
@@ -68,22 +69,6 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::third-field',this._setText.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
 		this.settings.connect('changed::icon-padding', this._setIcon.bind(this));
-
-		this.players.connect('selected-changed', () => {
-			this.player = this.players.selected;
-
-			this._setText();
-
-			this.player.connect('updated', () => {
-				this._setText();
-				this._setIcon();
-			});
-
-			this.player.connect('entry-ready', () => {
-				this._getStream();
-				this._setIcon();
-			});
-		});
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -371,6 +356,24 @@ class MprisLabel extends PanelMenu.Button {
 
 	//settings shortcut:
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
+	}
+
+	_onSelectedChanged(){
+		this.player = this.players.selected;
+
+		this._getStream();
+		this._setText();
+		this._setIcon();
+
+		this.player.connect('updated', () => {
+			this._setText();
+			this._setIcon();
+		});
+
+		this.player.connect('entry-ready', () => {
+			this._getStream();
+			this._setIcon();
+		});
 	}
 
 	_setIcon(){
