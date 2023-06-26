@@ -132,9 +132,6 @@ class Players extends GObject.Object {
 		if(name.startsWith("org.mpris.MediaPlayer2")){
 			if(newOwner && !oldOwner){ //add player
 				this._connectPlayer(name);
-
-				if(this.list.length == 1)
-					this.pick();
 			}
 			else if (!newOwner && oldOwner){ //delete player
 				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
@@ -150,6 +147,9 @@ class Players extends GObject.Object {
 		player.connect('updated', (player) => this._updateActiveList.bind(this));
 		this.unfilteredList.push(player);
 		this.updateFilterList();
+
+		if(this.list.length == 1)
+			this.pick();
 	}
 	updateFilterList(){
 		if(!this.unfilteredList)
