@@ -73,6 +73,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
+		this._hideLabel()
+
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 	}
 
@@ -361,7 +363,7 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onSelectedChanged(){
-	this.player = this.players.selected;
+		this.player = this.players.selected;
 
 		this._getStream();
 		this._setText();
@@ -372,10 +374,11 @@ class MprisLabel extends PanelMenu.Button {
 			const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay')
 	
 			if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus==="Paused"){
-				this.pauseTimeout = setTimeout(this._hideLabel.bind(this), REMOVE_TEXT_PAUSED_DELAY*1000)
-			} else if (this.pauseTimeout != null){
-				clearTimeout(this.pauseTimeout)
-				this._showLabel()
+				this.pauseTimeout = setTimeout(this._hideLabel.bind(this), REMOVE_TEXT_PAUSED_DELAY*1000);
+			} else{ 
+				if (this.pauseTimeout != null)
+					clearTimeout(this.pauseTimeout);
+					this._showLabel();
 			}
 			
 			this._setText();
@@ -435,13 +438,16 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.label.set_text("");
-			else
-				this.label.set_text(buildLabel(this.players));
+				this._hideLabel();
+			else{
+				const label = buildLabel(this.players)
+				if(label.length == 0) this._hideLabel();
+				else this.label.set_text(label);
+			}
 		}
 		catch(err){
 			log("Mpris Label: " + err);
-			this.label.set_text("");
+			this._hideLabel();
 		}
 	}
 
