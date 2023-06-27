@@ -27,6 +27,7 @@ class MprisLabel extends PanelMenu.Button {
 	_init(){
 		super._init(0.0,'Mpris Label',false);
 
+		this.hideTimeout = null
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
@@ -360,16 +361,27 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_onSelectedChanged(){
-		this.player = this.players.selected;
+	this.player = this.players.selected;
 
 		this._getStream();
 		this._setText();
 		this._setIcon();
 
 		this.player.connect('updated', () => {
+			const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused')
+			const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay')
+	
+			if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus==="Paused"){
+				this.pauseTimeout = setTimeout(this._hideLabel.bind(this), REMOVE_TEXT_PAUSED_DELAY*1000)
+			} else if (this.pauseTimeout != null){
+				clearTimeout(this.pauseTimeout)
+				this._showLabel()
+			}
+			
 			this._setText();
 			this._setIcon();
 		});
+
 
 		this.player.connect('entry-ready', () => {
 			this._getStream();
@@ -448,6 +460,14 @@ class MprisLabel extends PanelMenu.Button {
 			GLib.Source.remove(this._repositionTimeout);
 			this._repositionTimeout = null;
 		}
+	}
+
+	_hideLabel(){
+		if(this.visible) this.hide();
+	}
+
+	_showLabel(){
+		if(!this.visible) this.show()
 	}
 });
 

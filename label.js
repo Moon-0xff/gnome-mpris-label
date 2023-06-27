@@ -2,8 +2,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
-	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
+	DIVIDER_STRING,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
 	MAX_STRING_LENGTH,DIVIDER_STRING;
 
 function getSettings(){
@@ -12,8 +11,6 @@ function getSettings(){
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 	DIVIDER_STRING = settings.get_string('divider-string');
-	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
-	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
 	FIRST_FIELD = settings.get_string('first-field');
 	SECOND_FIELD = settings.get_string('second-field');
 	LAST_FIELD = settings.get_string('last-field');
@@ -28,14 +25,6 @@ var buildLabel = function buildLabel(players){
 	let placeholder = "";
 	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing")
 		placeholder = BUTTON_PLACEHOLDER;
-
-	if(REMOVE_TEXT_WHEN_PAUSED && players.selected.playbackStatus != "Playing"){
-		const statusTimestamp = players.selected.statusTimestamp / 1000;
-		const currentTimestamp = new Date().getTime() / 1000;
-
-		if(statusTimestamp + REMOVE_TEXT_PAUSED_DELAY <= currentTimestamp)
-			return placeholder
-	}
 
 	let metadata = players.selected.metadata;
 
