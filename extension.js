@@ -2,7 +2,6 @@ const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
-const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
@@ -47,6 +46,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.box.add_child(this.label);
 
 		this.players = new Players();
+		this.players.connect('selected-changed',this._onSelectedChanged.bind(this));
 
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
@@ -61,13 +61,18 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
+		this.settings.connect('changed::album-size',this._setIcon.bind(this));
+		this.settings.connect('changed::album-blacklist',this._setIcon.bind(this));
+		this.settings.connect('changed::divider-string',this._setText.bind(this))
+		this.settings.connect('changed::first-field',this._setText.bind(this));
+		this.settings.connect('changed::second-field',this._setText.bind(this));
+		this.settings.connect('changed::third-field',this._setText.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
+		this.settings.connect('changed::icon-padding', this._setIcon.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
-
-		this._refresh();
 	}
 
 	_onPaddingChanged(){
@@ -192,8 +197,7 @@ class MprisLabel extends PanelMenu.Button {
 				this.menu.toggle();
 				break;
 			case 'next-player':
-				this.player = this.players.next();
-				this._refresh();
+				this.players.next();
 				break;
 			case 'volume-up':
 				this._changeVolume(1);
@@ -302,7 +306,6 @@ class MprisLabel extends PanelMenu.Button {
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		this.menu.removeAll(); //start by deleting everything
-
 	//player selection submenu:
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
@@ -331,8 +334,7 @@ class MprisLabel extends PanelMenu.Button {
 				if (AUTO_SWITCH_TO_MOST_RECENT)
 					this.settings.set_boolean('auto-switch-to-most-recent',false);
 
-				this.players.selected = player; //this.player should sync with this on the next refresh
-				this._refresh();                //so let's refresh right away
+				this.players.pick();
 			});
 
 			this.menu.addMenuItem(settingsMenuItem);
@@ -357,30 +359,22 @@ class MprisLabel extends PanelMenu.Button {
 		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
 	}
 
-	_refresh() {
-		const REFRESH_RATE = this.settings.get_int('refresh-rate');
+	_onSelectedChanged(){
+		this.player = this.players.selected;
 
-		let prevPlayer = this.player;
-
-		try {
-			this.players.updateFilterList();
-			this.players.updateActiveList();
-		}
-		catch {
-			; //do nothing
-		}
-
-		this.player = this.players.pick();
-
-		if(this.player != prevPlayer)
-			this._getStream();
-
+		this._getStream();
 		this._setText();
 		this._setIcon();
-		this._removeTimeout();
 
-		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
-		return true;
+		this.player.connect('updated', () => {
+			this._setText();
+			this._setIcon();
+		});
+
+		this.player.connect('entry-ready', () => {
+			this._getStream();
+			this._setIcon();
+		});
 	}
 
 	_setIcon(){
@@ -429,20 +423,13 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.label.set_text("")
+				this.label.set_text("");
 			else
 				this.label.set_text(buildLabel(this.players));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
 			this.label.set_text("");
-		}
-	}
-
-	_removeTimeout() {
-		if(this._timeout) {
-			Mainloop.source_remove(this._timeout);
-			this._timeout = null;
 		}
 	}
 
@@ -456,7 +443,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.box.remove_child(this.label);
 		this.remove_child(this.box);
-		this._removeTimeout();
 
 		if (this._repositionTimeout){
 			GLib.Source.remove(this._repositionTimeout);

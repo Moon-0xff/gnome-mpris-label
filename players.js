@@ -41,8 +41,12 @@ const dBusInterface = `
 	</interface>
 </node>`
 
-var Players = class Players {
-	constructor(){
+var Players =
+GObject.registerClass(
+	{ Signals: {'selected-changed': {},} },
+class Players extends GObject.Object {
+	_init(){
+		super._init();
 		this.list = [];
 		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
@@ -82,6 +86,9 @@ var Players = class Players {
 			}
 		});
 		this.selected = bestChoice;
+
+		this.emit('selected-changed');
+
 		return this.selected
 	}
 	next(){
@@ -106,6 +113,8 @@ var Players = class Players {
 			this.selected.statusTimestamp = new Date().getTime();
 		}
 
+		this.emit('selected-changed');
+
 		return this.selected
 	}
 	_initList(){
@@ -113,20 +122,34 @@ var Players = class Players {
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
 		this.unfilteredList = [];
-		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
+		dBusList.forEach(address => {
+			this._connectPlayer(address);
+		})
 
 		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
 			if(newOwner && !oldOwner){ //add player
-				let player = new Player(name);
-				this.unfilteredList.push(player);
+				this._connectPlayer(name);
 			}
 			else if (!newOwner && oldOwner){ //delete player
 				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
+				this.updateFilterList();
+
+				if(name == this.selected.address)
+					this.pick();
 			}
 		}
+	}
+	_connectPlayer(address){
+		const player = new Player(address);
+		player.connect('updated', (player) => this._updateActiveList.bind(this));
+		this.unfilteredList.push(player);
+		this.updateFilterList();
+
+		if(this.list.length == 1)
+			this.pick();
 	}
 	updateFilterList(){
 		if(!this.unfilteredList)
@@ -148,18 +171,24 @@ var Players = class Players {
 		if(!USE_WHITELIST && SOURCES_BLACKLIST)
 			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 	}
-	updateActiveList(){
-		let actives = [];
-		this.list.forEach(player => {
-			if(player.playbackStatus == "Playing")
-				actives.push(player);
-		});
-		this.activePlayers = actives;
-	}
-}
+	_updateActiveList(player){
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
-class Player {
-	constructor(address){
+		if(player.playbackStatus == "Playing" && !this.activePlayers.includes(player))
+			this.activePlayers.push(player);
+		else if(player.playbackStatus != "Playing" && this.activePlayers.includes(player))
+			this.activePlayers.filter(storedPlayer => storedPlayer == player);
+
+		if(AUTO_SWITCH_TO_MOST_RECENT)
+			this.pick();
+	}
+});
+
+const Player = GObject.registerClass({
+	Signals: { 'updated': {}, 'entry-ready': {} }, },
+class Player extends GObject.Object {
+	_init(address){
+		super._init();
 		this.address = address;
 		this.statusTimestamp = new Date().getTime();
 		this.albumArt = null;
@@ -197,6 +226,8 @@ class Player {
 			this.desktopApp = this._matchRunningApps(matchedEntries)
 
 		this.icon = this.getIcon(this.desktopApp);
+
+		this.emit('entry-ready');
 	}
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
@@ -220,6 +251,8 @@ class Player {
 			this.playbackStatus = playbackStatus;
 			this.statusTimestamp = new Date().getTime();
 		}
+
+		this.emit('updated');
 	}
 	stringFromMetadata(field) {
 		// metadata is a javascript object
@@ -322,5 +355,5 @@ class Player {
 				return window;
 		}
 	}
-}
+});
 
