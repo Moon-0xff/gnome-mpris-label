@@ -372,20 +372,19 @@ class MprisLabel extends PanelMenu.Button {
 		this.player.connect('updated', () => {
 			const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused')
 			const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay')
-	
+
 			if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus==="Paused"){
-				this._pauseTimeout = setTimeout(()=>this._setText(this.players, true),
+				this._pauseTimeout = setTimeout( () => this._setText(this.players, true),
 				REMOVE_TEXT_PAUSED_DELAY*1000);
-			} else{ 
+			} else{
 				if (this._pauseTimeout != null)
 					clearTimeout(this._pauseTimeout);
 					this._showLabel();
 			}
-			
+
 			this._setText();
 			this._setIcon();
 		});
-
 
 		this.player.connect('entry-ready', () => {
 			this._getStream();
@@ -475,11 +474,13 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_hideLabel(){
-		if(this.visible) this.hide();
+		if(this.visible)
+			this.hide();
 	}
 
 	_showLabel(){
-		if(!this.visible) this.show()
+		if(!this.visible)
+			this.show()
 	}
 });
 
