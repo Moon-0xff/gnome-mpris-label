@@ -374,7 +374,8 @@ class MprisLabel extends PanelMenu.Button {
 			const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay')
 	
 			if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus==="Paused"){
-				this.pauseTimeout = setTimeout(this._hideLabel.bind(this), REMOVE_TEXT_PAUSED_DELAY*1000);
+				this.pauseTimeout = setTimeout(()=>this._setText(this.players, true),
+				REMOVE_TEXT_PAUSED_DELAY*1000);
 			} else{ 
 				if (this.pauseTimeout != null)
 					clearTimeout(this.pauseTimeout);
@@ -435,12 +436,12 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_setText() {
+	_setText(usePlaceholder = false) {
 		try{
 			if(this.player == null || undefined)
 				this._hideLabel();
 			else{
-				const label = buildLabel(this.players)
+				const label = buildLabel(this.players, usePlaceholder)
 				if(label.length == 0) this._hideLabel();
 				else this.label.set_text(label);
 			}

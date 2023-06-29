@@ -16,19 +16,17 @@ function getSettings(){
 	LAST_FIELD = settings.get_string('last-field');
 }
 
-var buildLabel = function buildLabel(players){
+var buildLabel = function buildLabel(players, usePlaceholder = false){
 	getSettings();
-
 	// the placeholder string is a hint for the user to switch players
 	// it should appear if labelstring is empty and there's another player playing
 	// avoid returning empty strings directly, use "placeholder" instead
 	let placeholder = "";
-	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing")
+	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing" || usePlaceholder)
 		placeholder = BUTTON_PLACEHOLDER;
-
 	let metadata = players.selected.metadata;
 
-	if(metadata == null)
+	if(metadata == null || usePlaceholder)
 		return placeholder
 
 	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD]; //order is user-defined
