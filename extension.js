@@ -27,7 +27,6 @@ class MprisLabel extends PanelMenu.Button {
 	_init(){
 		super._init(0.0,'Mpris Label',false);
 
-		this.hideTimeout = null
 		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
