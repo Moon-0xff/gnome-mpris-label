@@ -373,8 +373,12 @@ class MprisLabel extends PanelMenu.Button {
 			const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay')
 
 			if(REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus==="Paused"){
-				this._pauseTimeout = setTimeout( () => this._setText(this.players, true),
-				REMOVE_TEXT_PAUSED_DELAY*1000);
+				this._pauseTimeout =
+					GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+					REMOVE_TEXT_PAUSED_DELAY, () => {
+						this._setText(this.players,true);
+					});
+
 			} else{
 				if (this._pauseTimeout != null)
 					clearTimeout(this._pauseTimeout);
