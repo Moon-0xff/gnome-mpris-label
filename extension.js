@@ -380,8 +380,10 @@ class MprisLabel extends PanelMenu.Button {
 					});
 
 			} else{
-				if (this._pauseTimeout != null)
-					clearTimeout(this._pauseTimeout);
+				if (this._pauseTimeout){
+					GLib.Source.remove(this._pauseTimeout);
+					this._pauseTimeout = null;
+				}
 					this._showLabel();
 			}
 
