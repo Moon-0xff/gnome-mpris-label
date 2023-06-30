@@ -446,10 +446,12 @@ class MprisLabel extends PanelMenu.Button {
 		try{
 			if(this.player == null || undefined)
 				this._hideLabel();
-			else{
+			else {
 				const label = buildLabel(this.players)
-				if(label.length == 0) this._hideLabel();
-				else this.label.set_text(label);
+				if(label.length == 0)
+					this._hideLabel();
+				else
+					this.label.set_text(label);
 			}
 		}
 		catch(err){
