@@ -72,6 +72,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
+		this._hideLabel()
+
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 	}
 
@@ -367,6 +369,26 @@ class MprisLabel extends PanelMenu.Button {
 		this._setIcon();
 
 		this.player.connect('updated', () => {
+			const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
+			const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
+			const BUTTON_PLACEHOLDER = this.settings.get_string('button-placeholder');
+
+			if (REMOVE_TEXT_WHEN_PAUSED && this.player.playbackStatus == "Paused"){
+				this._pauseTimeout =
+					GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+					REMOVE_TEXT_PAUSED_DELAY, () => {
+						if (this.player && this.player.playbackStatus == "Paused")
+							this.label.set_text(BUTTON_PLACEHOLDER);
+					});
+
+			} else {
+				if (this._pauseTimeout){
+					GLib.Source.remove(this._pauseTimeout);
+					this._pauseTimeout = null;
+				}
+					this._showLabel();
+			}
+
 			this._setText();
 			this._setIcon();
 		});
@@ -423,13 +445,18 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.label.set_text("");
-			else
-				this.label.set_text(buildLabel(this.players));
+				this._hideLabel();
+			else {
+				const label = buildLabel(this.players)
+				if (label.length == 0)
+					this._hideLabel();
+				else
+					this.label.set_text(label);
+			}
 		}
 		catch(err){
 			log("Mpris Label: " + err);
-			this.label.set_text("");
+			this._hideLabel();
 		}
 	}
 
@@ -448,6 +475,21 @@ class MprisLabel extends PanelMenu.Button {
 			GLib.Source.remove(this._repositionTimeout);
 			this._repositionTimeout = null;
 		}
+
+		if (this._pauseTimeout){
+			GLib.Source.remove(this._pauseTimeout);
+			this._pauseTimeout = null;
+		}
+	}
+
+	_hideLabel(){
+		if (this.visible)
+			this.hide();
+	}
+
+	_showLabel(){
+		if (!this.visible)
+			this.show()
 	}
 });
 
