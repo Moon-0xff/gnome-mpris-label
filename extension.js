@@ -336,7 +336,8 @@ class MprisLabel extends PanelMenu.Button {
 				if (AUTO_SWITCH_TO_MOST_RECENT)
 					this.settings.set_boolean('auto-switch-to-most-recent',false);
 
-				this.players.pick();
+				this.players.selected = player;
+				this.players.emit('selected-changed');
 			});
 
 			this.menu.addMenuItem(settingsMenuItem);
