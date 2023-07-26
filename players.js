@@ -73,6 +73,8 @@ class Players extends GObject.Object {
 		let list = this.list;
 
 		if(AUTO_SWITCH_TO_MOST_RECENT){
+			this._updateActiveList();
+
 			if(this.activePlayers.length == 0)
 				return this.selected
 
@@ -144,7 +146,6 @@ class Players extends GObject.Object {
 	}
 	_connectPlayer(address){
 		const player = new Player(address);
-		player.connect('updated', (player) => this._updateActiveList.bind(this));
 		this.unfilteredList.push(player);
 		this.updateFilterList();
 
@@ -172,15 +173,12 @@ class Players extends GObject.Object {
 			this.list = this.unfilteredList.filter(element => !blacklist.includes(element.identity.toLowerCase().replaceAll(' ','')));
 	}
 	_updateActiveList(player){
-		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+		this.activePlayers = [];
 
-		if(player.playbackStatus == "Playing" && !this.activePlayers.includes(player))
-			this.activePlayers.push(player);
-		else if(player.playbackStatus != "Playing" && this.activePlayers.includes(player))
-			this.activePlayers.filter(storedPlayer => storedPlayer == player);
-
-		if(AUTO_SWITCH_TO_MOST_RECENT)
-			this.pick();
+		this.list.forEach(player => {
+			if(player.playbackStatus == "Playing")
+				this.activePlayers.push(player);
+		});
 	}
 });
 

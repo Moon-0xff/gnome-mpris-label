@@ -69,6 +69,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::third-field',this._setText.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
 		this.settings.connect('changed::icon-padding', this._setIcon.bind(this));
+		this.settings.connect('changed::auto-switch-to-most-recent', this._autoSwitchPlayer.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -443,6 +444,18 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
+	_autoSwitchPlayer(){
+		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
+
+		if(AUTO_SWITCH_TO_MOST_RECENT){
+			this.players.pick();
+			this._autoSwitchTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,1,this._autoSwitchPlayer.bind(this));
+		} else {
+			GLib.Source.remove(this._autoSwitchTimeout);
+			this._autoSwitchTimeout = null;
+		}
+	}
+
 	_setText() {
 		try{
 			if(this.player == null || undefined)
@@ -480,6 +493,11 @@ class MprisLabel extends PanelMenu.Button {
 		if (this._pauseTimeout){
 			GLib.Source.remove(this._pauseTimeout);
 			this._pauseTimeout = null;
+		}
+
+		if (this._autoSwitchTimeout){
+			GLib.Source.remove(this._autoSwitchTimeout);
+			this._autoSwitchTimeout = null;
 		}
 	}
 
