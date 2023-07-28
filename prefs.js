@@ -30,7 +30,7 @@ function buildPrefsWidget(){
 	addSpinButton(panelPage, 'icon-padding', 'Icon padding:', 0, 50, undefined);
 	addSwitch(panelPage, 'symbolic-source-icon', 'Use symbolic source icon:', "Uses an icon that follows the shell's color scheme");
 	addSwitch(panelPage,'use-album','Use album art as icon when available:',undefined);
-	addSpinButton(panelPage,'album-size','Album art scaling (in %):',50,250,undefined);
+	addSpinButton(panelPage,'album-size','Album art scaling (in %):',20,250,undefined);
 
 	addSubcategoryLabel(panelPage,'Position');
 	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
