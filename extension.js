@@ -2,7 +2,6 @@ const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const {Clutter,Gio,GLib,GObject,St} = imports.gi;
-const Mainloop = imports.mainloop;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
 const Volume = imports.ui.status.volume;
@@ -360,6 +359,9 @@ class MprisLabel extends PanelMenu.Button {
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 
+		if(this._timeout) //prevent simultaneous timeouts
+			this._removeTimeout();
+
 		let prevPlayer = this.player;
 
 		try {
@@ -377,10 +379,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._setText();
 		this._setIcon();
-		this._removeTimeout();
 
-		this._timeout = Mainloop.timeout_add(REFRESH_RATE, this._refresh.bind(this));
-		return true;
+		this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+			REFRESH_RATE, this._refresh.bind(this));
 	}
 
 	_setIcon(){
@@ -441,7 +442,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_removeTimeout() {
 		if(this._timeout) {
-			Mainloop.source_remove(this._timeout);
+			GLib.Source.remove(this._timeout);
 			this._timeout = null;
 		}
 	}
