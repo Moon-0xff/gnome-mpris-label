@@ -372,6 +372,19 @@ class MprisLabel extends PanelMenu.Button {
 			; //do nothing
 		}
 
+		if (this.players.list == 0){ //terminate function early, reset timer, and hide label
+			if(this.visible)
+				this.hide();
+
+			this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+				REFRESH_RATE, this._refresh.bind(this));
+
+			return
+		}
+
+		if(!this.visible)
+			this.show();
+
 		this.player = this.players.pick();
 
 		if(this.player != prevPlayer)
