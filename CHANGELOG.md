@@ -51,3 +51,10 @@ Includes new options to customize the icon alongside the label:
 - Use symbolic icon: Use the simplified, monochromatic version of the app icon
 - Use album art as icon when available
 - Album art scaling: adjust the size of the album art image on the panel
+
+# Upcoming Version
+- Hide the label widget completely when there's no available mpris sources
+- Uncouple refresh from shell main loop (this virtually gives the extension a
+  "refresh time" of 0ms)
+- Allow smaller sizes of album art (the minimum scale is now 20%)
+
