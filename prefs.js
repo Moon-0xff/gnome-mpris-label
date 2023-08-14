@@ -213,6 +213,10 @@ function buildPrefsWidget(){
 		'open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down','none':'none'
 	};
 
+
+	addSwitch(controlsPage, 'enable-double-clicks', 'Enable double clicks:', undefined, 2);
+	let doubleClickTime = addSpinButton(controlsPage, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined, 2);
+
 	addSubcategoryLabel(controlsPage,'Mouse bindings');
 	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
 	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
@@ -247,6 +251,8 @@ function buildPrefsWidget(){
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
 
+	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox].forEach(el => bindEnabled(controlsPage._settings, 'enable-double-clicks', el))
+
 	prefsWidget.append_page(controlsPage, buildLabel('Controls'));
 
 	return prefsWidget
@@ -255,7 +261,7 @@ function buildPrefsWidget(){
 //functions starting with 'add' adds a widget to the selected grid(or widget)
 //functions starting with 'build' creates the "generic" widget and returns it
 
-function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
+function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip,width=1){
 	addLabel(widget,labelstring,labeltooltip);
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
@@ -265,9 +271,10 @@ function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
 		}),
 		visible: true
 	});
-	widget.attach(thisSpinButton,1,position,1,1);
+	widget.attach(thisSpinButton,1,position,width,1);
 	widget._settings.bind(setting,thisSpinButton,'value',Gio.SettingsBindFlags.DEFAULT);
 	position++;
+	return thisSpinButton;
 }
 
 function addStringComboBox(widget,setting,labelstring,options,labeltooltip,width=1){
@@ -293,14 +300,14 @@ function addDoubleStringComboBox(widget, setting1, setting2, labelstring, option
 	return [comboBox1, comboBox2]
 }
 
-function addSwitch(widget,setting,labelstring,labeltooltip){
+function addSwitch(widget,setting,labelstring,labeltooltip,width=1){
 	addLabel(widget,labelstring,labeltooltip);
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.END,
 		halign: Gtk.Align.END,
 		visible: true
 	});
-	widget.attach(thisSwitch,1,position,1,1);
+	widget.attach(thisSwitch,1,position,width,1);
 	widget._settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 }
@@ -425,5 +432,8 @@ function playersToString(){
 	});
 
 	return newList.toString()
+}
+function bindEnabled(settings, setting, element) {
+	settings.bind(setting, element, 'sensitive', Gio.SettingsBindFlags.GET);
 }
 

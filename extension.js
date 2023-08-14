@@ -132,26 +132,29 @@ class MprisLabel extends PanelMenu.Button {
 
 		const button = event.get_button();
 
-		const double_click_time = Clutter.Settings.get_default().double_click_time // by default 400ms
-		const idDoubleClick = (Date.now() - (this.lastClicks[button] ?? 0 )) <= double_click_time;
+		const doubleClickEnabled = this.settings.get_boolean('enable-double-clicks')
+		const doubleClickTime = this.settings.get_int('double-click-time')
+		const isDoubleClick = doubleClickEnabled && ((Date.now() - (this.lastClicks[button] ?? 0 )) <= doubleClickTime);
 		this.lastClicks[button] = Date.now();
 
-		GLib.source_remove(this.scheduledActionsIds[button]); // cancel scheduled action for this button
+		if (isDoubleClick) {
+			GLib.source_remove(this.scheduledActionsIds[button]); // cancel scheduled action for this button
+		}
 
 		// if double click doesn't occur in the future, action with this id will be executed
 		this.scheduledActionsIds[button] = GLib.timeout_add(
 			GLib.PRIORITY_DEFAULT,
-			double_click_time,
+			doubleClickEnabled ? doubleClickTime : 0, // if double click feature is disabled, actions can be executed immediately
 			() => {
 				switch(button){
 					case Clutter.BUTTON_PRIMARY:
-						this._activateButton(idDoubleClick ? 'left-double-click-action' : 'left-click-action');
+						this._activateButton(isDoubleClick ? 'left-double-click-action' : 'left-click-action');
 						break;
 					case Clutter.BUTTON_MIDDLE:
-						this._activateButton(idDoubleClick ? 'middle-double-click-action' : 'middle-click-action');
+						this._activateButton(isDoubleClick ? 'middle-double-click-action' : 'middle-click-action');
 						break;
 					case Clutter.BUTTON_SECONDARY:
-						this._activateButton(idDoubleClick ? 'right-double-click-action' : 'right-click-action');
+						this._activateButton(isDoubleClick ? 'right-double-click-action' : 'right-click-action');
 						break;
 					case 8:
 						this._activateButton('thumb-backward-action');
@@ -160,7 +163,7 @@ class MprisLabel extends PanelMenu.Button {
 						this._activateButton('thumb-forward-action')
 						break;
 				}
-				return GLib.SOURCE_REMOVE;
+				return GLib.SOURCE_REMOVE; // callback function will be executed once
 			}
 		);
 

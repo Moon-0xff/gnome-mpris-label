@@ -94,6 +94,14 @@
       <default>false</default>
     </key>
 
+    <key name="enable-double-clicks" type="b">
+      <default>false</default>
+    </key>
+
+    <key name="double-click-time" type="i">
+      <default>400</default>
+    </key>
+
     <key name="left-click-action" type="s">
       <default>"open-menu"</default>
     </key>
