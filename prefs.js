@@ -214,27 +214,33 @@ function buildPrefsWidget(){
 	};
 
 	addSubcategoryLabel(controlsPage,'Mouse bindings');
-	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
-	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
-	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
-	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined);
-	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined);
-	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined);
+	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
+	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
+	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
+	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,2);
+	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined,2);
+	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined,2);
 
 	addSubcategoryLabel(controlsPage,'Behaviour');
 	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
 
 	addButton(controlsPage,'Reset controls settings',() => {
 		settings.reset('left-click-action');
+		settings.reset('left-double-click-action');
 		settings.reset('middle-click-action');
+		settings.reset('middle-double-click-action');
 		settings.reset('right-click-action');
+		settings.reset('right-double-click-action');
 		settings.reset('scroll-action');
 		settings.reset('thumb-forward-action');
 		settings.reset('thumb-backward-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
+		leftDoubleClickComboBox.set_active_id(settings.get_string('left-double-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
+		middleDoubleClickComboBox.set_active_id(settings.get_string('middle-double-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		rightDoubleClickComboBox.set_active_id(settings.get_string('right-double-click-action'));
 		scrollComboBox.set_active_id(settings.get_string('scroll-action'));
 		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
@@ -264,13 +270,27 @@ function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
 	position++;
 }
 
-function addStringComboBox(widget,setting,labelstring,options,labeltooltip){
+function addStringComboBox(widget,setting,labelstring,options,labeltooltip,width=1){
 	addLabel(widget,labelstring,labeltooltip);
 	thisComboBox = buildStringComboBox(widget._settings,setting,options);
-	widget.attach(thisComboBox,1,position,1,1);
+	widget.attach(thisComboBox,1,position,width,1);
 	position++;
 
 	return thisComboBox //necessary to reset position when the reset button is clicked
+}
+
+function addDoubleStringComboBox(widget, setting1, setting2, labelstring, options, labeltooltip){
+	addLabel(widget, labelstring, labeltooltip, 2);
+
+	comboBox1 = buildStringComboBox(widget._settings, setting1, options);
+	widget.attach(comboBox1, 1, position, 1, 1);
+
+	comboBox2 = buildStringComboBox(widget._settings, setting2, options);
+	widget.attach(comboBox2, 2, position, 1, 1);
+
+	position++;
+
+	return [comboBox1, comboBox2]
 }
 
 function addSwitch(widget,setting,labelstring,labeltooltip){

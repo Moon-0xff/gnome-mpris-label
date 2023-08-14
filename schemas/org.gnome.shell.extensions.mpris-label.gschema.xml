@@ -98,12 +98,24 @@
       <default>"open-menu"</default>
     </key>
 
+    <key name="left-double-click-action" type="s">
+      <default>"none"</default>
+    </key>
+
     <key name="middle-click-action" type="s">
       <default>"play-pause"</default>
     </key>
 
+    <key name="middle-double-click-action" type="s">
+      <default>"none"</default>
+    </key>
+
     <key name="right-click-action" type="s">
       <default>"activate-player"</default>
+    </key>
+
+    <key name="right-double-click-action" type="s">
+      <default>"none"</default>
     </key>
 
     <key name="volume-control-scheme" type="s">
