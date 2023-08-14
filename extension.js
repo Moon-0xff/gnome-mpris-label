@@ -66,6 +66,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
+		this.lastClicks = {} // json where occurrences od click actions will be stored
+		this.scheduledActionsIds = {} // json where ids of scheduled actions will be stored
+
 		this._refresh();
 	}
 
@@ -127,23 +130,41 @@ class MprisLabel extends PanelMenu.Button {
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition(); //force tray position update on button press
 
-		switch(event.get_button()){
-			case Clutter.BUTTON_PRIMARY:
-				this._activateButton('left-click-action');
-				return Clutter.EVENT_STOP;
-			case Clutter.BUTTON_MIDDLE:
-				this._activateButton('middle-click-action');
-				return Clutter.EVENT_STOP;
-			case Clutter.BUTTON_SECONDARY:
-				this._activateButton('right-click-action');
-				return Clutter.EVENT_STOP;
-			case 8:
-				this._activateButton('thumb-backward-action');
-				return Clutter.EVENT_STOP;
-			case 9:
-				this._activateButton('thumb-forward-action')
-				return Clutter.EVENT_STOP;
-		}
+		const button = event.get_button();
+
+		const double_click_time = Clutter.Settings.get_default().double_click_time // by default 400ms
+		const idDoubleClick = (Date.now() - (this.lastClicks[button] ?? 0 )) <= double_click_time;
+		this.lastClicks[button] = Date.now();
+
+		GLib.source_remove(this.scheduledActionsIds[button]); // cancel scheduled action for this button
+
+		// if double click doesn't occur in the future, action with this id will be executed
+		this.scheduledActionsIds[button] = GLib.timeout_add(
+			GLib.PRIORITY_DEFAULT,
+			double_click_time,
+			() => {
+				switch(button){
+					case Clutter.BUTTON_PRIMARY:
+						this._activateButton(idDoubleClick ? 'left-double-click-action' : 'left-click-action');
+						break;
+					case Clutter.BUTTON_MIDDLE:
+						this._activateButton(idDoubleClick ? 'middle-double-click-action' : 'middle-click-action');
+						break;
+					case Clutter.BUTTON_SECONDARY:
+						this._activateButton(idDoubleClick ? 'right-double-click-action' : 'right-click-action');
+						break;
+					case 8:
+						this._activateButton('thumb-backward-action');
+						break;
+					case 9:
+						this._activateButton('thumb-forward-action')
+						break;
+				}
+				return GLib.SOURCE_REMOVE;
+			}
+		);
+
+		return Clutter.EVENT_STOP;
 	}
 
 	_onScroll(event) {
