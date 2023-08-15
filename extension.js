@@ -146,23 +146,7 @@ class MprisLabel extends PanelMenu.Button {
 			GLib.PRIORITY_DEFAULT,
 			DOUBLE_CLICK ? DOUBLE_CLICK_TIME : 0, // if double click feature is disabled, actions can be executed immediately
 			() => {
-				switch(button){
-					case Clutter.BUTTON_PRIMARY:
-						this._activateButton(isDoubleClick ? 'left-double-click-action' : 'left-click-action');
-						break;
-					case Clutter.BUTTON_MIDDLE:
-						this._activateButton(isDoubleClick ? 'middle-double-click-action' : 'middle-click-action');
-						break;
-					case Clutter.BUTTON_SECONDARY:
-						this._activateButton(isDoubleClick ? 'right-double-click-action' : 'right-click-action');
-						break;
-					case 8:
-						this._activateButton(isDoubleClick ? 'thumb-double-backward-action' : 'thumb-backward-action');
-						break;
-					case 9:
-						this._activateButton(isDoubleClick ? 'thumb-double-forward-action' : 'thumb-forward-action')
-						break;
-				}
+				this._activateButtonAction(button,isDoubleClick);
 				return GLib.SOURCE_REMOVE; // callback function will be executed once
 			}
 		));
@@ -190,9 +174,30 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_activateButton(option) {
-		const value = this.settings.get_string(option);
+	_activateButtonAction(button,isDoubleClick) {
+		let option = '';
+		switch(button){
+			case Clutter.BUTTON_PRIMARY:
+				option = isDoubleClick ? 'left-double-click-action' : 'left-click-action';
+				break;
+			case Clutter.BUTTON_MIDDLE:
+				option = isDoubleClick ? 'middle-double-click-action' : 'middle-click-action';
+				break;
+			case Clutter.BUTTON_SECONDARY:
+				option = isDoubleClick ? 'right-double-click-action' : 'right-click-action';
+				break;
+			case 8:
+				option = isDoubleClick ? 'thumb-double-backward-action' : 'thumb-backward-action';
+				break;
+			case 9:
+				option = isDoubleClick ? 'thumb-double-forward-action' : 'thumb-forward-action';
+				break;
+		}
 
+		this._activateAction(this.settings.get_string(option));
+	}
+
+	_activateAction(value) {
 		switch(value){
 			case 'play-pause':
 				if(this.player)
