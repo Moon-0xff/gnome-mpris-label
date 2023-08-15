@@ -217,7 +217,10 @@ function buildPrefsWidget(){
 	addSwitch(controlsPage, 'enable-double-clicks', 'Enable double clicks:', undefined, 2);
 	let doubleClickTime = addSpinButton(controlsPage, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined, 2);
 
-	addSubcategoryLabel(controlsPage,'Mouse bindings');
+	addSubcategoryLabel(controlsPage, 'Mouse bindings');
+	controlsPage.attach(buildLabel("Single click"), 1, position - 1, 1, 1);
+	controlsPage.attach(buildLabel("Double click"), 2, position - 1, 1, 1);
+
 	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
 	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
 	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
