@@ -222,8 +222,8 @@ function buildPrefsWidget(){
 	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
 	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
 	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,2);
-	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined,2);
-	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined,2);
+	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action:',buttonActions,undefined);
+	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action:',buttonActions,undefined);
 
 	addSubcategoryLabel(controlsPage,'Behaviour');
 	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
@@ -237,7 +237,9 @@ function buildPrefsWidget(){
 		settings.reset('right-double-click-action');
 		settings.reset('scroll-action');
 		settings.reset('thumb-forward-action');
+		settings.reset('thumb-double-forward-action');
 		settings.reset('thumb-backward-action');
+		settings.reset('thumb-double-backward-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
 		leftDoubleClickComboBox.set_active_id(settings.get_string('left-double-click-action'));
@@ -247,11 +249,14 @@ function buildPrefsWidget(){
 		rightDoubleClickComboBox.set_active_id(settings.get_string('right-double-click-action'));
 		scrollComboBox.set_active_id(settings.get_string('scroll-action'));
 		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
+		thumbForwardComboBox.set_active_id(settings.get_string('thumb-double-forward-action'));
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
+		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-double-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
 
-	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox].forEach(el => bindEnabled(controlsPage._settings, 'enable-double-clicks', el))
+	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
+		.forEach(el => bindEnabled(controlsPage._settings, 'enable-double-clicks', el));
 
 	prefsWidget.append_page(controlsPage, buildLabel('Controls'));
 
@@ -433,6 +438,7 @@ function playersToString(){
 
 	return newList.toString()
 }
+
 function bindEnabled(settings, setting, element) {
 	settings.bind(setting, element, 'sensitive', Gio.SettingsBindFlags.GET);
 }

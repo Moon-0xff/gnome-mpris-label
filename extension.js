@@ -157,10 +157,10 @@ class MprisLabel extends PanelMenu.Button {
 						this._activateButton(isDoubleClick ? 'right-double-click-action' : 'right-click-action');
 						break;
 					case 8:
-						this._activateButton('thumb-backward-action');
+						this._activateButton(isDoubleClick ? 'thumb-double-backward-action' : 'thumb-backward-action');
 						break;
 					case 9:
-						this._activateButton('thumb-forward-action')
+						this._activateButton(isDoubleClick? 'thumb-double-forward-action' : 'thumb-forward-action')
 						break;
 				}
 				return GLib.SOURCE_REMOVE; // callback function will be executed once

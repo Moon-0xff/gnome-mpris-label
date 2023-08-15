@@ -138,8 +138,16 @@
       <default>"next-track"</default>
     </key>
 
+    <key name="thumb-double-forward-action" type="s">
+      <default>"none"</default>
+    </key>
+
     <key name="thumb-backward-action" type="s">
       <default>"prev-track"</default>
+    </key>
+
+    <key name="thumb-double-backward-action" type="s">
+      <default>"none"</default>
     </key>
 
     <key name="use-album" type="b">
