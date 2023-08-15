@@ -66,8 +66,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
-		this.lastClicks = {} // json where occurrences od click actions will be stored
-		this.scheduledActionsIds = {} // json where ids of scheduled actions will be stored
+		this.lastClicks = new Map() // place where occurrences od click actions will be stored
+		this.scheduledActionsIds = new Map() // place where ids of scheduled actions will be stored
 
 		this._refresh();
 	}
@@ -134,15 +134,15 @@ class MprisLabel extends PanelMenu.Button {
 
 		const doubleClickEnabled = this.settings.get_boolean('enable-double-clicks')
 		const doubleClickTime = this.settings.get_int('double-click-time')
-		const isDoubleClick = doubleClickEnabled && ((Date.now() - (this.lastClicks[button] ?? 0 )) <= doubleClickTime);
-		this.lastClicks[button] = Date.now();
+		const isDoubleClick = doubleClickEnabled && this.lastClicks.get(button) && ((Date.now() - this.lastClicks.get(button)) <= doubleClickTime);
+		this.lastClicks.set(button, Date.now());
 
 		if (isDoubleClick) {
-			GLib.source_remove(this.scheduledActionsIds[button]); // cancel scheduled action for this button
+			GLib.source_remove(this.scheduledActionsIds.get(button)); // cancel scheduled action for this button
 		}
 
 		// if double click doesn't occur in the future, action with this id will be executed
-		this.scheduledActionsIds[button] = GLib.timeout_add(
+		this.scheduledActionsIds.set(button, GLib.timeout_add(
 			GLib.PRIORITY_DEFAULT,
 			doubleClickEnabled ? doubleClickTime : 0, // if double click feature is disabled, actions can be executed immediately
 			() => {
@@ -165,7 +165,7 @@ class MprisLabel extends PanelMenu.Button {
 				}
 				return GLib.SOURCE_REMOVE; // callback function will be executed once
 			}
-		);
+		));
 
 		return Clutter.EVENT_STOP;
 	}
