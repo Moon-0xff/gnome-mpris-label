@@ -218,18 +218,21 @@ function buildPrefsWidget(){
 	let doubleClickTime = addSpinButton(controlsPage, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined, 2);
 
 	addSubcategoryLabel(controlsPage, 'Mouse bindings');
-	controlsPage.attach(buildLabel("Single click"), 1, position - 1, 1, 1);
-	controlsPage.attach(buildLabel("Double click"), 2, position - 1, 1, 1);
+	controlsPage.attach(buildLabel('<u> Single click </u>', true), 1, position - 1, 1, 1);
+	controlsPage.attach(buildLabel('<u> Double click </u>', true), 2, position - 1, 1, 1);
 
 	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
 	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
 	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
-	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,2);
 	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action:',buttonActions,undefined);
 	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action:',buttonActions,undefined);
+	
+	controlsPage.attach(buildLabel(''), 2, position++, 1, 1); // empty line to separate buttons and scroll
+	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,2);
+
 
 	addSubcategoryLabel(controlsPage,'Behaviour');
-	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
+	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined,2);
 
 	addButton(controlsPage,'Reset controls settings',() => {
 		settings.reset('left-click-action');
@@ -392,18 +395,18 @@ function addButton(widget,labelstring,callback){
 
 function addSubcategoryLabel(widget,labelstring){
 	labelstring = '<u> ' + labelstring + ' </u>';
-	let thisLabel = buildLabel(labelstring);
+	let thisLabel = buildLabel(labelstring,true);
 	widget.attach(thisLabel,0,position,1,1);
-	thisLabel.use_markup = true;
 	position++;
 }
 
-function buildLabel(labelstring){ //don't confuse with label.js buildLabel
+function buildLabel(labelstring, use_markup=false){ //don't confuse with label.js buildLabel
 	let thisLabel = new Gtk.Label({
 		label: labelstring,
 		halign: Gtk.Align.START,
 		visible: true
 	});
+	thisLabel.use_markup = use_markup
 	return thisLabel
 }
 
