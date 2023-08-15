@@ -132,8 +132,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		const button = event.get_button();
 
-		const DOUBLE_CLICK = this.settings.get_boolean('enable-double-clicks')
-		const DOUBLE_CLICK_TIME = this.settings.get_int('double-click-time')
+		const DOUBLE_CLICK = this.settings.get_boolean('enable-double-clicks');
+		const DOUBLE_CLICK_TIME = this.settings.get_int('double-click-time');
 		const isDoubleClick = DOUBLE_CLICK && this.lastClicks.get(button) && ((Date.now() - this.lastClicks.get(button)) <= DOUBLE_CLICK_TIME);
 		this.lastClicks.set(button, Date.now());
 
