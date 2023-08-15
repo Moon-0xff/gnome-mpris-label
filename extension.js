@@ -132,9 +132,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		const button = event.get_button();
 
-		const doubleClickEnabled = this.settings.get_boolean('enable-double-clicks')
-		const doubleClickTime = this.settings.get_int('double-click-time')
-		const isDoubleClick = doubleClickEnabled && this.lastClicks.get(button) && ((Date.now() - this.lastClicks.get(button)) <= doubleClickTime);
+		const DOUBLE_CLICK = this.settings.get_boolean('enable-double-clicks')
+		const DOUBLE_CLICK_TIME = this.settings.get_int('double-click-time')
+		const isDoubleClick = DOUBLE_CLICK && this.lastClicks.get(button) && ((Date.now() - this.lastClicks.get(button)) <= DOUBLE_CLICK_TIME);
 		this.lastClicks.set(button, Date.now());
 
 		if (isDoubleClick) {
@@ -144,7 +144,7 @@ class MprisLabel extends PanelMenu.Button {
 		// if double click doesn't occur in the future, action with this id will be executed
 		this.scheduledActionsIds.set(button, GLib.timeout_add(
 			GLib.PRIORITY_DEFAULT,
-			doubleClickEnabled ? doubleClickTime : 0, // if double click feature is disabled, actions can be executed immediately
+			DOUBLE_CLICK ? DOUBLE_CLICK_TIME : 0, // if double click feature is disabled, actions can be executed immediately
 			() => {
 				switch(button){
 					case Clutter.BUTTON_PRIMARY:
@@ -160,7 +160,7 @@ class MprisLabel extends PanelMenu.Button {
 						this._activateButton(isDoubleClick ? 'thumb-double-backward-action' : 'thumb-backward-action');
 						break;
 					case 9:
-						this._activateButton(isDoubleClick? 'thumb-double-forward-action' : 'thumb-forward-action')
+						this._activateButton(isDoubleClick ? 'thumb-double-forward-action' : 'thumb-forward-action')
 						break;
 				}
 				return GLib.SOURCE_REMOVE; // callback function will be executed once
