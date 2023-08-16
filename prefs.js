@@ -255,9 +255,9 @@ function buildPrefsWidget(){
 		rightDoubleClickComboBox.set_active_id(settings.get_string('right-double-click-action'));
 		scrollComboBox.set_active_id(settings.get_string('scroll-action'));
 		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
-		thumbForwardComboBox.set_active_id(settings.get_string('thumb-double-forward-action'));
+		thumbDoubleForwardComboBox.set_active_id(settings.get_string('thumb-double-forward-action'));
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
-		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-double-backward-action'));
+		thumbDoubleBackwardComboBox.set_active_id(settings.get_string('thumb-double-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
 
