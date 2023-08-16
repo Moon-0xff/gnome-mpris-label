@@ -126,13 +126,18 @@ class MprisLabel extends PanelMenu.Button {
 
 	_onClick(event){
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+		const DOUBLE_CLICK = this.settings.get_boolean('enable-double-clicks');
 
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition(); //force tray position update on button press
 
 		const button = event.get_button();
 
-		const DOUBLE_CLICK = this.settings.get_boolean('enable-double-clicks');
+		if (!DOUBLE_CLICK) {
+			this._activateButtonAction(button,false);
+			return Clutter.EVENT_STOP;
+		}
+
 		const DOUBLE_CLICK_TIME = this.settings.get_int('double-click-time');
 		const isDoubleClick = DOUBLE_CLICK && this.lastClicks.get(button) && ((Date.now() - this.lastClicks.get(button)) <= DOUBLE_CLICK_TIME);
 		this.lastClicks.set(button, Date.now());
