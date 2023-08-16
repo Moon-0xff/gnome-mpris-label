@@ -66,6 +66,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
+		this.lastClick = new Map() // place where occurrences of click actions will be stored
+		this.scheduledActionsIds = new Map() // place where ids of scheduled actions will be stored
+
 		this._refresh();
 	}
 
@@ -123,27 +126,36 @@ class MprisLabel extends PanelMenu.Button {
 
 	_onClick(event){
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
+		const DOUBLE_CLICK = this.settings.get_boolean('enable-double-clicks');
 
 		if (REPOSITION_ON_BUTTON_PRESS)
 			this._updateTrayPosition(); //force tray position update on button press
 
-		switch(event.get_button()){
-			case Clutter.BUTTON_PRIMARY:
-				this._activateButton('left-click-action');
-				return Clutter.EVENT_STOP;
-			case Clutter.BUTTON_MIDDLE:
-				this._activateButton('middle-click-action');
-				return Clutter.EVENT_STOP;
-			case Clutter.BUTTON_SECONDARY:
-				this._activateButton('right-click-action');
-				return Clutter.EVENT_STOP;
-			case 8:
-				this._activateButton('thumb-backward-action');
-				return Clutter.EVENT_STOP;
-			case 9:
-				this._activateButton('thumb-forward-action')
-				return Clutter.EVENT_STOP;
+		const button = event.get_button();
+
+		if (!DOUBLE_CLICK) {
+			this._activateButtonAction(button,false);
+			return Clutter.EVENT_STOP;
 		}
+
+		const DOUBLE_CLICK_TIME = this.settings.get_int('double-click-time');
+		const lastClickTimestamp = this.lastClick.get(button);
+		const currentTimestamp = Date.now();
+
+		// if is a double click, remove the scheduled action and activate the double click action
+		if (lastClickTimestamp &&  (currentTimestamp - lastClickTimestamp <= DOUBLE_CLICK_TIME)) {
+			GLib.source_remove(this.scheduledActionsIds.get(button));
+			this._activateButtonAction(button,true);
+			return Clutter.EVENT_STOP;
+		}
+		// else register the button and current timestamp on 'this.lastClick', and schedule the single click action
+		this.lastClick.set(button,currentTimestamp);
+		this.scheduledActionsIds.set(button, GLib.timeout_add(GLib.PRIORITY_DEFAULT, DOUBLE_CLICK_TIME, () => {
+				this._activateButtonAction(button,false);
+				return GLib.SOURCE_REMOVE; // callback function will be executed once
+			}
+		));
+		return Clutter.EVENT_STOP;
 	}
 
 	_onScroll(event) {
@@ -166,9 +178,30 @@ class MprisLabel extends PanelMenu.Button {
 		}
 	}
 
-	_activateButton(option) {
-		const value = this.settings.get_string(option);
+	_activateButtonAction(button,isDoubleClick) {
+		let option = '';
+		switch(button){
+			case Clutter.BUTTON_PRIMARY:
+				option = isDoubleClick ? 'left-double-click-action' : 'left-click-action';
+				break;
+			case Clutter.BUTTON_MIDDLE:
+				option = isDoubleClick ? 'middle-double-click-action' : 'middle-click-action';
+				break;
+			case Clutter.BUTTON_SECONDARY:
+				option = isDoubleClick ? 'right-double-click-action' : 'right-click-action';
+				break;
+			case 8:
+				option = isDoubleClick ? 'thumb-double-backward-action' : 'thumb-backward-action';
+				break;
+			case 9:
+				option = isDoubleClick ? 'thumb-double-forward-action' : 'thumb-forward-action';
+				break;
+		}
 
+		this._activateAction(this.settings.get_string(option));
+	}
+
+	_activateAction(value) {
 		switch(value){
 			case 'play-pause':
 				if(this.player)

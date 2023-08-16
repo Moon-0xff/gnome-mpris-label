@@ -58,3 +58,5 @@ Includes new options to customize the icon alongside the label:
   "refresh time" of 0ms)
 - Allow smaller sizes of album art (the minimum scale is now 20%)
 
+# Upcoming Version
+- Allows binding of two actions per button, for single and double click

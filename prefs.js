@@ -213,33 +213,56 @@ function buildPrefsWidget(){
 		'open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down','none':'none'
 	};
 
-	addSubcategoryLabel(controlsPage,'Mouse bindings');
-	let leftClickComboBox = addStringComboBox(controlsPage,'left-click-action','Left click action:',buttonActions,undefined);
-	let middleClickComboBox = addStringComboBox(controlsPage,'middle-click-action','Middle click action:',buttonActions,undefined);
-	let rightClickComboBox = addStringComboBox(controlsPage,'right-click-action','Right click action:',buttonActions,undefined);
-	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined);
-	let thumbForwardComboBox = addStringComboBox(controlsPage,'thumb-forward-action','Thumb-tip button action:',buttonActions,undefined);
-	let thumbBackwardComboBox = addStringComboBox(controlsPage,'thumb-backward-action','Inner-thumb button action:',buttonActions,undefined);
+
+	addSwitch(controlsPage, 'enable-double-clicks', 'Enable double clicks:', undefined, 2);
+	let doubleClickTime = addSpinButton(controlsPage, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined, 2);
+
+	addSubcategoryLabel(controlsPage, 'Mouse bindings');
+	controlsPage.attach(buildLabel('<u> Single click </u>', true), 1, position - 1, 1, 1);
+	controlsPage.attach(buildLabel('<u> Double click </u>', true), 2, position - 1, 1, 1);
+
+	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
+	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
+	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
+	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action:',buttonActions,undefined);
+	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action:',buttonActions,undefined);
+
+	controlsPage.attach(buildLabel(''), 2, position++, 1, 1); // empty line to separate buttons and scroll
+	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,2);
+
 
 	addSubcategoryLabel(controlsPage,'Behaviour');
-	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
+	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined,2);
 
 	addButton(controlsPage,'Reset controls settings',() => {
 		settings.reset('left-click-action');
+		settings.reset('left-double-click-action');
 		settings.reset('middle-click-action');
+		settings.reset('middle-double-click-action');
 		settings.reset('right-click-action');
+		settings.reset('right-double-click-action');
 		settings.reset('scroll-action');
 		settings.reset('thumb-forward-action');
+		settings.reset('thumb-double-forward-action');
 		settings.reset('thumb-backward-action');
+		settings.reset('thumb-double-backward-action');
 		settings.reset('volume-control-scheme');
 		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
+		leftDoubleClickComboBox.set_active_id(settings.get_string('left-double-click-action'));
 		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
+		middleDoubleClickComboBox.set_active_id(settings.get_string('middle-double-click-action'));
 		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
+		rightDoubleClickComboBox.set_active_id(settings.get_string('right-double-click-action'));
 		scrollComboBox.set_active_id(settings.get_string('scroll-action'));
 		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
+		thumbDoubleForwardComboBox.set_active_id(settings.get_string('thumb-double-forward-action'));
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
+		thumbDoubleBackwardComboBox.set_active_id(settings.get_string('thumb-double-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
+
+	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
+		.forEach(el => bindEnabled(controlsPage._settings, 'enable-double-clicks', el));
 
 	prefsWidget.append_page(controlsPage, buildLabel('Controls'));
 
@@ -249,7 +272,7 @@ function buildPrefsWidget(){
 //functions starting with 'add' adds a widget to the selected grid(or widget)
 //functions starting with 'build' creates the "generic" widget and returns it
 
-function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
+function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip,width=1){
 	addLabel(widget,labelstring,labeltooltip);
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
@@ -259,28 +282,43 @@ function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip){
 		}),
 		visible: true
 	});
-	widget.attach(thisSpinButton,1,position,1,1);
+	widget.attach(thisSpinButton,1,position,width,1);
 	widget._settings.bind(setting,thisSpinButton,'value',Gio.SettingsBindFlags.DEFAULT);
 	position++;
+	return thisSpinButton;
 }
 
-function addStringComboBox(widget,setting,labelstring,options,labeltooltip){
+function addStringComboBox(widget,setting,labelstring,options,labeltooltip,width=1){
 	addLabel(widget,labelstring,labeltooltip);
 	thisComboBox = buildStringComboBox(widget._settings,setting,options);
-	widget.attach(thisComboBox,1,position,1,1);
+	widget.attach(thisComboBox,1,position,width,1);
 	position++;
 
 	return thisComboBox //necessary to reset position when the reset button is clicked
 }
 
-function addSwitch(widget,setting,labelstring,labeltooltip){
+function addDoubleStringComboBox(widget, setting1, setting2, labelstring, options, labeltooltip){
+	addLabel(widget, labelstring, labeltooltip, 2);
+
+	comboBox1 = buildStringComboBox(widget._settings, setting1, options);
+	widget.attach(comboBox1, 1, position, 1, 1);
+
+	comboBox2 = buildStringComboBox(widget._settings, setting2, options);
+	widget.attach(comboBox2, 2, position, 1, 1);
+
+	position++;
+
+	return [comboBox1, comboBox2]
+}
+
+function addSwitch(widget,setting,labelstring,labeltooltip,width=1){
 	addLabel(widget,labelstring,labeltooltip);
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.END,
 		halign: Gtk.Align.END,
 		visible: true
 	});
-	widget.attach(thisSwitch,1,position,1,1);
+	widget.attach(thisSwitch,1,position,width,1);
 	widget._settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	position++;
 }
@@ -357,18 +395,18 @@ function addButton(widget,labelstring,callback){
 
 function addSubcategoryLabel(widget,labelstring){
 	labelstring = '<u> ' + labelstring + ' </u>';
-	let thisLabel = buildLabel(labelstring);
+	let thisLabel = buildLabel(labelstring,true);
 	widget.attach(thisLabel,0,position,1,1);
-	thisLabel.use_markup = true;
 	position++;
 }
 
-function buildLabel(labelstring){ //don't confuse with label.js buildLabel
+function buildLabel(labelstring, use_markup=false){ //don't confuse with label.js buildLabel
 	let thisLabel = new Gtk.Label({
 		label: labelstring,
 		halign: Gtk.Align.START,
 		visible: true
 	});
+	thisLabel.use_markup = use_markup
 	return thisLabel
 }
 
@@ -405,5 +443,9 @@ function playersToString(){
 	});
 
 	return newList.toString()
+}
+
+function bindEnabled(settings, setting, element) {
+	settings.bind(setting, element, 'sensitive', Gio.SettingsBindFlags.GET);
 }
 

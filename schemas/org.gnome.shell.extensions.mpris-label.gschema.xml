@@ -94,16 +94,36 @@
       <default>false</default>
     </key>
 
+    <key name="enable-double-clicks" type="b">
+      <default>false</default>
+    </key>
+
+    <key name="double-click-time" type="i">
+      <default>400</default>
+    </key>
+
     <key name="left-click-action" type="s">
       <default>"open-menu"</default>
+    </key>
+
+    <key name="left-double-click-action" type="s">
+      <default>"next-track"</default>
     </key>
 
     <key name="middle-click-action" type="s">
       <default>"play-pause"</default>
     </key>
 
+    <key name="middle-double-click-action" type="s">
+      <default>"none"</default>
+    </key>
+
     <key name="right-click-action" type="s">
       <default>"activate-player"</default>
+    </key>
+
+    <key name="right-double-click-action" type="s">
+      <default>"prev-track"</default>
     </key>
 
     <key name="volume-control-scheme" type="s">
@@ -118,8 +138,16 @@
       <default>"next-track"</default>
     </key>
 
+    <key name="thumb-double-forward-action" type="s">
+      <default>"none"</default>
+    </key>
+
     <key name="thumb-backward-action" type="s">
       <default>"prev-track"</default>
+    </key>
+
+    <key name="thumb-double-backward-action" type="s">
+      <default>"none"</default>
     </key>
 
     <key name="use-album" type="b">
