@@ -107,7 +107,7 @@
     </key>
 
     <key name="left-double-click-action" type="s">
-      <default>"none"</default>
+      <default>"next-track"</default>
     </key>
 
     <key name="middle-click-action" type="s">
@@ -123,7 +123,7 @@
     </key>
 
     <key name="right-double-click-action" type="s">
-      <default>"none"</default>
+      <default>"prev-track"</default>
     </key>
 
     <key name="volume-control-scheme" type="s">
