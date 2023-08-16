@@ -66,7 +66,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
-		this.lastClicks = new Map() // place where occurrences od click actions will be stored
+		this.lastClick = new Map() // place where occurrences of click actions will be stored
 		this.scheduledActionsIds = new Map() // place where ids of scheduled actions will be stored
 
 		this._refresh();
@@ -139,23 +139,22 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		const DOUBLE_CLICK_TIME = this.settings.get_int('double-click-time');
-		const isDoubleClick = DOUBLE_CLICK && this.lastClicks.get(button) && ((Date.now() - this.lastClicks.get(button)) <= DOUBLE_CLICK_TIME);
-		this.lastClicks.set(button, Date.now());
+		const lastClickTimestamp = this.lastClick.get(button);
+		const currentTimestamp = Date.now();
 
-		if (isDoubleClick) {
-			GLib.source_remove(this.scheduledActionsIds.get(button)); // cancel scheduled action for this button
+		// if is a double click, remove the scheduled action and activate the double click action
+		if (lastClickTimestamp &&  (currentTimestamp - lastClickTimestamp <= DOUBLE_CLICK_TIME)) {
+			GLib.source_remove(this.scheduledActionsIds.get(button));
+			this._activateButtonAction(button,true);
+			return Clutter.EVENT_STOP;
 		}
-
-		// if double click doesn't occur in the future, action with this id will be executed
-		this.scheduledActionsIds.set(button, GLib.timeout_add(
-			GLib.PRIORITY_DEFAULT,
-			DOUBLE_CLICK ? DOUBLE_CLICK_TIME : 0, // if double click feature is disabled, actions can be executed immediately
-			() => {
-				this._activateButtonAction(button,isDoubleClick);
+		// else register the button and current timestamp on 'this.lastClick', and schedule the single click action
+		this.lastClick.set(button,currentTimestamp);
+		this.scheduledActionsIds.set(button, GLib.timeout_add(GLib.PRIORITY_DEFAULT, DOUBLE_CLICK_TIME, () => {
+				this._activateButtonAction(button,false);
 				return GLib.SOURCE_REMOVE; // callback function will be executed once
 			}
 		));
-
 		return Clutter.EVENT_STOP;
 	}
 
