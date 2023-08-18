@@ -511,7 +511,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		if (this._repositionTimeout){
-			GLib.Source.remove(this._scheduledActionTimeout);
+			GLib.Source.remove(this._repositionTimeout);
 			this._repositionTimeout = null;
 		}
 	}
