@@ -3,6 +3,6 @@
     "name": "Mpris Label",
     "description": "Display in your panel the (song)title, album and/or artist name available from an mpris compatible media player, such as Spotify, Vlc, Rhythmbox, Firefox, Chromium and many more. Lots of features and very customizable!",
     "version": 18,
-    "shell-version": [ "3.36", "3.38", "40", "41", "42", "43", "44" ],
+    "shell-version": [ "43", "44" ],
     "url": "https://github.com/Moon-0xff/gnome-mpris-label"
 }

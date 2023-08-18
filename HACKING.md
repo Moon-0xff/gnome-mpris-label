@@ -55,9 +55,6 @@ This file is part of the standard extension structure and houses all the code
 that relates to the Prefences dialog and links to Gsettings.  
 See [GJS guide](https://gjs.guide/extensions/development/preferences.html#creating-the-schema) for details.
 
-Note that this file does not use the latest Adwaita styles or functions for
-backwards compatibility with older gnome-shell versions.
-
 ## Coding style
 We loosely follow [gnome's coding style](https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/HACKING.md) except for two points:
 

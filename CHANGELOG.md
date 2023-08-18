@@ -60,3 +60,6 @@ Includes new options to customize the icon alongside the label:
 
 # Upcoming Version
 - Allows binding of two actions per button, for single and double click
+- Uses Adwaita for the preferences window
+- Removes support for GNOME 3.36, 3.38, 40, 41, and 42
+  (The extension may still work in GNOME 42 but it's untested)
