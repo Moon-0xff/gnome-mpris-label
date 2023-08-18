@@ -96,7 +96,6 @@ function fillPreferencesWindow(window){
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
 
-
 	addButton(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
@@ -216,6 +215,8 @@ function fillPreferencesWindow(window){
 	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined,2);
 
 	addButton(controlsPage,'Reset controls settings',() => {
+		settings.reset('enable-double-clicks');
+		settings.reset('double-click-time');
 		settings.reset('left-click-action');
 		settings.reset('left-double-click-action');
 		settings.reset('middle-click-action');
