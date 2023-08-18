@@ -143,14 +143,14 @@ class MprisLabel extends PanelMenu.Button {
 
 		// if is a double click, remove the scheduled action and activate the double click action
 		if (lastClickTimestamp &&  (currentTimestamp - lastClickTimestamp <= DOUBLE_CLICK_TIME)) {
-			GLib.source_remove(this.scheduledActionTimeout);
-			this.scheduledActionTimeout = null;
+			GLib.source_remove(this._scheduledActionTimeout);
+			this._scheduledActionTimeout = null;
 			this._activateButtonAction(button,true);
 			return Clutter.EVENT_STOP;
 		}
 		// else register the button and current timestamp on 'this.lastClick', and schedule the single click action
 		this.lastClick.set(button,currentTimestamp);
-		this.scheduledActionTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DOUBLE_CLICK_TIME, () => {
+		this._scheduledActionTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DOUBLE_CLICK_TIME, () => {
 				this._activateButtonAction(button,false);
 				return GLib.SOURCE_REMOVE; // callback function will be executed once
 			}
