@@ -1,4 +1,4 @@
-const {Gio,Gtk} = imports.gi;
+const {Adw,Gio,Gtk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;
@@ -7,23 +7,18 @@ let position = 0;
 
 function init(){}
 
-function buildPrefsWidget(){
-	const [major] = Config.PACKAGE_VERSION.split('.');
-	const shellVersion = Number.parseInt(major);
+function fillPreferencesWindow(window){
+	window.default_width = 600;
+	window.default_height = 750;
 
-	let prefsWidget = new Gtk.Notebook({visible: true});
+	// const [major] = Config.PACKAGE_VERSION.split('.');
+	// const shellVersion = Number.parseInt(major);
+
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
-	if(shellVersion >= 40){ //workaround taken directly from gjs.guide
-		prefsWidget.connect('realize', () => {
-			let window = prefsWidget.get_root();
-			window.default_width = 600;
-			window.default_height = 775;
-		});
-	}
-
 //panel page:
-	let panelPage = buildGrid(shellVersion,settings);
+	let panelPage = buildGrid(settings);
+	let adwPanelPage = addPreferencesPage(window,'Panel',panelPage,'computer-symbolic');
 
 	addSubcategoryLabel(panelPage,'Icon');
 	let showIconComboBox = addStringComboBox(panelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
@@ -58,10 +53,9 @@ function buildPrefsWidget(){
 		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
-	prefsWidget.append_page(panelPage, buildLabel('Panel'));
-
 //label page:
-	let labelPage = buildGrid(shellVersion,settings);
+	let labelPage = buildGrid(settings);
+	let adwLabelPage = addPreferencesPage(window,'Label',labelPage,'document-edit-symbolic');
 
 	position = 0; //this line this line seems to be unnecessary
 
@@ -94,16 +88,10 @@ function buildPrefsWidget(){
 	let secondFieldComboBox = buildStringComboBox(settings,'second-field',fieldOptions);
 	let lastFieldComboBox = buildStringComboBox(settings,'last-field',fieldOptions);
 
-	if(shellVersion < 40){
-		visibleFieldsBox.pack_start(firstFieldComboBox,true,true,0);
-		visibleFieldsBox.pack_start(secondFieldComboBox,true,true,0);
-		visibleFieldsBox.pack_start(lastFieldComboBox,true,true,0);
-	}
-	else {
-		visibleFieldsBox.append(firstFieldComboBox,true,true,0);
-		visibleFieldsBox.append(secondFieldComboBox,true,true,0);
-		visibleFieldsBox.append(lastFieldComboBox,true,true,0);
-	}
+	visibleFieldsBox.append(firstFieldComboBox,true,true,0);
+	visibleFieldsBox.append(secondFieldComboBox,true,true,0);
+	visibleFieldsBox.append(lastFieldComboBox,true,true,0);
+
 	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
 	labelPage.attach(visibleFieldsBox,1,position,1,1);
 	position++;
@@ -126,10 +114,9 @@ function buildPrefsWidget(){
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
 	});
 
-	prefsWidget.append_page(labelPage, buildLabel('Label'));
-
 //filters page:
-	let filtersPage = buildGrid(shellVersion,settings);
+	let filtersPage = buildGrid(settings);
+	let adwFiltersPage = addPreferencesPage(window,'Filters',filtersPage,'dialog-error-symbolic');
 
 	position = 0;
 
@@ -179,16 +166,11 @@ function buildPrefsWidget(){
 	albumBlacklistEntry.set_placeholder_text('Separate entries with commas');
 	position++;
 
-	let filtersPageSubGrid = buildGrid(shellVersion,settings);
-	if(shellVersion < 40){
-		filtersPageSubGrid.margin = 0;
-	}
-	else {
-		filtersPageSubGrid.margin_top = 0,
-		filtersPageSubGrid.margin_bottom = 0,
-		filtersPageSubGrid.margin_start = 0,
-		filtersPageSubGrid.margin_end = 0
-	}
+	let filtersPageSubGrid = buildGrid(settings);
+	filtersPageSubGrid.margin_top = 0,
+	filtersPageSubGrid.margin_bottom = 0,
+	filtersPageSubGrid.margin_start = 0,
+	filtersPageSubGrid.margin_end = 0
 	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
 
 	addButton(filtersPageSubGrid,'Reset filters settings', () => {
@@ -201,10 +183,9 @@ function buildPrefsWidget(){
 	let placeholderLabel = buildLabel('')//for alignment
 	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
 
-	prefsWidget.append_page(filtersPage, buildLabel('Filters'));
-
 //controls page:
-	let controlsPage = buildGrid(shellVersion,settings);
+	let controlsPage = buildGrid(settings);
+	let adwControlsPage = addPreferencesPage(window,'Controls',controlsPage,'input-mouse-symbolic');
 
 	position = 0;
 
@@ -263,14 +244,23 @@ function buildPrefsWidget(){
 
 	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
 		.forEach(el => bindEnabled(controlsPage._settings, 'enable-double-clicks', el));
-
-	prefsWidget.append_page(controlsPage, buildLabel('Controls'));
-
-	return prefsWidget
 }
 
 //functions starting with 'add' adds a widget to the selected grid(or widget)
 //functions starting with 'build' creates the "generic" widget and returns it
+
+function addPreferencesPage(window,name,widget,icon){
+	let thisPage = new Adw.PreferencesPage({
+		name: name,
+		title: name,
+		icon_name: icon,
+	});
+	let thisGroup = new Adw.PreferencesGroup;
+	window.add(thisPage);
+	thisPage.add(thisGroup);
+	thisGroup.add(widget);
+	return thisPage
+}
 
 function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip,width=1){
 	addLabel(widget,labelstring,labeltooltip);
@@ -357,30 +347,19 @@ function buildStringComboBox(settings,setting,options){
 	return thisComboBox
 }
 
-function buildGrid(shellVersion,settings){
-	if(shellVersion < 40){
-		widget = new Gtk.Grid({
-			margin: 18,
-			column_spacing: 12,
-			row_spacing: 12,
-			visible: true,
-			column_homogeneous: true
-		});
-	}
-	else {
-		widget = new Gtk.Grid({
-			margin_top: 10,
-			margin_bottom: 10,
-			margin_start: 10,
-			margin_end: 10,
-			column_spacing: 12,
-			row_spacing: 12,
-			visible: true,
-			column_homogeneous: true
-		});
-	}
-	widget._settings = settings;
-	return widget
+function buildGrid(settings){
+	let grid = new Gtk.Grid({
+		margin_top: 10,
+		margin_bottom: 10,
+		margin_start: 10,
+		margin_end: 10,
+		column_spacing: 12,
+		row_spacing: 12,
+		visible: true,
+		column_homogeneous: true
+	});
+	grid._settings = settings;
+	return grid
 }
 
 function addButton(widget,labelstring,callback){
