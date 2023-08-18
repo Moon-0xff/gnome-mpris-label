@@ -66,8 +66,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
 
-		this.lastClick = new Map() // place where occurrences of click actions will be stored
-		this.scheduledActionsIds = new Map() // place where ids of scheduled actions will be stored
+		this.lastClick = new Map(); // place where occurrences of click actions will be stored
 
 		this._refresh();
 	}
@@ -144,17 +143,18 @@ class MprisLabel extends PanelMenu.Button {
 
 		// if is a double click, remove the scheduled action and activate the double click action
 		if (lastClickTimestamp &&  (currentTimestamp - lastClickTimestamp <= DOUBLE_CLICK_TIME)) {
-			GLib.source_remove(this.scheduledActionsIds.get(button));
+			GLib.source_remove(this.scheduledActionTimeout);
+			this.scheduledActionTimeout = null;
 			this._activateButtonAction(button,true);
 			return Clutter.EVENT_STOP;
 		}
 		// else register the button and current timestamp on 'this.lastClick', and schedule the single click action
 		this.lastClick.set(button,currentTimestamp);
-		this.scheduledActionsIds.set(button, GLib.timeout_add(GLib.PRIORITY_DEFAULT, DOUBLE_CLICK_TIME, () => {
+		this.scheduledActionTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DOUBLE_CLICK_TIME, () => {
 				this._activateButtonAction(button,false);
 				return GLib.SOURCE_REMOVE; // callback function will be executed once
 			}
-		));
+		);
 		return Clutter.EVENT_STOP;
 	}
 
@@ -505,8 +505,13 @@ class MprisLabel extends PanelMenu.Button {
 		this.remove_child(this.box);
 		this._removeTimeout();
 
+		if (this._scheduledActionTimeout){
+			GLib.Source.remove(this._scheduledActionTimeout);
+			this._repositionTimeout = null;
+		}
+
 		if (this._repositionTimeout){
-			GLib.Source.remove(this._repositionTimeout);
+			GLib.Source.remove(this._scheduledActionTimeout);
 			this._repositionTimeout = null;
 		}
 	}
