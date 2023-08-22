@@ -64,50 +64,39 @@ function fillPreferencesWindow(window){
 
 //label page:
 	let labelPage = buildGrid(settings);
-	page = addPreferencesPage(window,'Label',labelPage,'document-edit-symbolic');
-
-	position = 0; //this line this line seems to be unnecessary
+	page = addPreferencesPage2(window,'Label',labelPage,'document-edit-symbolic');
 
 	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
 	page.add(group);
 	addSwitch2(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists",group);
 	addSwitch2(labelPage,'remove-text-when-paused','Hide when paused:',undefined,group);
-	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
-	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
+	addSpinButton2(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined,group);
+	addSpinButton2(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined,group);
 	addEntry2(labelPage,'label-filtered-list','Filter segments containing:',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen",group);
 
 	group = new Adw.PreferencesGroup({ title: 'Appearance'});
 	page.add(group);
 	addSpinButton2(labelPage,'max-string-length','Max string length (each field):',1,150,undefined,group);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	addEntry2(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active",group);
 	addEntry2(labelPage,'divider-string','Divider string (you can use spaces):',undefined,group);
 
-	//visible fields is a bit more complex
-	addLabel(labelPage,'Visible fields and order:',undefined);
-
-	let visibleFieldsBox = new Gtk.Box({
-		spacing: 12,
-		visible: true
-	});
-
+	//triple comboBox done manually
 	let fieldOptions = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
-
 	let firstFieldComboBox = buildStringComboBox(settings,'first-field',fieldOptions);
-
 	fieldOptions['none'] = '';
-
 	let secondFieldComboBox = buildStringComboBox(settings,'second-field',fieldOptions);
 	let lastFieldComboBox = buildStringComboBox(settings,'last-field',fieldOptions);
 
-	visibleFieldsBox.append(firstFieldComboBox,true,true,0);
-	visibleFieldsBox.append(secondFieldComboBox,true,true,0);
-	visibleFieldsBox.append(lastFieldComboBox,true,true,0);
+	let row = new Adw.ActionRow({ title: 'Visible fields and order:' });
+	row.add_suffix(firstFieldComboBox);
+	row.add_suffix(secondFieldComboBox);
+	row.add_suffix(lastFieldComboBox);
+	group.add(row);
 
-	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
-	labelPage.attach(visibleFieldsBox,1,position,1,1);
-	position++;
-
-	addButton(labelPage,'Reset label settings', () => {
+	//add empty row to separate Reset Button
+	group = new Adw.PreferencesGroup({ title: ' ' });
+	page.add(group);
+	addButton2(labelPage,'Reset label settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
@@ -122,7 +111,7 @@ function fillPreferencesWindow(window){
 		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
 		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
-	});
+	},group);
 
 //filters page:
 	let filtersPage = buildGrid(settings);
