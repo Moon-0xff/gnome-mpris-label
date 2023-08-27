@@ -19,7 +19,6 @@ function fillPreferencesWindow(window){
 
 //panel page:
 	let panelPage = buildGrid(settings);
-	// page = addPreferencesPage(window,'Panel',panelPage,'computer-symbolic');
 	page = addPreferencesPage2(window,'Panel',panelPage,'computer-symbolic');
 	
 	group = new Adw.PreferencesGroup({ title: 'Icon'});
@@ -111,7 +110,7 @@ function fillPreferencesWindow(window){
 
 //filters page:
 	let filtersPage = buildGrid(settings);
-	page = addPreferencesPage(window,'Filters',filtersPage,'dialog-error-symbolic');
+	page = addPreferencesPage2(window,'Filters',filtersPage,'dialog-error-symbolic');
 
 	position = 0;
 	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources:' });
@@ -172,8 +171,8 @@ function fillPreferencesWindow(window){
 		settings.reset('album-blacklist');
 	},group);
 
-	let placeholderLabel = buildLabel('')//for alignment
-	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
+	// let placeholderLabel = buildLabel('')//for alignment
+	// filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
 
 //controls page:
 	let controlsPage = buildGrid(settings);
