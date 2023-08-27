@@ -393,10 +393,26 @@ function addEntry(widget,setting,labelstring,labeltooltip){
 	position++;
 }
 
-function addEntry2(widget,setting,labelstring,labeltooltip,group){
+function addEntry2(widget,setting,labelstring,labeltooltip,group,popover){
 	let row = new Adw.ActionRow({ title: labelstring });
-	if ( labeltooltip )
-		row.subtitle = labeltooltip;
+	if ( labeltooltip ){
+		if (labeltooltip.length>50){
+			let thisInfo = new Gtk.MenuButton({
+				valign: Gtk.Align.CENTER,
+				icon_name: 'info-symbolic',
+				visible: true
+			});
+			let thisPopover = new Gtk.Popover();
+			let thisLabel = new Gtk.Label({
+				label: labeltooltip
+			});
+			thisPopover.set_child(thisLabel);
+			thisInfo.set_popover(thisPopover);
+			row.add_suffix(thisInfo);
+		}
+		else
+			row.subtitle = labeltooltip;
+	}
 
 	let thisEntry = new Gtk.Entry({
 		valign: Gtk.Align.CENTER,
