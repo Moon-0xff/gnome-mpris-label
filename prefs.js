@@ -393,7 +393,7 @@ function addEntry(widget,setting,labelstring,labeltooltip){
 	position++;
 }
 
-function addEntry2(widget,setting,labelstring,labeltooltip,group,popover){
+function addEntry2(widget,setting,labelstring,labeltooltip,group){
 	let row = new Adw.ActionRow({ title: labelstring });
 	if ( labeltooltip ){
 		if (labeltooltip.length>50){
