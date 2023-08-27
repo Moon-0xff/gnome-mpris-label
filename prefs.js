@@ -9,7 +9,7 @@ function init(){}
 
 function fillPreferencesWindow(window){
 	window.default_width = 600;
-	window.default_height = 1000;
+	window.default_height = 950;
 
 	// const [major] = Config.PACKAGE_VERSION.split('.');
 	// const shellVersion = Number.parseInt(major);
@@ -44,9 +44,7 @@ function fillPreferencesWindow(window){
 	addSwitch2(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined,group);
 
 	//add empty row to separate Reset Button
-	group = new Adw.PreferencesGroup({ title: ' ' });
-	page.add(group);
-	addButton2(panelPage,'Reset panel settings', () => {
+	addButton2(panelPage,'Reset Panel settings', () => {
 		settings.reset('show-icon');
 		settings.reset('left-padding');
 		settings.reset('right-padding');
@@ -93,10 +91,8 @@ function fillPreferencesWindow(window){
 	row.add_suffix(lastFieldComboBox);
 	group.add(row);
 
-	//add empty row to separate Reset Button
-	group = new Adw.PreferencesGroup({ title: ' ' });
-	page.add(group);
-	addButton2(labelPage,'Reset label settings', () => {
+	//Reset Button
+	addButton2(labelPage,'Reset Label settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
@@ -118,52 +114,48 @@ function fillPreferencesWindow(window){
 	page = addPreferencesPage(window,'Filters',filtersPage,'dialog-error-symbolic');
 
 	position = 0;
+	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources:' });
+	page.add(group);
 
 	let sourcesListEntry = new Gtk.Entry({
 		visible: true,
 		editable: false
 	});
-	filtersPage.attach(sourcesListEntry,0,position,1,1);
+	group.add(sourcesListEntry);
 	sourcesListEntry.set_text(playersToString());
-	position++;
 
-	addButton(filtersPage,'Update list of available MPRIS sources', () => {
+	addButton2(filtersPage,'Update list of available MPRIS sources', () => {
 		sourcesListEntry.set_text(playersToString());
-	});
+	},group);
 
-	addSubcategoryLabel(filtersPage,'Ignore list:');
+	// addSubcategoryLabel(filtersPage,'Ignore list:');
+	group = new Adw.PreferencesGroup({ title: 'Ignore list:'});
 	let blacklistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(blacklistEntry,0,position,1,1);
+	// filtersPage.attach(blacklistEntry,0,position,1,1);
+	group.add(blacklistEntry);
+	page.add(group);
 	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	blacklistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
 
-	addSubcategoryLabel(filtersPage,'Allow list:');
-	let whitelistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(whitelistEntry,0,position,1,1);
+	// addSubcategoryLabel(filtersPage,'Allow list:');
+	group = new Adw.PreferencesGroup({ title: 'Allow list:'});
+	page.add(group);
+
+	addSwitch2(filtersPage,'use-whitelisted-sources-only','Ignore all sources except allowed ones:',"This option is ignored if the allow list is empty",group);
+	
+	let whitelistEntry = new Gtk.Entry({ visible: true, margin_top: 10 });
 	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	whitelistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
+	group.add(whitelistEntry);
 
-	//using addSwitch messes up the layout for the other widgets in the page
-	let whitelistLabel = buildLabel('Ignore all sources except allowed ones:');
-	whitelistLabel.set_tooltip_text("This option is ignored if the allow list is empty");
-	filtersPage.attach(whitelistLabel,0,position,1,1);
-	let whitelistSwitch = new Gtk.Switch({
-		valign: Gtk.Align.END,
-		halign: Gtk.Align.END,
-		visible: true
-	});
-	filtersPage.attach(whitelistSwitch,0,position,1,1);
-	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
-	position++;
-
-	addSubcategoryLabel(filtersPage,'Players excluded from using album art as icon:');
+	// addSubcategoryLabel(filtersPage,'Players excluded from using album art as icon:');
+	group = new Adw.PreferencesGroup({ title: 'Players excluded from using album art as icon:'});
+	page.add(group);
 	let albumBlacklistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(albumBlacklistEntry,0,position,1,1);
+	// filtersPage.attach(albumBlacklistEntry,0,position,1,1);
+	group.add(albumBlacklistEntry);
 	filtersPage._settings.bind('album-blacklist',albumBlacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	albumBlacklistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
 
 	let filtersPageSubGrid = buildGrid(settings);
 	filtersPageSubGrid.margin_top = 0,
@@ -172,12 +164,13 @@ function fillPreferencesWindow(window){
 	filtersPageSubGrid.margin_end = 0
 	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
 
-	addButton(filtersPageSubGrid,'Reset filters settings', () => {
+	//add empty row to separate Reset Button
+	addButton2(filtersPageSubGrid,'Reset Filters settings', () => {
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
 		settings.reset('album-blacklist');
-	});
+	},group);
 
 	let placeholderLabel = buildLabel('')//for alignment
 	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
@@ -214,7 +207,7 @@ function fillPreferencesWindow(window){
 	addSubcategoryLabel(controlsPage,'Behaviour');
 	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined,2);
 
-	addButton(controlsPage,'Reset controls settings',() => {
+	addButton(controlsPage,'Reset Controls settings',() => {
 		settings.reset('enable-double-clicks');
 		settings.reset('double-click-time');
 		settings.reset('left-click-action');
@@ -425,7 +418,7 @@ function addLabel(widget,labelstring,labeltooltip){
 }
 
 function buildStringComboBox(settings,setting,options){
-	let thisComboBox = new Gtk.ComboBoxText({
+	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
 		visible: true
@@ -488,6 +481,7 @@ function addButton(widget,labelstring,callback){
 function addButton2(widget,labelstring,callback,group){
 	button = new Gtk.Button({
 		label: labelstring,
+		margin_top: 20,
 		visible: true
 	});
 	button.connect('clicked',callback);
@@ -510,6 +504,7 @@ function buildLabel(labelstring, use_markup=false){ //don't confuse with label.j
 	thisLabel.use_markup = use_markup
 	return thisLabel
 }
+
 
 function playersToString(){
 	const dBusInterface = `
