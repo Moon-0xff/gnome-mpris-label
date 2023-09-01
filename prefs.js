@@ -179,7 +179,7 @@ function fillPreferencesWindow(window){
 	page.add(group);
 
 	row = new Adw.ActionRow({ title: ''});
-	let thisLabel = new Gtk.Label({
+	let thisLabel = new Gtk.Label({ //not sure how to underline or reduce height
 		label: 'Single click',
 		width_chars: 17
 	});
@@ -252,10 +252,32 @@ function addPreferencesPage(window,name,icon){
 	return thisPage
 }
 
-function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
+function buildActionRow(labelstring,labeltooltip){
 	let row = new Adw.ActionRow({ title: labelstring });
-	if (labeltooltip)
-		row.subtitle = labeltooltip;
+	if ( labeltooltip ){
+		if (labeltooltip.length>70){ //could make every tooltip a button if preferred
+			let thisInfo = new Gtk.MenuButton({
+				valign: Gtk.Align.CENTER,
+				icon_name: 'info-symbolic',
+				visible: true
+			});
+			let thisPopover = new Gtk.Popover();
+			let thisLabel = new Gtk.Label({
+				label: labeltooltip
+			});
+			thisPopover.set_child(thisLabel);
+			thisInfo.set_popover(thisPopover);
+			row.add_suffix(thisInfo);
+		}
+		else
+			row.subtitle = labeltooltip;
+	}
+
+	return row;
+}
+
+function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
 
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
@@ -276,9 +298,7 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 }
 
 function addStringComboBox(group,setting,labelstring,options,labeltooltip){
-	let row = new Adw.ActionRow({ title: labelstring });
-	if (labeltooltip)
-		row.subtitle = labeltooltip;
+	let row = buildActionRow(labelstring,labeltooltip);
 
 	thisComboBox = buildStringComboBox(settings,setting,options);
 
@@ -289,9 +309,7 @@ function addStringComboBox(group,setting,labelstring,options,labeltooltip){
 }
 
 function addToggleButton(widget,setting,labelstring,options,labeltooltip,group){
-	let row = new Adw.ActionRow({ title: labelstring });
-	if (labeltooltip)
-		row.subtitle = labeltooltip;
+	let row = buildActionRow(labelstring,labeltooltip);
 
 	thisComboBox = buildToggleButton(settings,setting,options);
 
@@ -302,9 +320,7 @@ function addToggleButton(widget,setting,labelstring,options,labeltooltip,group){
 }
 
 function addDoubleStringComboBox(group, setting1, setting2, labelstring, options, labeltooltip){
-	let row = new Adw.ActionRow({ title: labelstring });
-	if (labeltooltip)
-		row.subtitle = labeltooltip;
+	let row = buildActionRow(labelstring,labeltooltip);
 
 	comboBox1 = buildStringComboBox(settings, setting1, options);
 	row.add_suffix(comboBox1);
@@ -317,9 +333,7 @@ function addDoubleStringComboBox(group, setting1, setting2, labelstring, options
 }
 
 function addSwitch(group,setting,labelstring,labeltooltip){
-	let row = new Adw.ActionRow({ title: labelstring });
-	if (labeltooltip)
-		row.subtitle = labeltooltip;
+	let row = buildActionRow(labelstring,labeltooltip);
 
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.CENTER,
@@ -333,25 +347,7 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 }
 
 function addEntry(group,setting,labelstring,labeltooltip){
-	let row = new Adw.ActionRow({ title: labelstring });
-	if ( labeltooltip ){
-		if (labeltooltip.length>50){
-			let thisInfo = new Gtk.MenuButton({
-				valign: Gtk.Align.CENTER,
-				icon_name: 'info-symbolic',
-				visible: true
-			});
-			let thisPopover = new Gtk.Popover();
-			let thisLabel = new Gtk.Label({
-				label: labeltooltip
-			});
-			thisPopover.set_child(thisLabel);
-			thisInfo.set_popover(thisPopover);
-			row.add_suffix(thisInfo);
-		}
-		else
-			row.subtitle = labeltooltip;
-	}
+	let row = buildActionRow(labelstring,labeltooltip);
 
 	let thisEntry = new Gtk.Entry({
 		valign: Gtk.Align.CENTER,
