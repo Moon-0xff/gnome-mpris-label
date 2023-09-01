@@ -256,24 +256,32 @@ function buildActionRow(labelstring,labeltooltip){
 	let row = new Adw.ActionRow({ title: labelstring });
 	if ( labeltooltip ){
 		if (labeltooltip.length>70){ //could make every tooltip a button if preferred
-			let thisInfo = new Gtk.MenuButton({
-				valign: Gtk.Align.CENTER,
-				icon_name: 'info-symbolic',
-				visible: true
-			});
-			let thisPopover = new Gtk.Popover();
-			let thisLabel = new Gtk.Label({
-				label: labeltooltip
-			});
-			thisPopover.set_child(thisLabel);
-			thisInfo.set_popover(thisPopover);
-			row.add_suffix(thisInfo);
+			let thisInfoButton = buildInfoButton(labeltooltip);
+			row.add_suffix(thisInfoButton);
 		}
 		else
 			row.subtitle = labeltooltip;
 	}
 
 	return row;
+}
+
+function buildInfoButton(labeltooltip){
+	let thisInfoButton = new Gtk.MenuButton({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'info-symbolic',
+		visible: true
+	});
+	thisInfoButton.add_css_class('flat');
+	// thisInfoButton.add_css_class('circular');
+	let thisPopover = new Gtk.Popover();
+	let thisLabel = new Gtk.Label({
+		label: labeltooltip
+	});
+	thisPopover.set_child(thisLabel);
+	thisInfoButton.set_popover(thisPopover);
+
+	return thisInfoButton;
 }
 
 function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
