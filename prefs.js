@@ -65,7 +65,7 @@ function fillPreferencesWindow(window){
 	page.add(group);
 	addSwitch(group,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
 	addSwitch(group,'remove-text-when-paused','Hide when paused:',undefined);
-	addSpinButton(group,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
+	addSpinButton(group,'remove-text-paused-delay','Hide when paused delay (seconds):',0,9999,undefined);
 	addSpinButton(group,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
 	addEntry(group,'label-filtered-list','Filter segments containing:',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
