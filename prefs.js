@@ -9,7 +9,7 @@ let position = 0;
 function init(){}
 
 function fillPreferencesWindow(window){
-	window.default_width = 600;
+	window.default_width = 650;
 	window.default_height = 950;
 
 	// const [major] = Config.PACKAGE_VERSION.split('.');
