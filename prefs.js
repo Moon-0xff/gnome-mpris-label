@@ -176,7 +176,7 @@ function fillPreferencesWindow(window){
 
 //controls page:
 	let controlsPage = buildGrid(settings);
-	page = addPreferencesPage(window,'Controls',controlsPage,'input-mouse-symbolic');
+	page = addPreferencesPage2(window,'Controls',controlsPage,'input-mouse-symbolic');
 
 	position = 0;
 
@@ -185,28 +185,46 @@ function fillPreferencesWindow(window){
 		'open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down','none':'none'
 	};
 
-	addSubcategoryLabel(controlsPage, 'Double Click');
-	addSwitch(controlsPage, 'enable-double-clicks', 'Enable double clicks:', undefined, 2);
-	let doubleClickTime = addSpinButton(controlsPage, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined, 2);
+	//addSubcategoryLabel(controlsPage, 'Double Click');
+	group = new Adw.PreferencesGroup({ title: 'Double Click'});
+	page.add(group);
 
-	addSubcategoryLabel(controlsPage, 'Mouse bindings');
-	controlsPage.attach(buildLabel('<u> Single click </u>', true), 1, position - 1, 1, 1);
-	controlsPage.attach(buildLabel('<u> Double click </u>', true), 2, position - 1, 1, 1);
+	addSwitch2(controlsPage, 'enable-double-clicks', 'Enable double clicks:', undefined, group);
+	let doubleClickTime = addSpinButton2(controlsPage, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined, group);
 
-	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
-	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
-	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
-	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action:',buttonActions,undefined);
-	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action:',buttonActions,undefined);
+	//addSubcategoryLabel(controlsPage, 'Mouse bindings');
+	// group = new Adw.PreferencesGroup({ title: 'Mouse bindings'});
+	group = new Adw.PreferencesGroup({ title: 'Mouse bindings'});
+	page.add(group);
 
-	controlsPage.attach(buildLabel(''), 2, position++, 1, 1); // empty line to separate buttons and scroll
-	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,2);
+	row = new Adw.ActionRow({ title: ''});
+	let thisLabel = new Gtk.Label({
+		label: 'Single click',
+		width_chars: 17
+	});
+	row.add_suffix(thisLabel);
+	thisLabel = new Gtk.Label({
+		label: 'Double click',
+		width_chars: 17
+	});
+	row.add_suffix(thisLabel);
+	group.add(row);
 
+	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox2(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined,group);
+	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox2(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined,group);
+	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox2(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined,group);
+	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox2(controlsPage,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action:',buttonActions,undefined,group);
+	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox2(controlsPage,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action:',buttonActions,undefined,group);
 
-	addSubcategoryLabel(controlsPage,'Behaviour');
-	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined,2);
+	group = new Adw.PreferencesGroup({ title: ''});
+	page.add(group);
+	let scrollComboBox = addStringComboBox2(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,group);
 
-	addButton(controlsPage,'Reset Controls settings',() => {
+	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
+	page.add(group);
+	let VolumeControlComboBox = addStringComboBox2(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined,group);
+
+	addButton2(controlsPage,'Reset Controls settings',() => {
 		settings.reset('enable-double-clicks');
 		settings.reset('double-click-time');
 		settings.reset('left-click-action');
@@ -233,7 +251,7 @@ function fillPreferencesWindow(window){
 		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
 		thumbDoubleBackwardComboBox.set_active_id(settings.get_string('thumb-double-backward-action'));
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
-	});
+	},group);
 
 	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
 		.forEach(el => bindEnabled(controlsPage._settings, 'enable-double-clicks', el));
@@ -303,6 +321,7 @@ function addSpinButton2(widget,setting,labelstring,lower,upper,labeltooltip,grou
 
 	row.add_suffix(thisSpinButton);
 	group.add(row);
+	return thisSpinButton;
 }
 
 function addStringComboBox(widget,setting,labelstring,options,labeltooltip,width=1){
@@ -350,6 +369,21 @@ function addDoubleStringComboBox(widget, setting1, setting2, labelstring, option
 	widget.attach(comboBox2, 2, position, 1, 1);
 
 	position++;
+
+	return [comboBox1, comboBox2]
+}
+
+function addDoubleStringComboBox2(widget, setting1, setting2, labelstring, options, labeltooltip,group){
+	let row = new Adw.ActionRow({ title: labelstring });
+	if (labeltooltip)
+		row.subtitle = labeltooltip;
+
+	comboBox1 = buildStringComboBox(widget._settings, setting1, options);
+	row.add_suffix(comboBox1);
+
+	comboBox2 = buildStringComboBox(widget._settings, setting2, options);
+	row.add_suffix(comboBox2);
+	group.add(row)
 
 	return [comboBox1, comboBox2]
 }
@@ -496,7 +530,7 @@ function addButton(widget,labelstring,callback){
 function addButton2(widget,labelstring,callback,group){
 	button = new Gtk.Button({
 		label: labelstring,
-		margin_top: 20,
+		margin_top: 30,
 		visible: true
 	});
 	button.connect('clicked',callback);
