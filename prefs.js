@@ -4,8 +4,6 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;
 const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
-let position = 0;
-
 function init(){}
 
 function fillPreferencesWindow(window){
@@ -101,7 +99,6 @@ function fillPreferencesWindow(window){
 //filters page:
 	page = addPreferencesPage(window,'Filters','dialog-error-symbolic');
 
-	position = 0;
 	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources:' });
 	page.add(group);
 
@@ -116,19 +113,16 @@ function fillPreferencesWindow(window){
 
 	group = new Adw.PreferencesGroup({ title: 'Ignore list:'});
 	page.add(group);
-
 	addWideEntry(group,'mpris-sources-blacklist','Separate entries with commas',undefined);
 
 	group = new Adw.PreferencesGroup({ title: 'Allow list:'});
 	page.add(group);
-
 	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones:',"This option is ignored if the allow list is empty");
 	let allowListEntry = addWideEntry(group,'mpris-sources-whitelist','Separate entries with commas',undefined);
 	allowListEntry.set_margin_top(10);
 
 	group = new Adw.PreferencesGroup({ title: 'Players excluded from using album art as icon:'});
 	page.add(group);
-
 	addWideEntry(group,'album-blacklist','Separate entries with commas',undefined);
 
 	//Reset Button
@@ -141,8 +135,6 @@ function fillPreferencesWindow(window){
 
 //controls page:
 	page = addPreferencesPage(window,'Controls','input-mouse-symbolic');
-
-	position = 0;
 
 	let buttonActions = {
 		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player',
@@ -296,17 +288,6 @@ function addStringComboBox(group,setting,labelstring,options,labeltooltip){
 	return thisComboBox //necessary to reset position when the reset button is clicked
 }
 
-function addToggleButton(widget,setting,labelstring,options,labeltooltip,group){
-	let row = buildActionRow(labelstring,labeltooltip);
-
-	thisComboBox = buildToggleButton(settings,setting,options);
-
-	row.add_suffix(thisComboBox);
-	group.add(row);
-
-	return thisComboBox //necessary to reset position when the reset button is clicked
-}
-
 function addDoubleStringComboBox(group, setting1, setting2, labelstring, options, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
@@ -393,25 +374,6 @@ function buildStringComboBox(settings,setting,options){
 	});
 
 	return thisComboBox
-}
-
-function buildToggleButton(settings,setting,options){
-	let thisToggleButton = new Gtk.ToggleButton({
-		valign: Gtk.Align.CENTER,
-		halign: Gtk.Align.END,
-		group:true,
-		visible: true
-	});
-	for (let option in options){
-		thisToggleButton.append(options[option],option);
-	}
-	thisToggleButton.set_active_id(settings.get_string(setting));
-	thisToggleButton.connect('changed', () => {
-		settings.set_string(setting,thisComboBox.get_active_id());
-	});
-	thisToggleButton.gtk_toggle_button_set_group = true
-
-	return thisToggleButton
 }
 
 function addButton(group,labelstring,callback){
