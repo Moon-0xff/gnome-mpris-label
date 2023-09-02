@@ -114,42 +114,31 @@ function fillPreferencesWindow(window){
 	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources:' });
 	page.add(group);
 
-	let sourcesListEntry = new Gtk.Entry({
-		visible: true,
-		editable: false
-	});
-	group.add(sourcesListEntry);
+	let sourcesListEntry = addWideEntry(group,undefined,'',"Press the button below to update");
 	sourcesListEntry.set_text(playersToString());
+	sourcesListEntry.set_editable(false);
 
-	addButton(group,'Update list of available MPRIS sources', () => {
+	let updateButton = addButton(group,'Update list of available MPRIS sources', () => {
 		sourcesListEntry.set_text(playersToString());
 	});
+	updateButton.set_margin_top(10);
 
 	group = new Adw.PreferencesGroup({ title: 'Ignore list:'});
 	page.add(group);
 
-	let blacklistEntry = new Gtk.Entry({ visible: true });
-	group.add(blacklistEntry);
-	settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	blacklistEntry.set_placeholder_text('Separate entries with commas');
+	addWideEntry(group,'mpris-sources-blacklist','Separate entries with commas',undefined);
 
 	group = new Adw.PreferencesGroup({ title: 'Allow list:'});
 	page.add(group);
 
 	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones:',"This option is ignored if the allow list is empty");
-	
-	let whitelistEntry = new Gtk.Entry({ visible: true, margin_top: 10 });
-	settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	whitelistEntry.set_placeholder_text('Separate entries with commas');
-	group.add(whitelistEntry);
+	let allowListEntry = addWideEntry(group,'mpris-sources-whitelist','Separate entries with commas',undefined);
+	allowListEntry.set_margin_top(10);
 
 	group = new Adw.PreferencesGroup({ title: 'Players excluded from using album art as icon:'});
 	page.add(group);
 
-	let albumBlacklistEntry = new Gtk.Entry({ visible: true });
-	group.add(albumBlacklistEntry);
-	settings.bind('album-blacklist',albumBlacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	albumBlacklistEntry.set_placeholder_text('Separate entries with commas');
+	addWideEntry(group,'album-blacklist','Separate entries with commas',undefined);
 
 	//Reset Button
 	addButton(group,'Reset Filters settings', () => {
@@ -368,6 +357,20 @@ function addEntry(group,setting,labelstring,labeltooltip){
 	group.add(row)
 }
 
+function addWideEntry(group,setting,placeholder,labeltooltip){
+	let thisEntry = new Gtk.Entry({ visible: true});
+	if ( labeltooltip )
+		thisEntry.set_tooltip_text(labeltooltip)
+
+	if (setting)
+		settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+
+	thisEntry.set_placeholder_text(placeholder);
+	group.add(thisEntry);
+
+	return thisEntry;
+}
+
 function addLabel(widget,labelstring,labeltooltip){
 	let thisLabel = buildLabel(labelstring);
 	if ( labeltooltip )
@@ -435,6 +438,8 @@ function addButton(group,labelstring,callback){
 	});
 	button.connect('clicked',callback);
 	group.add(button);
+
+	return button
 }
 
 function addSubcategoryLabel(widget,labelstring){
