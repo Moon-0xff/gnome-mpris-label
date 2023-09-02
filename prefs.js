@@ -75,18 +75,10 @@ function fillPreferencesWindow(window){
 	addEntry(group,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
 	addEntry(group,'divider-string','Divider string (you can use spaces):',undefined);
 
-	//triple comboBox done manually
-	let fieldOptions = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
-	let firstFieldComboBox = buildStringComboBox(settings,'first-field',fieldOptions);
-	fieldOptions['none'] = '';
-	let secondFieldComboBox = buildStringComboBox(settings,'second-field',fieldOptions);
-	let lastFieldComboBox = buildStringComboBox(settings,'last-field',fieldOptions);
-
-	let row = new Adw.ActionRow({ title: 'Visible fields and order:' });
-	row.add_suffix(firstFieldComboBox);
-	row.add_suffix(secondFieldComboBox);
-	row.add_suffix(lastFieldComboBox);
-	group.add(row);
+	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
+	let fieldOptions2 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
+	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
+	let [firstFieldComboBox, secondFieldComboBox, lastFieldComboBox] = addTripleStringComboBox(group,'first-field','second-field','last-field','Visible fields and order:',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
 	//Reset Button
 	addButton(group,'Reset Label settings', () => {
@@ -106,7 +98,6 @@ function fillPreferencesWindow(window){
 		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
 	});
 
-	
 //filters page:
 	page = addPreferencesPage(window,'Filters','dialog-error-symbolic');
 
@@ -327,6 +318,22 @@ function addDoubleStringComboBox(group, setting1, setting2, labelstring, options
 	group.add(row)
 
 	return [comboBox1, comboBox2]
+}
+
+function addTripleStringComboBox(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+
+	comboBox1 = buildStringComboBox(settings, setting1, options1);
+	row.add_suffix(comboBox1);
+
+	comboBox2 = buildStringComboBox(settings, setting2, options2);
+	row.add_suffix(comboBox2);
+
+	comboBox3 = buildStringComboBox(settings, setting3, options3);
+	row.add_suffix(comboBox3);
+
+	group.add(row)
+	return [comboBox1, comboBox2, comboBox3]
 }
 
 function addSwitch(group,setting,labelstring,labeltooltip){
