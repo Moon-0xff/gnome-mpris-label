@@ -378,14 +378,6 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function addLabel(widget,labelstring,labeltooltip){
-	let thisLabel = buildLabel(labelstring);
-	if ( labeltooltip )
-		thisLabel.set_tooltip_text(labeltooltip)
-
-	widget.attach(thisLabel,0,position,1,1);
-}
-
 function buildStringComboBox(settings,setting,options){
 	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
 		valign: Gtk.Align.CENTER,
@@ -422,21 +414,6 @@ function buildToggleButton(settings,setting,options){
 	return thisToggleButton
 }
 
-function buildGrid(settings){
-	let grid = new Gtk.Grid({
-		margin_top: 10,
-		margin_bottom: 10,
-		margin_start: 10,
-		margin_end: 10,
-		column_spacing: 12,
-		row_spacing: 12,
-		visible: true,
-		column_homogeneous: true
-	});
-	grid._settings = settings;
-	return grid
-}
-
 function addButton(group,labelstring,callback){
 	button = new Gtk.Button({
 		label: labelstring,
@@ -448,24 +425,6 @@ function addButton(group,labelstring,callback){
 
 	return button
 }
-
-function addSubcategoryLabel(widget,labelstring){
-	labelstring = '<u> ' + labelstring + ' </u>';
-	let thisLabel = buildLabel(labelstring,true);
-	widget.attach(thisLabel,0,position,1,1);
-	position++;
-}
-
-function buildLabel(labelstring, use_markup=false){ //don't confuse with label.js buildLabel
-	let thisLabel = new Gtk.Label({
-		label: labelstring,
-		halign: Gtk.Align.START,
-		visible: true
-	});
-	thisLabel.use_markup = use_markup
-	return thisLabel
-}
-
 
 function playersToString(){
 	const dBusInterface = `
