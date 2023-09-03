@@ -171,11 +171,13 @@ function fillPreferencesWindow(window){
 
 	group = new Adw.PreferencesGroup({ title: ''});
 	page.add(group);
-	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined);
+	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down action:',{'volume control':'volume-controls','none':'none'},undefined);
+	scrollComboBox.set_size_request(140,-1); //match size with next button
 
 	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
 	page.add(group);
 	let VolumeControlComboBox = addStringComboBox(group,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
+	VolumeControlComboBox.set_size_request(140,-1); //match size with previous button
 
 	//Reset Button
 	addButton(group,'Reset Controls settings',() => {
@@ -337,6 +339,7 @@ function addEntry(group,setting,labelstring,labeltooltip){
 	let thisEntry = new Gtk.Entry({
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
+		width_request: 215,
 		visible: true
 	});
 	settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
@@ -363,6 +366,7 @@ function buildStringComboBox(settings,setting,options){
 	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
+		width_request: 105,
 		visible: true
 	});
 	for (let option in options){
