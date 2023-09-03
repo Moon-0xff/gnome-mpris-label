@@ -151,16 +151,16 @@ function fillPreferencesWindow(window){
 	page.add(group);
 
 	row = new Adw.ActionRow({ title: ''});
-	let thisLabel = new Gtk.Label({ //not sure how to underline or reduce height
+	let singleClickLabel = new Gtk.Label({ //not sure how to underline or reduce height
 		label: 'Single click',
 		width_chars: 17
 	});
-	row.add_suffix(thisLabel);
-	thisLabel = new Gtk.Label({
+	row.add_suffix(singleClickLabel);
+	doubleClickLabel = new Gtk.Label({
 		label: 'Double click',
 		width_chars: 17
 	});
-	row.add_suffix(thisLabel);
+	row.add_suffix(doubleClickLabel);
 	group.add(row);
 
 	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(group,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
@@ -209,7 +209,7 @@ function fillPreferencesWindow(window){
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
 
-	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
+	[doubleClickTime, doubleClickLabel, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
 		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
 }
 
