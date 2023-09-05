@@ -2,42 +2,45 @@ const {Adw,Gio,Gtk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;
-
-let position = 0;
+const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
 function init(){}
 
 function fillPreferencesWindow(window){
-	window.default_width = 600;
-	window.default_height = 750;
+	// window.default_width = 650;
+	window.default_height = 950;
 
 	// const [major] = Config.PACKAGE_VERSION.split('.');
 	// const shellVersion = Number.parseInt(major);
 
-	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+	let page,group;
 
 //panel page:
-	let panelPage = buildGrid(settings);
-	let adwPanelPage = addPreferencesPage(window,'Panel',panelPage,'computer-symbolic');
+	page = addPreferencesPage(window,'Panel','computer-symbolic');
 
-	addSubcategoryLabel(panelPage,'Icon');
-	let showIconComboBox = addStringComboBox(panelPage,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
-	addSpinButton(panelPage, 'icon-padding', 'Icon padding:', 0, 50, undefined);
-	addSwitch(panelPage, 'symbolic-source-icon', 'Use symbolic source icon:', "Uses an icon that follows the shell's color scheme");
-	addSwitch(panelPage,'use-album','Use album art as icon when available:',undefined);
-	addSpinButton(panelPage,'album-size','Album art scaling (in %):',20,250,undefined);
+	group = new Adw.PreferencesGroup({ title: 'Icon'});
+	page.add(group);
 
-	addSubcategoryLabel(panelPage,'Position');
-	let extensionPlaceComboBox = addStringComboBox(panelPage,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
-	addSpinButton(panelPage,'extension-index','Extension index:',0,20,"Set widget location within with respect to other adjacent widgets");
-	addSpinButton(panelPage,'left-padding','Left padding:',0,500,undefined);
-	addSpinButton(panelPage,'right-padding','Right padding:',0,500,undefined);
+	let showIconComboBox = addStringComboBox(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
+	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
+	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
+	addSwitch(group,'use-album','Use album art as icon when available',undefined);
+	addSpinButton(group,'album-size','Album art scaling (in %)',20,250,undefined);
 
-	addSubcategoryLabel(panelPage,'Wrong index at loadup mitigations');
-	addSpinButton(panelPage,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
-	addSwitch(panelPage,'reposition-on-button-press','Update panel position on every button press:',undefined);
+	group = new Adw.PreferencesGroup({ title: 'Position'});
+	page.add(group);
+	let extensionPlaceComboBox = addStringComboBox(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
+	addSpinButton(group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
+	addSpinButton(group,'left-padding','Left padding',0,500,undefined);
+	addSpinButton(group,'right-padding','Right padding',0,500,undefined);
 
-	addButton(panelPage,'Reset panel settings', () => {
+	group = new Adw.PreferencesGroup({ title: 'Wrong index at loadup mitigations'});
+	page.add(group);
+	addSpinButton(group,'reposition-delay','Panel reposition at startup (delay in seconds)',0,300,"Increase this value if extension index isn't respected at startup");
+	addSwitch(group,'reposition-on-button-press','Update panel position on every button press',undefined);
+
+	//Reset Button
+	addButton(group,'Reset Panel settings', () => {
 		settings.reset('show-icon');
 		settings.reset('left-padding');
 		settings.reset('right-padding');
@@ -54,49 +57,29 @@ function fillPreferencesWindow(window){
 	});
 
 //label page:
-	let labelPage = buildGrid(settings);
-	let adwLabelPage = addPreferencesPage(window,'Label',labelPage,'document-edit-symbolic');
+	page = addPreferencesPage(window,'Label','document-edit-symbolic');
 
-	position = 0; //this line this line seems to be unnecessary
+	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
+	page.add(group);
+	addSwitch(group,'auto-switch-to-most-recent','Switch to the most recent source automatically',"This option can be annoying without the use of filter lists");
+	addSwitch(group,'remove-text-when-paused','Hide when paused',undefined);
+	addSpinButton(group,'remove-text-paused-delay','Hide when paused delay (seconds)',0,9999,undefined);
+	addSpinButton(group,'refresh-rate','Refresh rate (milliseconds)',30,3000,undefined);
+	addEntry(group,'label-filtered-list','Filter segments containing',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
-	addSubcategoryLabel(labelPage,'Behaviour');
-	addSwitch(labelPage,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(labelPage,'remove-text-when-paused','Hide when paused:',undefined);
-	addSpinButton(labelPage,'remove-text-paused-delay','Hide when paused delay (seconds):',0,10800,undefined);
-	addSpinButton(labelPage,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
-	addEntry(labelPage,'label-filtered-list','Filter segments containing:',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
+	group = new Adw.PreferencesGroup({ title: 'Appearance'});
+	page.add(group);
+	addSpinButton(group,'max-string-length','Max string length (each field)',1,150,undefined);
+	addEntry(group,'button-placeholder','Button placeholder (can be left empty)',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	addEntry(group,'divider-string','Divider string (you can use spaces)',undefined);
 
-	addSubcategoryLabel(labelPage,'Appearance');
-	addSpinButton(labelPage,'max-string-length','Max string length (each field):',1,150,undefined);
-	addEntry(labelPage,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(labelPage,'divider-string','Divider string (you can use spaces):',undefined);
+	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
+	let fieldOptions2 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
+	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
+	let [firstFieldComboBox, secondFieldComboBox, lastFieldComboBox] = addTripleStringComboBox(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
-	//visible fields is a bit more complex
-	addLabel(labelPage,'Visible fields and order:',undefined);
-
-	let visibleFieldsBox = new Gtk.Box({
-		spacing: 12,
-		visible: true
-	});
-
-	let fieldOptions = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
-
-	let firstFieldComboBox = buildStringComboBox(settings,'first-field',fieldOptions);
-
-	fieldOptions['none'] = '';
-
-	let secondFieldComboBox = buildStringComboBox(settings,'second-field',fieldOptions);
-	let lastFieldComboBox = buildStringComboBox(settings,'last-field',fieldOptions);
-
-	visibleFieldsBox.append(firstFieldComboBox,true,true,0);
-	visibleFieldsBox.append(secondFieldComboBox,true,true,0);
-	visibleFieldsBox.append(lastFieldComboBox,true,true,0);
-
-	visibleFieldsBox.margin_start = 30; //include margin on left to align with rest of widgets
-	labelPage.attach(visibleFieldsBox,1,position,1,1);
-	position++;
-
-	addButton(labelPage,'Reset label settings', () => {
+	//Reset Button
+	addButton(group,'Reset Label settings', () => {
 		settings.reset('max-string-length');
 		settings.reset('refresh-rate');
 		settings.reset('button-placeholder');
@@ -114,107 +97,90 @@ function fillPreferencesWindow(window){
 	});
 
 //filters page:
-	let filtersPage = buildGrid(settings);
-	let adwFiltersPage = addPreferencesPage(window,'Filters',filtersPage,'dialog-error-symbolic');
+	page = addPreferencesPage(window,'Filters','dialog-error-symbolic');
 
-	position = 0;
+	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources'});
+	page.add(group);
 
-	let sourcesListEntry = new Gtk.Entry({
-		visible: true,
-		editable: false
-	});
-	filtersPage.attach(sourcesListEntry,0,position,1,1);
+	let sourcesListEntry = addWideEntry(group,undefined,'',"Press the button below to update");
 	sourcesListEntry.set_text(playersToString());
-	position++;
+	sourcesListEntry.set_editable(false);
 
-	addButton(filtersPage,'Update list of available MPRIS sources', () => {
+	let updateButton = addButton(group,'Update list of available MPRIS sources', () => {
 		sourcesListEntry.set_text(playersToString());
 	});
+	updateButton.set_margin_top(10);
 
-	addSubcategoryLabel(filtersPage,'Ignore list:');
-	let blacklistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(blacklistEntry,0,position,1,1);
-	filtersPage._settings.bind('mpris-sources-blacklist',blacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	blacklistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
+	group = new Adw.PreferencesGroup({ title: 'Ignore list'});
+	page.add(group);
+	addWideEntry(group,'mpris-sources-blacklist','Separate entries with commas',undefined);
 
-	addSubcategoryLabel(filtersPage,'Allow list:');
-	let whitelistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(whitelistEntry,0,position,1,1);
-	filtersPage._settings.bind('mpris-sources-whitelist',whitelistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	whitelistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
+	group = new Adw.PreferencesGroup({ title: 'Allow list'});
+	page.add(group);
+	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones',"This option is ignored if the allow list is empty");
+	let allowListEntry = addWideEntry(group,'mpris-sources-whitelist','Separate entries with commas',undefined);
+	allowListEntry.set_margin_top(10);
 
-	//using addSwitch messes up the layout for the other widgets in the page
-	let whitelistLabel = buildLabel('Ignore all sources except allowed ones:');
-	whitelistLabel.set_tooltip_text("This option is ignored if the allow list is empty");
-	filtersPage.attach(whitelistLabel,0,position,1,1);
-	let whitelistSwitch = new Gtk.Switch({
-		valign: Gtk.Align.END,
-		halign: Gtk.Align.END,
-		visible: true
-	});
-	filtersPage.attach(whitelistSwitch,0,position,1,1);
-	filtersPage._settings.bind('use-whitelisted-sources-only',whitelistSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
-	position++;
+	group = new Adw.PreferencesGroup({ title: 'Players excluded from using album art as icon'});
+	page.add(group);
+	addWideEntry(group,'album-blacklist','Separate entries with commas',undefined);
 
-	addSubcategoryLabel(filtersPage,'Players excluded from using album art as icon:');
-	let albumBlacklistEntry = new Gtk.Entry({ visible: true });
-	filtersPage.attach(albumBlacklistEntry,0,position,1,1);
-	filtersPage._settings.bind('album-blacklist',albumBlacklistEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	albumBlacklistEntry.set_placeholder_text('Separate entries with commas');
-	position++;
-
-	let filtersPageSubGrid = buildGrid(settings);
-	filtersPageSubGrid.margin_top = 0,
-	filtersPageSubGrid.margin_bottom = 0,
-	filtersPageSubGrid.margin_start = 0,
-	filtersPageSubGrid.margin_end = 0
-	filtersPage.attach(filtersPageSubGrid,0,position,1,1);
-
-	addButton(filtersPageSubGrid,'Reset filters settings', () => {
+	//Reset Button
+	addButton(group,'Reset Filters settings', () => {
 		settings.reset('mpris-sources-blacklist');
 		settings.reset('mpris-sources-whitelist');
 		settings.reset('use-whitelisted-sources-only');
 		settings.reset('album-blacklist');
 	});
 
-	let placeholderLabel = buildLabel('')//for alignment
-	filtersPageSubGrid.attach(placeholderLabel,1,position,1,1);
-
 //controls page:
-	let controlsPage = buildGrid(settings);
-	let adwControlsPage = addPreferencesPage(window,'Controls',controlsPage,'input-mouse-symbolic');
-
-	position = 0;
+	page = addPreferencesPage(window,'Controls','input-mouse-symbolic');
 
 	let buttonActions = {
 		'open menu':'open-menu','play/pause':'play-pause','next track':'next-track','previous track':'prev-track','next player':'next-player',
 		'open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down','none':'none'
 	};
 
+	group = new Adw.PreferencesGroup({ title: 'Double Click'});
+	page.add(group);
 
-	addSwitch(controlsPage, 'enable-double-clicks', 'Enable double clicks:', undefined, 2);
-	let doubleClickTime = addSpinButton(controlsPage, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined, 2);
+	addSwitch(group, 'enable-double-clicks', 'Enable double clicks', undefined);
+	let doubleClickTime = addSpinButton(group, 'double-click-time', 'Double click time (milliseconds)', 1, 1000, undefined);
 
-	addSubcategoryLabel(controlsPage, 'Mouse bindings');
-	controlsPage.attach(buildLabel('<u> Single click </u>', true), 1, position - 1, 1, 1);
-	controlsPage.attach(buildLabel('<u> Double click </u>', true), 2, position - 1, 1, 1);
+	group = new Adw.PreferencesGroup({ title: 'Mouse bindings'});
+	page.add(group);
 
-	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
-	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined);
-	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(controlsPage,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
-	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action:',buttonActions,undefined);
-	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(controlsPage,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action:',buttonActions,undefined);
+	row = new Adw.ActionRow({ title: ''});
+	let singleClickLabel = new Gtk.Label({ //not sure how to underline or reduce height
+		label: 'Single click',
+		width_chars: 17
+	});
+	row.add_suffix(singleClickLabel);
+	doubleClickLabel = new Gtk.Label({
+		label: 'Double click',
+		width_chars: 17
+	});
+	row.add_suffix(doubleClickLabel);
+	group.add(row);
 
-	controlsPage.attach(buildLabel(''), 2, position++, 1, 1); // empty line to separate buttons and scroll
-	let scrollComboBox = addStringComboBox(controlsPage,'scroll-action','Scroll up/down action:',{'volume controls':'volume-controls','none':'none'},undefined,2);
+	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(group,'left-click-action','left-double-click-action','Left click action',buttonActions,undefined);
+	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(group,'middle-click-action','middle-double-click-action','Middle click action',buttonActions,undefined,);
+	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(group,'right-click-action','right-double-click-action','Right click action',buttonActions,undefined);
+	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action',buttonActions,undefined);
+	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action',buttonActions,undefined);
 
+	group = new Adw.PreferencesGroup({ title: ''});
+	page.add(group);
+	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down action',{'volume control':'volume-controls','none':'none'},undefined);
+	scrollComboBox.set_size_request(140,-1); //match size with next button
 
-	addSubcategoryLabel(controlsPage,'Behaviour');
-	let VolumeControlComboBox = addStringComboBox(controlsPage,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined,2);
+	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
+	page.add(group);
+	let VolumeControlComboBox = addStringComboBox(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
+	VolumeControlComboBox.set_size_request(140,-1); //match size with previous button
 
-	addButton(controlsPage,'Reset controls settings',() => {
+	//Reset Button
+	addButton(group,'Reset Controls settings',() => {
 		settings.reset('enable-double-clicks');
 		settings.reset('double-click-time');
 		settings.reset('left-click-action');
@@ -243,98 +209,164 @@ function fillPreferencesWindow(window){
 		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
 	});
 
-	[doubleClickTime, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
-		.forEach(el => bindEnabled(controlsPage._settings, 'enable-double-clicks', el));
+	[doubleClickTime, doubleClickLabel, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
+		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
 }
 
 //functions starting with 'add' adds a widget to the selected grid(or widget)
 //functions starting with 'build' creates the "generic" widget and returns it
 
-function addPreferencesPage(window,name,widget,icon){
+function addPreferencesPage(window,name,icon){
 	let thisPage = new Adw.PreferencesPage({
 		name: name,
 		title: name,
 		icon_name: icon,
 	});
-	let thisGroup = new Adw.PreferencesGroup;
 	window.add(thisPage);
-	thisPage.add(thisGroup);
-	thisGroup.add(widget);
 	return thisPage
 }
 
-function addSpinButton(widget,setting,labelstring,lower,upper,labeltooltip,width=1){
-	addLabel(widget,labelstring,labeltooltip);
+function buildActionRow(labelstring,labeltooltip){
+	let row = new Adw.ActionRow({ title: labelstring });
+	if ( labeltooltip ){
+		if (labeltooltip.length>70){ //could make every tooltip a button if preferred
+			let thisInfoButton = buildInfoButton(labeltooltip);
+			row.add_suffix(thisInfoButton);
+		}
+		else
+			row.subtitle = labeltooltip;
+	}
+
+	return row;
+}
+
+function buildInfoButton(labeltooltip){
+	let thisInfoButton = new Gtk.MenuButton({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'info-symbolic',
+		visible: true
+	});
+	thisInfoButton.add_css_class('flat');
+	// thisInfoButton.add_css_class('circular');
+	let thisPopover = new Gtk.Popover();
+	let thisLabel = new Gtk.Label({
+		label: labeltooltip
+	});
+	thisPopover.set_child(thisLabel);
+	thisInfoButton.set_popover(thisPopover);
+
+	return thisInfoButton;
+}
+
+function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
 			lower: lower,
 			upper: upper,
 			step_increment: 1
 		}),
+		valign: Gtk.Align.CENTER,
+		halign: Gtk.Align.END,
 		visible: true
 	});
-	widget.attach(thisSpinButton,1,position,width,1);
-	widget._settings.bind(setting,thisSpinButton,'value',Gio.SettingsBindFlags.DEFAULT);
-	position++;
+
+	settings.bind(setting,thisSpinButton,'value',Gio.SettingsBindFlags.DEFAULT);
+
+	row.add_suffix(thisSpinButton);
+	group.add(row);
 	return thisSpinButton;
 }
 
-function addStringComboBox(widget,setting,labelstring,options,labeltooltip,width=1){
-	addLabel(widget,labelstring,labeltooltip);
-	thisComboBox = buildStringComboBox(widget._settings,setting,options);
-	widget.attach(thisComboBox,1,position,width,1);
-	position++;
+function addStringComboBox(group,setting,labelstring,options,labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+
+	thisComboBox = buildStringComboBox(settings,setting,options);
+
+	row.add_suffix(thisComboBox);
+	group.add(row);
 
 	return thisComboBox //necessary to reset position when the reset button is clicked
 }
 
-function addDoubleStringComboBox(widget, setting1, setting2, labelstring, options, labeltooltip){
-	addLabel(widget, labelstring, labeltooltip, 2);
+function addDoubleStringComboBox(group, setting1, setting2, labelstring, options, labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
 
-	comboBox1 = buildStringComboBox(widget._settings, setting1, options);
-	widget.attach(comboBox1, 1, position, 1, 1);
+	comboBox1 = buildStringComboBox(settings, setting1, options);
+	row.add_suffix(comboBox1);
 
-	comboBox2 = buildStringComboBox(widget._settings, setting2, options);
-	widget.attach(comboBox2, 2, position, 1, 1);
-
-	position++;
+	comboBox2 = buildStringComboBox(settings, setting2, options);
+	row.add_suffix(comboBox2);
+	group.add(row)
 
 	return [comboBox1, comboBox2]
 }
 
-function addSwitch(widget,setting,labelstring,labeltooltip,width=1){
-	addLabel(widget,labelstring,labeltooltip);
+function addTripleStringComboBox(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+
+	comboBox1 = buildStringComboBox(settings, setting1, options1);
+	row.add_suffix(comboBox1);
+
+	comboBox2 = buildStringComboBox(settings, setting2, options2);
+	row.add_suffix(comboBox2);
+
+	comboBox3 = buildStringComboBox(settings, setting3, options3);
+	row.add_suffix(comboBox3);
+
+	group.add(row)
+	return [comboBox1, comboBox2, comboBox3]
+}
+
+function addSwitch(group,setting,labelstring,labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+
 	let thisSwitch = new Gtk.Switch({
-		valign: Gtk.Align.END,
+		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
 		visible: true
 	});
-	widget.attach(thisSwitch,1,position,width,1);
-	widget._settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
-	position++;
+	settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
+
+	row.add_suffix(thisSwitch);
+	group.add(row)
 }
 
-function addEntry(widget,setting,labelstring,labeltooltip){
-	addLabel(widget,labelstring,labeltooltip);
+function addEntry(group,setting,labelstring,labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+
 	let thisEntry = new Gtk.Entry({
+		valign: Gtk.Align.CENTER,
+		halign: Gtk.Align.END,
+		width_request: 215,
 		visible: true
 	});
-	widget.attach(thisEntry,1,position,1,1);
-	widget._settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-	position++;
+	settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+
+	row.add_suffix(thisEntry);
+	group.add(row)
 }
 
-function addLabel(widget,labelstring,labeltooltip){
-	let thisLabel = buildLabel(labelstring);
+function addWideEntry(group,setting,placeholder,labeltooltip){
+	let thisEntry = new Gtk.Entry({ visible: true});
 	if ( labeltooltip )
-		thisLabel.set_tooltip_text(labeltooltip)
+		thisEntry.set_tooltip_text(labeltooltip)
 
-	widget.attach(thisLabel,0,position,1,1);
+	if (setting)
+		settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+
+	thisEntry.set_placeholder_text(placeholder);
+	group.add(thisEntry);
+
+	return thisEntry;
 }
 
 function buildStringComboBox(settings,setting,options){
-	let thisComboBox = new Gtk.ComboBoxText({
-		halign: Gtk.Align.FILL,
+	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
+		valign: Gtk.Align.CENTER,
+		halign: Gtk.Align.END,
+		width_request: 105,
 		visible: true
 	});
 	for (let option in options){
@@ -348,46 +380,16 @@ function buildStringComboBox(settings,setting,options){
 	return thisComboBox
 }
 
-function buildGrid(settings){
-	let grid = new Gtk.Grid({
-		margin_top: 10,
-		margin_bottom: 10,
-		margin_start: 10,
-		margin_end: 10,
-		column_spacing: 12,
-		row_spacing: 12,
-		visible: true,
-		column_homogeneous: true
-	});
-	grid._settings = settings;
-	return grid
-}
-
-function addButton(widget,labelstring,callback){
+function addButton(group,labelstring,callback){
 	button = new Gtk.Button({
 		label: labelstring,
+		margin_top: 30,
 		visible: true
 	});
-	widget.attach(button,0,position,1,1);
 	button.connect('clicked',callback);
-	position++;
-}
+	group.add(button);
 
-function addSubcategoryLabel(widget,labelstring){
-	labelstring = '<u> ' + labelstring + ' </u>';
-	let thisLabel = buildLabel(labelstring,true);
-	widget.attach(thisLabel,0,position,1,1);
-	position++;
-}
-
-function buildLabel(labelstring, use_markup=false){ //don't confuse with label.js buildLabel
-	let thisLabel = new Gtk.Label({
-		label: labelstring,
-		halign: Gtk.Align.START,
-		visible: true
-	});
-	thisLabel.use_markup = use_markup
-	return thisLabel
+	return button
 }
 
 function playersToString(){
