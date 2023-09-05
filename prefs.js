@@ -21,23 +21,23 @@ function fillPreferencesWindow(window){
 	group = new Adw.PreferencesGroup({ title: 'Icon'});
 	page.add(group);
 
-	let showIconComboBox = addStringComboBox(group,'show-icon','Show source icon:',{'off':'','left':'left','right':'right'},undefined);
-	addSpinButton(group, 'icon-padding', 'Icon padding:', 0, 50, undefined);
-	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon:', "Uses an icon that follows the shell's color scheme");
-	addSwitch(group,'use-album','Use album art as icon when available:',undefined);
-	addSpinButton(group,'album-size','Album art scaling (in %):',20,250,undefined);
+	let showIconComboBox = addStringComboBox(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
+	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
+	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
+	addSwitch(group,'use-album','Use album art as icon when available',undefined);
+	addSpinButton(group,'album-size','Album art scaling (in %)',20,250,undefined);
 
 	group = new Adw.PreferencesGroup({ title: 'Position'});
 	page.add(group);
-	let extensionPlaceComboBox = addStringComboBox(group,'extension-place','Extension place:',{'left':'left','center':'center','right':'right'},undefined);
-	addSpinButton(group,'extension-index','Extension index:',0,20,"Set widget location within with respect to other adjacent widgets");
-	addSpinButton(group,'left-padding','Left padding:',0,500,undefined);
-	addSpinButton(group,'right-padding','Right padding:',0,500,undefined);
+	let extensionPlaceComboBox = addStringComboBox(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
+	addSpinButton(group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
+	addSpinButton(group,'left-padding','Left padding',0,500,undefined);
+	addSpinButton(group,'right-padding','Right padding',0,500,undefined);
 
 	group = new Adw.PreferencesGroup({ title: 'Wrong index at loadup mitigations'});
 	page.add(group);
-	addSpinButton(group,'reposition-delay','Panel reposition at startup (delay in seconds):',0,300,"Increase this value if extension index isn't respected at startup");
-	addSwitch(group,'reposition-on-button-press','Update panel position on every button press:',undefined);
+	addSpinButton(group,'reposition-delay','Panel reposition at startup (delay in seconds)',0,300,"Increase this value if extension index isn't respected at startup");
+	addSwitch(group,'reposition-on-button-press','Update panel position on every button press',undefined);
 
 	//Reset Button
 	addButton(group,'Reset Panel settings', () => {
@@ -61,22 +61,22 @@ function fillPreferencesWindow(window){
 
 	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
 	page.add(group);
-	addSwitch(group,'auto-switch-to-most-recent','Switch to the most recent source automatically:',"This option can be annoying without the use of filter lists");
-	addSwitch(group,'remove-text-when-paused','Hide when paused:',undefined);
-	addSpinButton(group,'remove-text-paused-delay','Hide when paused delay (seconds):',0,9999,undefined);
-	addSpinButton(group,'refresh-rate','Refresh rate (milliseconds):',30,3000,undefined);
-	addEntry(group,'label-filtered-list','Filter segments containing:',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
+	addSwitch(group,'auto-switch-to-most-recent','Switch to the most recent source automatically',"This option can be annoying without the use of filter lists");
+	addSwitch(group,'remove-text-when-paused','Hide when paused',undefined);
+	addSpinButton(group,'remove-text-paused-delay','Hide when paused delay (seconds)',0,9999,undefined);
+	addSpinButton(group,'refresh-rate','Refresh rate (milliseconds)',30,3000,undefined);
+	addEntry(group,'label-filtered-list','Filter segments containing',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
 	group = new Adw.PreferencesGroup({ title: 'Appearance'});
 	page.add(group);
-	addSpinButton(group,'max-string-length','Max string length (each field):',1,150,undefined);
-	addEntry(group,'button-placeholder','Button placeholder (can be left empty):',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
-	addEntry(group,'divider-string','Divider string (you can use spaces):',undefined);
+	addSpinButton(group,'max-string-length','Max string length (each field)',1,150,undefined);
+	addEntry(group,'button-placeholder','Button placeholder (can be left empty)',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	addEntry(group,'divider-string','Divider string (you can use spaces)',undefined);
 
 	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
 	let fieldOptions2 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
 	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
-	let [firstFieldComboBox, secondFieldComboBox, lastFieldComboBox] = addTripleStringComboBox(group,'first-field','second-field','last-field','Visible fields and order:',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
+	let [firstFieldComboBox, secondFieldComboBox, lastFieldComboBox] = addTripleStringComboBox(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
 	//Reset Button
 	addButton(group,'Reset Label settings', () => {
@@ -99,7 +99,7 @@ function fillPreferencesWindow(window){
 //filters page:
 	page = addPreferencesPage(window,'Filters','dialog-error-symbolic');
 
-	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources:' });
+	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources'});
 	page.add(group);
 
 	let sourcesListEntry = addWideEntry(group,undefined,'',"Press the button below to update");
@@ -111,17 +111,17 @@ function fillPreferencesWindow(window){
 	});
 	updateButton.set_margin_top(10);
 
-	group = new Adw.PreferencesGroup({ title: 'Ignore list:'});
+	group = new Adw.PreferencesGroup({ title: 'Ignore list'});
 	page.add(group);
 	addWideEntry(group,'mpris-sources-blacklist','Separate entries with commas',undefined);
 
-	group = new Adw.PreferencesGroup({ title: 'Allow list:'});
+	group = new Adw.PreferencesGroup({ title: 'Allow list'});
 	page.add(group);
-	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones:',"This option is ignored if the allow list is empty");
+	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones',"This option is ignored if the allow list is empty");
 	let allowListEntry = addWideEntry(group,'mpris-sources-whitelist','Separate entries with commas',undefined);
 	allowListEntry.set_margin_top(10);
 
-	group = new Adw.PreferencesGroup({ title: 'Players excluded from using album art as icon:'});
+	group = new Adw.PreferencesGroup({ title: 'Players excluded from using album art as icon'});
 	page.add(group);
 	addWideEntry(group,'album-blacklist','Separate entries with commas',undefined);
 
@@ -144,8 +144,8 @@ function fillPreferencesWindow(window){
 	group = new Adw.PreferencesGroup({ title: 'Double Click'});
 	page.add(group);
 
-	addSwitch(group, 'enable-double-clicks', 'Enable double clicks:', undefined);
-	let doubleClickTime = addSpinButton(group, 'double-click-time', 'Double click time (milliseconds):', 1, 1000, undefined);
+	addSwitch(group, 'enable-double-clicks', 'Enable double clicks', undefined);
+	let doubleClickTime = addSpinButton(group, 'double-click-time', 'Double click time (milliseconds)', 1, 1000, undefined);
 
 	group = new Adw.PreferencesGroup({ title: 'Mouse bindings'});
 	page.add(group);
@@ -163,20 +163,20 @@ function fillPreferencesWindow(window){
 	row.add_suffix(doubleClickLabel);
 	group.add(row);
 
-	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(group,'left-click-action','left-double-click-action','Left click action:',buttonActions,undefined);
-	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(group,'middle-click-action','middle-double-click-action','Middle click action:',buttonActions,undefined,);
-	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(group,'right-click-action','right-double-click-action','Right click action:',buttonActions,undefined);
-	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action:',buttonActions,undefined);
-	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action:',buttonActions,undefined);
+	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(group,'left-click-action','left-double-click-action','Left click action',buttonActions,undefined);
+	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(group,'middle-click-action','middle-double-click-action','Middle click action',buttonActions,undefined,);
+	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(group,'right-click-action','right-double-click-action','Right click action',buttonActions,undefined);
+	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action',buttonActions,undefined);
+	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action',buttonActions,undefined);
 
 	group = new Adw.PreferencesGroup({ title: ''});
 	page.add(group);
-	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down action:',{'volume control':'volume-controls','none':'none'},undefined);
+	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down action',{'volume control':'volume-controls','none':'none'},undefined);
 	scrollComboBox.set_size_request(140,-1); //match size with next button
 
 	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
 	page.add(group);
-	let VolumeControlComboBox = addStringComboBox(group,'volume-control-scheme','Volume control scheme:',{'application':'application','global':'global'},undefined);
+	let VolumeControlComboBox = addStringComboBox(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
 	VolumeControlComboBox.set_size_request(140,-1); //match size with previous button
 
 	//Reset Button
