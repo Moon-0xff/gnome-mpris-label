@@ -17,7 +17,7 @@ function fillPreferencesWindow(window){
 
 //panel page:
 	page = addPreferencesPage(window,'Panel','computer-symbolic');
-	
+
 	group = new Adw.PreferencesGroup({ title: 'Icon'});
 	page.add(group);
 
