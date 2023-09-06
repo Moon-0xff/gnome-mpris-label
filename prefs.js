@@ -70,7 +70,7 @@ function fillPreferencesWindow(window){
 	group = new Adw.PreferencesGroup({ title: 'Appearance'});
 	page.add(group);
 	addSpinButton(group,'max-string-length','Max string length (each field)',1,150,undefined);
-	addEntry(group,'button-placeholder','Button placeholder (can be left empty)',"The button placeholder is a hint for the user\nAppears when the label is empty and another available source is active");
+	addEntry(group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
 	addEntry(group,'divider-string','Divider string (you can use spaces)',undefined);
 
 	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
@@ -153,25 +153,25 @@ function fillPreferencesWindow(window){
 	row = new Adw.ActionRow({ title: ''});
 	let singleClickLabel = new Gtk.Label({ //not sure how to underline or reduce height
 		label: 'Single click',
-		width_chars: 17
+		width_chars: 15
 	});
 	row.add_suffix(singleClickLabel);
 	doubleClickLabel = new Gtk.Label({
 		label: 'Double click',
-		width_chars: 17
+		width_chars: 28
 	});
 	row.add_suffix(doubleClickLabel);
 	group.add(row);
 
-	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(group,'left-click-action','left-double-click-action','Left click action',buttonActions,undefined);
-	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(group,'middle-click-action','middle-double-click-action','Middle click action',buttonActions,undefined,);
-	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(group,'right-click-action','right-double-click-action','Right click action',buttonActions,undefined);
-	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button action',buttonActions,undefined);
-	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button action',buttonActions,undefined);
+	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(group,'left-click-action','left-double-click-action','Left click',buttonActions,undefined);
+	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,undefined,);
+	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(group,'right-click-action','right-double-click-action','Right click',buttonActions,undefined);
+	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,undefined);
+	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,undefined);
 
 	group = new Adw.PreferencesGroup({ title: ''});
 	page.add(group);
-	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down action',{'volume control':'volume-controls','none':'none'},undefined);
+	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined);
 	scrollComboBox.set_size_request(140,-1); //match size with next button
 
 	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
@@ -258,6 +258,25 @@ function buildInfoButton(labeltooltip){
 	return thisInfoButton;
 }
 
+function buildResetButton(setting,combobox){
+	let thisResetButton = new Gtk.Button({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'edit-clear-symbolic',
+		visible: true
+	});
+	thisResetButton.add_css_class('flat');
+	thisResetButton.set_tooltip_text('Reset to Default');
+	if (combobox)
+		thisResetButton.connect('clicked',() => {
+			settings.reset(setting);
+			combobox.set_active_id(settings.get_string(setting));
+		});
+	else
+		thisResetButton.connect('clicked',() => {settings.reset(setting)});
+
+	return thisResetButton;
+}
+
 function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
@@ -271,10 +290,12 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 		halign: Gtk.Align.END,
 		visible: true
 	});
-
 	settings.bind(setting,thisSpinButton,'value',Gio.SettingsBindFlags.DEFAULT);
-
 	row.add_suffix(thisSpinButton);
+
+	let resetButton = buildResetButton(setting);
+	row.add_suffix(resetButton);
+
 	group.add(row);
 	return thisSpinButton;
 }
@@ -283,8 +304,11 @@ function addStringComboBox(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
 	thisComboBox = buildStringComboBox(settings,setting,options);
-
 	row.add_suffix(thisComboBox);
+
+	let resetButton = buildResetButton(setting);
+	row.add_suffix(resetButton,thisComboBox);
+
 	group.add(row);
 
 	return thisComboBox //necessary to reset position when the reset button is clicked
@@ -295,9 +319,12 @@ function addDoubleStringComboBox(group, setting1, setting2, labelstring, options
 
 	comboBox1 = buildStringComboBox(settings, setting1, options);
 	row.add_suffix(comboBox1);
+	row.add_suffix(buildResetButton(setting1),comboBox1);
 
 	comboBox2 = buildStringComboBox(settings, setting2, options);
 	row.add_suffix(comboBox2);
+	row.add_suffix(buildResetButton(setting2),comboBox2);
+
 	group.add(row)
 
 	return [comboBox1, comboBox2]
@@ -328,8 +355,11 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 		visible: true
 	});
 	settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
-
 	row.add_suffix(thisSwitch);
+
+	let resetButton = buildResetButton(setting);
+	row.add_suffix(resetButton);
+
 	group.add(row)
 }
 
@@ -343,18 +373,27 @@ function addEntry(group,setting,labelstring,labeltooltip){
 		visible: true
 	});
 	settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-
 	row.add_suffix(thisEntry);
+
+	let resetButton = buildResetButton(setting);
+	row.add_suffix(resetButton);
+
 	group.add(row)
 }
 
 function addWideEntry(group,setting,placeholder,labeltooltip){
-	let thisEntry = new Gtk.Entry({ visible: true});
+	let thisEntry = new Gtk.Entry({ 
+		visible: true,
+		secondary_icon_name: "edit-clear-symbolic",
+		secondary_icon_tooltip_text: "Reset to Default"
+	});
 	if ( labeltooltip )
 		thisEntry.set_tooltip_text(labeltooltip)
 
-	if (setting)
+	if (setting){
 		settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
+		thisEntry.connect('icon-press',() => {settings.reset(setting)});
+	}
 
 	thisEntry.set_placeholder_text(placeholder);
 	group.add(thisEntry);
