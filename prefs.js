@@ -262,17 +262,27 @@ function buildResetButton(setting,combobox){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic',
-		visible: true
+		visible: false
 	});
+
+	//hide if default setting
+	if (settings.get_string(setting))
+		thisResetButton.set_visible(true);
+
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
 	if (combobox)
 		thisResetButton.connect('clicked',() => {
 			settings.reset(setting);
 			combobox.set_active_id(settings.get_string(setting));
+			thisResetButton.set_visible(false);
 		});
-	else
-		thisResetButton.connect('clicked',() => {settings.reset(setting)});
+	else {
+		thisResetButton.connect('clicked',() => {
+			settings.reset(setting);
+			thisResetButton.set_visible(false)
+		});
+	}
 
 	return thisResetButton;
 }
@@ -296,6 +306,8 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	let resetButton = buildResetButton(setting);
 	row.add_suffix(resetButton);
 
+	thisSpinButton.connect('changed',() => {resetButton.set_visible(true)})
+
 	group.add(row);
 	return thisSpinButton;
 }
@@ -309,6 +321,7 @@ function addStringComboBox(group,setting,labelstring,options,labeltooltip){
 	let resetButton = buildResetButton(setting);
 	row.add_suffix(resetButton,thisComboBox);
 
+	thisComboBox.connect('changed',() => {resetButton.set_visible(true)})
 	group.add(row);
 
 	return thisComboBox //necessary to reset position when the reset button is clicked
@@ -360,6 +373,8 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 	let resetButton = buildResetButton(setting);
 	row.add_suffix(resetButton);
 
+	thisSwitch.connect('state-set',() => {resetButton.set_visible(true)})
+
 	group.add(row)
 }
 
@@ -384,7 +399,7 @@ function addEntry(group,setting,labelstring,labeltooltip){
 function addWideEntry(group,setting,placeholder,labeltooltip){
 	let thisEntry = new Gtk.Entry({ 
 		visible: true,
-		secondary_icon_name: "edit-clear-symbolic",
+		secondary_icon_name: '',
 		secondary_icon_tooltip_text: "Reset to Default"
 	});
 	if ( labeltooltip )
@@ -392,7 +407,15 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 
 	if (setting){
 		settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
-		thisEntry.connect('icon-press',() => {settings.reset(setting)});
+		thisEntry.connect('icon-press',() => {
+			thisEntry.set_icon_from_icon_name(1,'');
+			settings.reset(setting)
+		});
+
+		thisEntry.connect('changed',() => {	thisEntry.set_icon_from_icon_name(1,'edit-clear-symbolic');	})
+
+		if (settings.get_string(setting))
+			thisEntry.set_icon_from_icon_name(1,'edit-clear-symbolic');
 	}
 
 	thisEntry.set_placeholder_text(placeholder);
