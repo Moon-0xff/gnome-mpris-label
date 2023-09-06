@@ -261,7 +261,7 @@ function buildInfoButton(labeltooltip){
 function buildResetButton(setting,combobox){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
-		icon_name: 'edit-clear-symbolic',
+		icon_name: 'edit-clear-symbolic-rtl',
 		visible: false
 	});
 
@@ -290,6 +290,8 @@ function buildResetButton(setting,combobox){
 function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
+	let resetButton = buildResetButton(setting);
+
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
 			lower: lower,
@@ -301,10 +303,9 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 		visible: true
 	});
 	settings.bind(setting,thisSpinButton,'value',Gio.SettingsBindFlags.DEFAULT);
-	row.add_suffix(thisSpinButton);
 
-	let resetButton = buildResetButton(setting);
 	row.add_suffix(resetButton);
+	row.add_suffix(thisSpinButton);
 
 	thisSpinButton.connect('changed',() => {resetButton.set_visible(true)})
 
@@ -316,10 +317,10 @@ function addStringComboBox(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
 	thisComboBox = buildStringComboBox(settings,setting,options);
-	row.add_suffix(thisComboBox);
-
 	let resetButton = buildResetButton(setting);
+
 	row.add_suffix(resetButton,thisComboBox);
+	row.add_suffix(thisComboBox);
 
 	thisComboBox.connect('changed',() => {resetButton.set_visible(true)})
 	group.add(row);
@@ -331,12 +332,12 @@ function addDoubleStringComboBox(group, setting1, setting2, labelstring, options
 	let row = buildActionRow(labelstring,labeltooltip);
 
 	comboBox1 = buildStringComboBox(settings, setting1, options);
-	row.add_suffix(comboBox1);
 	row.add_suffix(buildResetButton(setting1),comboBox1);
+	row.add_suffix(comboBox1);
 
 	comboBox2 = buildStringComboBox(settings, setting2, options);
-	row.add_suffix(comboBox2);
 	row.add_suffix(buildResetButton(setting2),comboBox2);
+	row.add_suffix(comboBox2);
 
 	group.add(row)
 
@@ -362,6 +363,9 @@ function addTripleStringComboBox(group, setting1, setting2, setting3, labelstrin
 function addSwitch(group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
+	let resetButton = buildResetButton(setting);
+	row.add_suffix(resetButton);
+
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
@@ -370,9 +374,6 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 	settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	row.add_suffix(thisSwitch);
 
-	let resetButton = buildResetButton(setting);
-	row.add_suffix(resetButton);
-
 	thisSwitch.connect('state-set',() => {resetButton.set_visible(true)})
 
 	group.add(row)
@@ -380,6 +381,9 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 
 function addEntry(group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
+
+	let resetButton = buildResetButton(setting);
+	row.add_suffix(resetButton);
 
 	let thisEntry = new Gtk.Entry({
 		valign: Gtk.Align.CENTER,
@@ -390,8 +394,7 @@ function addEntry(group,setting,labelstring,labeltooltip){
 	settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	row.add_suffix(thisEntry);
 
-	let resetButton = buildResetButton(setting);
-	row.add_suffix(resetButton);
+	thisEntry.connect('changed',() => {resetButton.set_visible(true)})
 
 	group.add(row)
 }
