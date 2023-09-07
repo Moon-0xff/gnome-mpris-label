@@ -316,7 +316,7 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 function addStringComboBox(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	thisComboBox = buildStringComboBox(settings,setting,options);
+	thisComboBox = buildStringComboBox(settings,setting,options,105); //105 preferred width to align with spinbuttons
 	let resetButton = buildResetButton(setting);
 
 	row.add_suffix(resetButton,thisComboBox);
@@ -427,13 +427,15 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function buildStringComboBox(settings,setting,options){
+function buildStringComboBox(settings,setting,options,width){
 	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
-		width_request: 105,
 		visible: true
 	});
+	if (width)
+		thisComboBox.set_size_request(105,-1);
+
 	for (let option in options){
 		thisComboBox.append(options[option],option);
 	}
