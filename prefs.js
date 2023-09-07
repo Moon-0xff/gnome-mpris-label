@@ -18,24 +18,20 @@ function fillPreferencesWindow(window){
 //panel page:
 	page = addPreferencesPage(window,'Panel','computer-symbolic');
 
-	group = new Adw.PreferencesGroup({ title: 'Icon'});
-	page.add(group);
-
+	group = addGroup(page,'Icon');
 	let showIconComboBox = addStringComboBox(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
 	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
 	addSwitch(group,'use-album','Use album art as icon when available',undefined);
 	addSpinButton(group,'album-size','Album art scaling (in %)',20,250,undefined);
 
-	group = new Adw.PreferencesGroup({ title: 'Position'});
-	page.add(group);
+	group = addGroup(page,'Position');
 	let extensionPlaceComboBox = addStringComboBox(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
 	addSpinButton(group,'left-padding','Left padding',0,500,undefined);
 	addSpinButton(group,'right-padding','Right padding',0,500,undefined);
 
-	group = new Adw.PreferencesGroup({ title: 'Wrong index at loadup mitigations'});
-	page.add(group);
+	group = addGroup(page,'Wrong index at loadup mitigations');
 	addSpinButton(group,'reposition-delay','Panel reposition at startup (delay in seconds)',0,300,"Increase this value if extension index isn't respected at startup");
 	addSwitch(group,'reposition-on-button-press','Update panel position on every button press',undefined);
 
@@ -59,16 +55,14 @@ function fillPreferencesWindow(window){
 //label page:
 	page = addPreferencesPage(window,'Label','document-edit-symbolic');
 
-	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
-	page.add(group);
+	group = addGroup(page,'Behaviour');
 	addSwitch(group,'auto-switch-to-most-recent','Switch to the most recent source automatically',"This option can be annoying without the use of filter lists");
 	addSwitch(group,'remove-text-when-paused','Hide when paused',undefined);
 	addSpinButton(group,'remove-text-paused-delay','Hide when paused delay (seconds)',0,9999,undefined);
 	addSpinButton(group,'refresh-rate','Refresh rate (milliseconds)',30,3000,undefined);
 	addEntry(group,'label-filtered-list','Filter segments containing',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
-	group = new Adw.PreferencesGroup({ title: 'Appearance'});
-	page.add(group);
+	group = addGroup(page,'Appearance');
 	addSpinButton(group,'max-string-length','Max string length (each field)',1,150,undefined);
 	addEntry(group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
 	addEntry(group,'divider-string','Divider string (you can use spaces)',undefined);
@@ -99,9 +93,7 @@ function fillPreferencesWindow(window){
 //filters page:
 	page = addPreferencesPage(window,'Filters','dialog-error-symbolic');
 
-	group = new Adw.PreferencesGroup({ title: 'List of available MPRIS Sources'});
-	page.add(group);
-
+	group = addGroup(page,'List of available MPRIS Sources');
 	let sourcesListEntry = addWideEntry(group,undefined,'',"Press the button below to update");
 	sourcesListEntry.set_text(playersToString());
 	sourcesListEntry.set_editable(false);
@@ -111,18 +103,15 @@ function fillPreferencesWindow(window){
 	});
 	updateButton.set_margin_top(10);
 
-	group = new Adw.PreferencesGroup({ title: 'Ignore list'});
-	page.add(group);
+	group = addGroup(page,'Ignore list');
 	addWideEntry(group,'mpris-sources-blacklist','Separate entries with commas',undefined);
 
-	group = new Adw.PreferencesGroup({ title: 'Allow list'});
-	page.add(group);
+	group = addGroup(page,'Allow list');
 	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones',"This option is ignored if the allow list is empty");
 	let allowListEntry = addWideEntry(group,'mpris-sources-whitelist','Separate entries with commas',undefined);
 	allowListEntry.set_margin_top(10);
 
-	group = new Adw.PreferencesGroup({ title: 'Players excluded from using album art as icon'});
-	page.add(group);
+	group = addGroup(page,'Players excluded from using album art as icon');
 	addWideEntry(group,'album-blacklist','Separate entries with commas',undefined);
 
 	//Reset Button
@@ -141,14 +130,11 @@ function fillPreferencesWindow(window){
 		'open app':'activate-player','volume mute':'volume-mute','volume up':'volume-up','volume down':'volume-down','none':'none'
 	};
 
-	group = new Adw.PreferencesGroup({ title: 'Double Click'});
-	page.add(group);
-
+	group = addGroup(page,'Double Click');
 	addSwitch(group, 'enable-double-clicks', 'Enable double clicks', undefined);
 	let doubleClickTime = addSpinButton(group, 'double-click-time', 'Double click time (milliseconds)', 1, 1000, undefined);
 
-	group = new Adw.PreferencesGroup({ title: 'Mouse bindings'});
-	page.add(group);
+	group = addGroup(page,'Mouse bindings');
 
 	row = new Adw.ActionRow({ title: ''});
 	let singleClickLabel = new Gtk.Label({ //not sure how to underline or reduce height
@@ -169,13 +155,11 @@ function fillPreferencesWindow(window){
 	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,undefined);
 	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,undefined);
 
-	group = new Adw.PreferencesGroup({ title: ''});
-	page.add(group);
+	group = addGroup(page,'');
 	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined);
 	scrollComboBox.set_size_request(140,-1); //match size with next button
 
-	group = new Adw.PreferencesGroup({ title: 'Behaviour'});
-	page.add(group);
+	group = addGroup(page,'Behaviour');
 	let VolumeControlComboBox = addStringComboBox(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
 	VolumeControlComboBox.set_size_request(140,-1); //match size with previous button
 
@@ -223,7 +207,13 @@ function addPreferencesPage(window,name,icon){
 		icon_name: icon,
 	});
 	window.add(thisPage);
-	return thisPage
+	return thisPage;
+}
+
+function addGroup(page,title){
+	let thisGroup = new Adw.PreferencesGroup({ title: title});
+	page.add(thisGroup);
+	return thisGroup;
 }
 
 function buildActionRow(labelstring,labeltooltip){
