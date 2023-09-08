@@ -19,14 +19,14 @@ function fillPreferencesWindow(window){
 	page = addPreferencesPage(window,'Panel','computer-symbolic');
 
 	group = addGroup(page,'Icon');
-	let showIconComboBox = addStringComboBox(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
+	let showIconComboBox = addStringComboRow(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
 	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
 	addSwitch(group,'use-album','Use album art as icon when available',undefined);
 	addSpinButton(group,'album-size','Album art scaling (in %)',20,250,undefined);
 
 	group = addGroup(page,'Position');
-	let extensionPlaceComboBox = addStringComboBox(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
+	let extensionPlaceComboBox = addStringComboRow(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
 	addSpinButton(group,'left-padding','Left padding',0,500,undefined);
 	addSpinButton(group,'right-padding','Right padding',0,500,undefined);
@@ -48,8 +48,6 @@ function fillPreferencesWindow(window){
 		settings.reset('album-size');
 		settings.reset('symbolic-source-icon');
 		settings.reset('icon-padding');
-		extensionPlaceComboBox.set_active_id(settings.get_string('extension-place'));
-		showIconComboBox.set_active_id(settings.get_string('show-icon'));
 	});
 
 //label page:
@@ -301,6 +299,30 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 
 	group.add(row);
 	return thisSpinButton;
+}
+
+function addStringComboRow(group,setting,labelstring,options,labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+
+	let thisComboRow = new Adw.ComboRow({
+		model: Gtk.StringList.new(Object.keys(options)),
+		selected: Object.keys(options).indexOf(settings.get_string(setting)),
+		valign: Gtk.Align.END
+	});
+
+	let resetButton = buildResetButton(setting);
+
+	row.add_suffix(resetButton);
+	row.add_suffix(thisComboRow);
+
+	thisComboRow.connect('notify::selected-item', () => {
+		settings.set_string(setting,Object.values(options)[thisComboRow.get_selected().id]);
+		resetButton.set_visible(true);
+	});
+
+	group.add(row);
+
+	return thisComboRow;
 }
 
 function addStringComboBox(group,setting,labelstring,options,labeltooltip){
