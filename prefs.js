@@ -246,7 +246,7 @@ function buildInfoButton(labeltooltip){
 	return thisInfoButton;
 }
 
-function buildResetButton(setting,combobox){
+function buildResetButton(setting){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic-rtl',
@@ -259,18 +259,10 @@ function buildResetButton(setting,combobox){
 
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
-	if (combobox)
-		thisResetButton.connect('clicked',() => {
-			settings.reset(setting);
-			combobox.set_active_id(settings.get_string(setting));
-			thisResetButton.set_visible(false);
-		});
-	else {
-		thisResetButton.connect('clicked',() => {
-			settings.reset(setting);
-			thisResetButton.set_visible(false)
-		});
-	}
+	thisResetButton.connect('clicked',() => {
+		settings.reset(setting);
+		thisResetButton.set_visible(false)
+	});
 
 	return thisResetButton;
 }
@@ -320,11 +312,7 @@ function buildDropDown(settings,setting,options,width){
 	return thisDropDown;
 }
 
-function addStringComboRow(group,setting,labelstring,options,labeltooltip){
-	let row = buildActionRow(labelstring,labeltooltip);
-
-	let thisComboRow = buildDropDown(settings,setting,options,105)
-
+function buildDropDownResetButton(setting,combobox,options){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic-rtl',
@@ -332,22 +320,36 @@ function addStringComboRow(group,setting,labelstring,options,labeltooltip){
 	});
 
 	//hide if default setting
-	if (settings.get_string(setting))
-		thisResetButton.set_visible(true);
+	setting.forEach((item) => {
+		if (settings.get_string(item))
+			thisResetButton.set_visible(true);
+	})
 
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
 
-	thisComboRow.connect('notify::selected-item', () => {
-		settings.set_string(setting,'right');
-		settings.set_string(setting,Object.values(options)[thisComboRow.get_selected()]);
-		thisResetButton.set_visible(true);
+	thisResetButton.connect('clicked',() => {
+		 for (let i = 0; i < setting.length; i++) {
+			settings.reset(setting[i]);
+			combobox[i].set_selected(Object.values(options[i]).indexOf(settings.get_string(setting[i])));
+		}
+		thisResetButton.set_visible(false);
 	});
 
-	thisResetButton.connect('clicked',() => {
-		settings.reset(setting);
-		thisComboRow.set_selected(Object.values(options).indexOf(settings.get_string(setting)));
-		thisResetButton.set_visible(false);
+	return thisResetButton;
+}
+
+function addStringComboRow(group,setting,labelstring,options,labeltooltip){
+	let row = buildActionRow(labelstring,labeltooltip);
+	let width = 135;
+
+	let thisComboRow = buildDropDown(settings,setting,options,width)
+
+	let thisResetButton = buildDropDownResetButton([setting],[thisComboRow],[options])
+
+	thisComboRow.connect('notify::selected-item', () => {
+		settings.set_string(setting,Object.values(options)[thisComboRow.get_selected()]);
+		thisResetButton.set_visible(true);
 	});
 
 	row.add_suffix(thisResetButton);
@@ -362,10 +364,22 @@ function addDoubleStringComboBox(group, setting1, setting2, labelstring, options
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 135;
 
-	comboBox1 = buildDropDown(settings, setting1, options,width);
-	row.add_suffix(comboBox1);
+	let comboBox1 = buildDropDown(settings, setting1, options, width);
+	let comboBox2 = buildDropDown(settings, setting2, options, width);
+	let thisResetButton = buildDropDownResetButton([setting1,setting2],[comboBox1,comboBox2],[options,options])
 
-	comboBox2 = buildDropDown(settings, setting2, options,width);
+	comboBox1.connect('notify::selected-item', () => {
+		settings.set_string(setting1,Object.values(options)[comboBox1.get_selected()]);
+		thisResetButton.set_visible(true);
+	});
+
+	comboBox2.connect('notify::selected-item', () => {
+		settings.set_string(setting2,Object.values(options)[comboBox2.get_selected()]);
+		thisResetButton.set_visible(true);
+	});
+
+	row.add_suffix(thisResetButton);
+	row.add_suffix(comboBox1);
 	row.add_suffix(comboBox2);
 
 	group.add(row)
@@ -377,13 +391,13 @@ function addTripleStringComboBox(group, setting1, setting2, setting3, labelstrin
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 85;
 
-	comboBox1 = buildDropDown(settings, setting1, options1,width);
+	let comboBox1 = buildDropDown(settings, setting1, options1,width);
 	row.add_suffix(comboBox1);
 
-	comboBox2 = buildDropDown(settings, setting2, options2,width);
+	let comboBox2 = buildDropDown(settings, setting2, options2,width);
 	row.add_suffix(comboBox2);
 
-	comboBox3 = buildDropDown(settings, setting3, options3,width);
+	let comboBox3 = buildDropDown(settings, setting3, options3,width);
 	row.add_suffix(comboBox3);
 
 	group.add(row)
