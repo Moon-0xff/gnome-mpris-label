@@ -341,7 +341,7 @@ function buildDropDownResetButton(setting,combobox,options){
 
 function addDropDown(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
-	let width = 135;
+	let width = 105;
 
 	let thisComboRow = buildDropDown(settings,setting,options,width)
 
@@ -389,7 +389,7 @@ function addDoubleStringDropDown(group, setting1, setting2, labelstring, options
 
 function addTripleStringDropDown(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
-	let width = 85;
+	let width = 81;
 
 	let comboBox1 = buildDropDown(settings, setting1, options1,width);
 	let comboBox2 = buildDropDown(settings, setting2, options2,width);
@@ -448,7 +448,7 @@ function addEntry(group,setting,labelstring,labeltooltip){
 	let thisEntry = new Gtk.Entry({
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
-		width_request: 215,
+		width_request: 200,
 		visible: true
 	});
 	settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
