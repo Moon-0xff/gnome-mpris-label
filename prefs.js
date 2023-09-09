@@ -31,7 +31,8 @@ function fillPreferencesWindow(window){
 
 	addResetButton(group,'Reset Panel settings',[
 		'show-icon','left-padding','right-padding','extension-index','extension-place','reposition-delay','reposition-on-button-press','use-album',
-		'album-size','symbolic-source-icon','icon-padding']
+		'album-size','symbolic-source-icon','icon-padding'],
+		[showIconDropDown,extensionPlaceDropDown]
 	);
 
 //label page:
@@ -337,12 +338,18 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function addResetButton(group,labelstring,options){
+function addResetButton(group,labelstring,options,dropDowns){
 	let thisButton = buildButton(labelstring, () => {
 		options.forEach(option => {
 			settings.reset(option);
 		});
 	});
+
+	if (dropDowns){
+		dropDowns.forEach(dropDown => {
+			dropDown.set_selected(dropDown._defaultValueIndex);
+		});
+	}
 
 	group.add(thisButton);
 
@@ -412,13 +419,14 @@ function buildResetButton(setting){
 }
 
 function buildDropDown(settings,setting,options,width){
-
 	let thisDropDown = new Gtk.DropDown({
 		model: Gtk.StringList.new(Object.keys(options)),
 		selected: Object.values(options).indexOf(settings.get_string(setting)),
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END
 	});
+
+	thisDropDown._defaultValueIndex = Object.values(options).indexOf(settings.get_default_value(setting).get_string()[0]);
 
 	if (width)
 		thisDropDown.set_size_request(width,-1);
