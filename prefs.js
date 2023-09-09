@@ -137,12 +137,12 @@ function fillPreferencesWindow(window){
 	row = new Adw.ActionRow({ title: ''});
 	let singleClickLabel = new Gtk.Label({ //not sure how to underline or reduce height
 		label: 'Single click',
-		width_chars: 15
+		width_chars: 17
 	});
 	row.add_suffix(singleClickLabel);
 	doubleClickLabel = new Gtk.Label({
 		label: 'Double click',
-		width_chars: 28
+		width_chars: 17
 	});
 	row.add_suffix(doubleClickLabel);
 	group.add(row);
@@ -301,7 +301,7 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	return thisSpinButton;
 }
 
-function buildStringComboRow(settings,setting,options,width){
+function buildDropDown(settings,setting,options,width){
 
 	let thisDropDown = new Gtk.DropDown({
 		model: Gtk.StringList.new(Object.keys(options)),
@@ -311,7 +311,7 @@ function buildStringComboRow(settings,setting,options,width){
 	});
 
 	if (width)
-		thisDropDown.set_size_request(105,-1);
+		thisDropDown.set_size_request(width,-1);
 
 	// thisDropDown.connect('notify::selected-item', () => {
 	// 	settings.set_string(setting,'right');
@@ -323,7 +323,7 @@ function buildStringComboRow(settings,setting,options,width){
 function addStringComboRow(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let thisComboRow = buildStringComboRow(settings,setting,options,105)
+	let thisComboRow = buildDropDown(settings,setting,options,105)
 
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
@@ -358,30 +358,14 @@ function addStringComboRow(group,setting,labelstring,options,labeltooltip){
 	return thisComboRow;
 }
 
-function addStringComboBox(group,setting,labelstring,options,labeltooltip){
-	let row = buildActionRow(labelstring,labeltooltip);
-
-	thisComboBox = buildStringComboBox(settings,setting,options,105); //105 preferred width to align with spinbuttons
-	let resetButton = buildResetButton(setting);
-
-	row.add_suffix(resetButton,thisComboBox);
-	row.add_suffix(thisComboBox);
-
-	thisComboBox.connect('changed',() => {resetButton.set_visible(true)})
-	group.add(row);
-
-	return thisComboBox //necessary to reset position when the reset button is clicked
-}
-
 function addDoubleStringComboBox(group, setting1, setting2, labelstring, options, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
+	let width = 135;
 
-	comboBox1 = buildStringComboBox(settings, setting1, options);
-	row.add_suffix(buildResetButton(setting1),comboBox1);
+	comboBox1 = buildDropDown(settings, setting1, options,width);
 	row.add_suffix(comboBox1);
 
-	comboBox2 = buildStringComboBox(settings, setting2, options);
-	row.add_suffix(buildResetButton(setting2),comboBox2);
+	comboBox2 = buildDropDown(settings, setting2, options,width);
 	row.add_suffix(comboBox2);
 
 	group.add(row)
@@ -391,14 +375,15 @@ function addDoubleStringComboBox(group, setting1, setting2, labelstring, options
 
 function addTripleStringComboBox(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
+	let width = 85;
 
-	comboBox1 = buildStringComboBox(settings, setting1, options1);
+	comboBox1 = buildDropDown(settings, setting1, options1,width);
 	row.add_suffix(comboBox1);
 
-	comboBox2 = buildStringComboBox(settings, setting2, options2);
+	comboBox2 = buildDropDown(settings, setting2, options2,width);
 	row.add_suffix(comboBox2);
 
-	comboBox3 = buildStringComboBox(settings, setting3, options3);
+	comboBox3 = buildDropDown(settings, setting3, options3,width);
 	row.add_suffix(comboBox3);
 
 	group.add(row)
