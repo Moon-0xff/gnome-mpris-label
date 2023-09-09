@@ -195,8 +195,7 @@ function fillPreferencesWindow(window){
 		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
 }
 
-//functions starting with 'add' adds a widget to the selected grid(or widget)
-//functions starting with 'build' creates the "generic" widget and returns it
+// Adwaita "design" and "structure" functions
 
 function addPreferencesPage(window,name,icon){
 	let thisPage = new Adw.PreferencesPage({
@@ -214,59 +213,7 @@ function addGroup(page,title){
 	return thisGroup;
 }
 
-function buildActionRow(labelstring,labeltooltip){
-	let row = new Adw.ActionRow({ title: labelstring });
-	if ( labeltooltip ){
-		if (labeltooltip.length>70){ //could make every tooltip a button if preferred
-			let thisInfoButton = buildInfoButton(labeltooltip);
-			row.add_suffix(thisInfoButton);
-		}
-		else
-			row.subtitle = labeltooltip;
-	}
-
-	return row;
-}
-
-function buildInfoButton(labeltooltip){
-	let thisInfoButton = new Gtk.MenuButton({
-		valign: Gtk.Align.CENTER,
-		icon_name: 'info-symbolic',
-		visible: true
-	});
-	thisInfoButton.add_css_class('flat');
-	// thisInfoButton.add_css_class('circular');
-	let thisPopover = new Gtk.Popover();
-	let thisLabel = new Gtk.Label({
-		label: labeltooltip
-	});
-	thisPopover.set_child(thisLabel);
-	thisInfoButton.set_popover(thisPopover);
-
-	return thisInfoButton;
-}
-
-function buildResetButton(setting){
-	let thisResetButton = new Gtk.Button({
-		valign: Gtk.Align.CENTER,
-		icon_name: 'edit-clear-symbolic-rtl',
-		visible: false
-	});
-
-	//hide if default setting
-	if (settings.get_user_value(setting) != null)
-		thisResetButton.set_visible(true)
-
-	thisResetButton.add_css_class('flat');
-	thisResetButton.set_tooltip_text('Reset to Default');
-
-	thisResetButton.connect('clicked',() => {
-		settings.reset(setting);
-		thisResetButton.set_visible(false)
-	});
-
-	return thisResetButton;
-}
+// Adwaita 'Row' functions, they add a row to the target group with the widget(s) specified
 
 function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
@@ -292,48 +239,6 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 
 	group.add(row);
 	return row;
-}
-
-function buildDropDown(settings,setting,options,width){
-
-	let thisDropDown = new Gtk.DropDown({
-		model: Gtk.StringList.new(Object.keys(options)),
-		selected: Object.values(options).indexOf(settings.get_string(setting)),
-		valign: Gtk.Align.CENTER,
-		halign: Gtk.Align.END
-	});
-
-	if (width)
-		thisDropDown.set_size_request(width,-1);
-
-	return thisDropDown;
-}
-
-function buildDropDownResetButton(setting,combobox,options){
-	let thisResetButton = new Gtk.Button({
-		valign: Gtk.Align.CENTER,
-		icon_name: 'edit-clear-symbolic-rtl',
-		visible: false
-	});
-
-	//hide if default setting
-	setting.forEach((item) => {
-		if (settings.get_user_value(item) != null && settings.get_user_value(item) != settings.get_default_value(item))
-			thisResetButton.set_visible(true);
-	})
-
-	thisResetButton.add_css_class('flat');
-	thisResetButton.set_tooltip_text('Reset to Default');
-
-	thisResetButton.connect('clicked',() => {
-		 for (let i = 0; i < setting.length; i++) {
-			settings.reset(setting[i]);
-			combobox[i].set_selected(Object.values(options[i]).indexOf(settings.get_string(setting[i])));
-		}
-		thisResetButton.set_visible(false);
-	});
-
-	return thisResetButton;
 }
 
 function addDropDown(group,setting,labelstring,options,labeltooltip){
@@ -489,6 +394,116 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
+function addButton(group,labelstring,callback){
+	button = new Gtk.Button({
+		label: labelstring,
+		margin_top: 30,
+		visible: true
+	});
+	button.connect('clicked',callback);
+	group.add(button);
+
+	return button
+}
+
+// 'build' functions, they build "generic" widgets for the specified type and returns it
+
+function buildActionRow(labelstring,labeltooltip){
+	let row = new Adw.ActionRow({ title: labelstring });
+	if ( labeltooltip ){
+		if (labeltooltip.length>70){ //could make every tooltip a button if preferred
+			let thisInfoButton = buildInfoButton(labeltooltip);
+			row.add_suffix(thisInfoButton);
+		}
+		else
+			row.subtitle = labeltooltip;
+	}
+
+	return row;
+}
+
+function buildInfoButton(labeltooltip){
+	let thisInfoButton = new Gtk.MenuButton({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'info-symbolic',
+		visible: true
+	});
+	thisInfoButton.add_css_class('flat');
+	// thisInfoButton.add_css_class('circular');
+	let thisPopover = new Gtk.Popover();
+	let thisLabel = new Gtk.Label({
+		label: labeltooltip
+	});
+	thisPopover.set_child(thisLabel);
+	thisInfoButton.set_popover(thisPopover);
+
+	return thisInfoButton;
+}
+
+function buildResetButton(setting){
+	let thisResetButton = new Gtk.Button({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'edit-clear-symbolic-rtl',
+		visible: false
+	});
+
+	//hide if default setting
+	if (settings.get_user_value(setting) != null)
+		thisResetButton.set_visible(true)
+
+	thisResetButton.add_css_class('flat');
+	thisResetButton.set_tooltip_text('Reset to Default');
+
+	thisResetButton.connect('clicked',() => {
+		settings.reset(setting);
+		thisResetButton.set_visible(false)
+	});
+
+	return thisResetButton;
+}
+
+function buildDropDown(settings,setting,options,width){
+
+	let thisDropDown = new Gtk.DropDown({
+		model: Gtk.StringList.new(Object.keys(options)),
+		selected: Object.values(options).indexOf(settings.get_string(setting)),
+		valign: Gtk.Align.CENTER,
+		halign: Gtk.Align.END
+	});
+
+	if (width)
+		thisDropDown.set_size_request(width,-1);
+
+	return thisDropDown;
+}
+
+function buildDropDownResetButton(setting,combobox,options){
+	let thisResetButton = new Gtk.Button({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'edit-clear-symbolic-rtl',
+		visible: false
+	});
+
+	//hide if default setting
+	setting.forEach((item) => {
+		if (settings.get_user_value(item) != null && settings.get_user_value(item) != settings.get_default_value(item))
+			thisResetButton.set_visible(true);
+	})
+
+	thisResetButton.add_css_class('flat');
+	thisResetButton.set_tooltip_text('Reset to Default');
+
+	thisResetButton.connect('clicked',() => {
+		 for (let i = 0; i < setting.length; i++) {
+			settings.reset(setting[i]);
+			combobox[i].set_selected(Object.values(options[i]).indexOf(settings.get_string(setting[i])));
+		}
+		thisResetButton.set_visible(false);
+	});
+
+	return thisResetButton;
+}
+
 function buildStringDropDown(settings,setting,options,width){
 	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
 		valign: Gtk.Align.CENTER,
@@ -509,17 +524,13 @@ function buildStringDropDown(settings,setting,options,width){
 	return thisComboBox
 }
 
-function addButton(group,labelstring,callback){
-	button = new Gtk.Button({
-		label: labelstring,
-		margin_top: 30,
-		visible: true
-	});
-	button.connect('clicked',callback);
-	group.add(button);
+// helper functions
 
-	return button
+function bindEnabled(settings, setting, element) {
+	settings.bind(setting, element, 'visible', Gio.SettingsBindFlags.GET);
 }
+
+// specific job/usage functions
 
 function playersToString(){
 	const dBusInterface = `
@@ -554,9 +565,5 @@ function playersToString(){
 	});
 
 	return newList.toString()
-}
-
-function bindEnabled(settings, setting, element) {
-	settings.bind(setting, element, 'visible', Gio.SettingsBindFlags.GET);
 }
 
