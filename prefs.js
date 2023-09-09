@@ -291,7 +291,7 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	thisSpinButton.connect('changed',() => {resetButton.set_visible(true)})
 
 	group.add(row);
-	return thisSpinButton;
+	return row;
 }
 
 function buildDropDown(settings,setting,options,width){
@@ -323,7 +323,7 @@ function buildDropDownResetButton(setting,combobox,options){
 	})
 
 	thisResetButton.add_css_class('flat');
-	// thisResetButton.set_tooltip_text('Reset to Default');
+	thisResetButton.set_tooltip_text('Reset to Default');
 
 	thisResetButton.connect('clicked',() => {
 		 for (let i = 0; i < setting.length; i++) {
@@ -431,7 +431,12 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 	settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	row.add_suffix(thisSwitch);
 
-	thisSwitch.connect('state-set',() => {resetButton.set_visible(true)})
+	thisSwitch.connect('state-set',() => {
+		if (settings.get_boolean(setting) == Boolean(settings.get_default_value(setting)))
+			resetButton.set_visible(false);
+		else 
+			resetButton.set_visible(true)
+	})
 
 	group.add(row)
 }
@@ -552,6 +557,6 @@ function playersToString(){
 }
 
 function bindEnabled(settings, setting, element) {
-	settings.bind(setting, element, 'sensitive', Gio.SettingsBindFlags.GET);
+	settings.bind(setting, element, 'visible', Gio.SettingsBindFlags.GET);
 }
 
