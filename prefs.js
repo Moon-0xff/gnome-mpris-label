@@ -154,11 +154,11 @@ function fillPreferencesWindow(window){
 	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let scrollComboBox = addStringComboBox(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined);
+	let scrollComboBox = addStringComboRow(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined);
 	scrollComboBox.set_size_request(140,-1); //match size with next button
 
 	group = addGroup(page,'Behaviour');
-	let VolumeControlComboBox = addStringComboBox(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
+	let VolumeControlComboBox = addStringComboRow(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
 	VolumeControlComboBox.set_size_request(140,-1); //match size with previous button
 
 	//Reset Button
@@ -301,24 +301,57 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	return thisSpinButton;
 }
 
+function buildStringComboRow(settings,setting,options,width){
+
+	let thisDropDown = new Gtk.DropDown({
+		model: Gtk.StringList.new(Object.keys(options)),
+		selected: Object.values(options).indexOf(settings.get_string(setting)),
+		valign: Gtk.Align.CENTER,
+		halign: Gtk.Align.END
+	});
+
+	if (width)
+		thisDropDown.set_size_request(105,-1);
+
+	// thisDropDown.connect('notify::selected-item', () => {
+	// 	settings.set_string(setting,'right');
+	// });
+
+	return thisDropDown;
+}
+
 function addStringComboRow(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let thisComboRow = new Adw.ComboRow({
-		model: Gtk.StringList.new(Object.keys(options)),
-		selected: Object.keys(options).indexOf(settings.get_string(setting)),
-		valign: Gtk.Align.END
+	let thisComboRow = buildStringComboRow(settings,setting,options,105)
+
+	let thisResetButton = new Gtk.Button({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'edit-clear-symbolic-rtl',
+		visible: false
 	});
 
-	let resetButton = buildResetButton(setting);
+	//hide if default setting
+	if (settings.get_string(setting))
+		thisResetButton.set_visible(true);
 
-	row.add_suffix(resetButton);
-	row.add_suffix(thisComboRow);
+	thisResetButton.add_css_class('flat');
+	thisResetButton.set_tooltip_text('Reset to Default');
 
 	thisComboRow.connect('notify::selected-item', () => {
-		settings.set_string(setting,Object.values(options)[thisComboRow.get_selected().id]);
-		resetButton.set_visible(true);
+		settings.set_string(setting,'right');
+		settings.set_string(setting,Object.values(options)[thisComboRow.get_selected()]);
+		thisResetButton.set_visible(true);
 	});
+
+	thisResetButton.connect('clicked',() => {
+		settings.reset(setting);
+		thisComboRow.set_selected(Object.values(options).indexOf(settings.get_string(setting)));
+		thisResetButton.set_visible(false);
+	});
+
+	row.add_suffix(thisResetButton);
+	row.add_suffix(thisComboRow);
 
 	group.add(row);
 
