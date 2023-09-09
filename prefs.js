@@ -254,11 +254,12 @@ function buildResetButton(setting){
 	});
 
 	//hide if default setting
-	if (settings.get_string(setting))
-		thisResetButton.set_visible(true);
+	if (settings.get_user_value(setting) != null)
+		thisResetButton.set_visible(true)
 
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
+
 	thisResetButton.connect('clicked',() => {
 		settings.reset(setting);
 		thisResetButton.set_visible(false)
@@ -305,10 +306,6 @@ function buildDropDown(settings,setting,options,width){
 	if (width)
 		thisDropDown.set_size_request(width,-1);
 
-	// thisDropDown.connect('notify::selected-item', () => {
-	// 	settings.set_string(setting,'right');
-	// });
-
 	return thisDropDown;
 }
 
@@ -321,12 +318,12 @@ function buildDropDownResetButton(setting,combobox,options){
 
 	//hide if default setting
 	setting.forEach((item) => {
-		if (settings.get_string(item))
+		if (settings.get_user_value(item) != null && settings.get_user_value(item) != settings.get_default_value(item))
 			thisResetButton.set_visible(true);
 	})
 
 	thisResetButton.add_css_class('flat');
-	thisResetButton.set_tooltip_text('Reset to Default');
+	// thisResetButton.set_tooltip_text('Reset to Default');
 
 	thisResetButton.connect('clicked',() => {
 		 for (let i = 0; i < setting.length; i++) {
