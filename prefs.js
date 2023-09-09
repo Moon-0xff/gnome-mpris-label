@@ -19,14 +19,14 @@ function fillPreferencesWindow(window){
 	page = addPreferencesPage(window,'Panel','computer-symbolic');
 
 	group = addGroup(page,'Icon');
-	let showIconComboBox = addStringComboRow(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
+	let showIconComboBox = addDropDown(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
 	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
 	addSwitch(group,'use-album','Use album art as icon when available',undefined);
 	addSpinButton(group,'album-size','Album art scaling (in %)',20,250,undefined);
 
 	group = addGroup(page,'Position');
-	let extensionPlaceComboBox = addStringComboRow(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
+	let extensionPlaceComboBox = addDropDown(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
 	addSpinButton(group,'left-padding','Left padding',0,500,undefined);
 	addSpinButton(group,'right-padding','Right padding',0,500,undefined);
@@ -68,7 +68,7 @@ function fillPreferencesWindow(window){
 	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
 	let fieldOptions2 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
 	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
-	let [firstFieldComboBox, secondFieldComboBox, lastFieldComboBox] = addTripleStringComboBox(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
+	let [firstFieldComboBox, secondFieldComboBox, lastFieldComboBox] = addTripleStringDropDown(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
 	//Reset Button
 	addButton(group,'Reset Label settings', () => {
@@ -147,18 +147,18 @@ function fillPreferencesWindow(window){
 	row.add_suffix(doubleClickLabel);
 	group.add(row);
 
-	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringComboBox(group,'left-click-action','left-double-click-action','Left click',buttonActions,undefined);
-	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringComboBox(group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,undefined,);
-	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringComboBox(group,'right-click-action','right-double-click-action','Right click',buttonActions,undefined);
-	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringComboBox(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,undefined);
-	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringComboBox(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,undefined);
+	let [leftClickComboBox, leftDoubleClickComboBox] = addDoubleStringDropDown(group,'left-click-action','left-double-click-action','Left click',buttonActions,undefined);
+	let [middleClickComboBox, middleDoubleClickComboBox] = addDoubleStringDropDown(group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,undefined,);
+	let [rightClickComboBox, rightDoubleClickComboBox] = addDoubleStringDropDown(group,'right-click-action','right-double-click-action','Right click',buttonActions,undefined);
+	let [thumbForwardComboBox, thumbDoubleForwardComboBox] = addDoubleStringDropDown(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,undefined);
+	let [thumbBackwardComboBox, thumbDoubleBackwardComboBox] = addDoubleStringDropDown(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let scrollComboBox = addStringComboRow(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined);
+	let scrollComboBox = addDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined);
 	scrollComboBox.set_size_request(140,-1); //match size with next button
 
 	group = addGroup(page,'Behaviour');
-	let VolumeControlComboBox = addStringComboRow(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
+	let VolumeControlComboBox = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
 	VolumeControlComboBox.set_size_request(140,-1); //match size with previous button
 
 	//Reset Button
@@ -339,7 +339,7 @@ function buildDropDownResetButton(setting,combobox,options){
 	return thisResetButton;
 }
 
-function addStringComboRow(group,setting,labelstring,options,labeltooltip){
+function addDropDown(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 135;
 
@@ -360,7 +360,7 @@ function addStringComboRow(group,setting,labelstring,options,labeltooltip){
 	return thisComboRow;
 }
 
-function addDoubleStringComboBox(group, setting1, setting2, labelstring, options, labeltooltip){
+function addDoubleStringDropDown(group, setting1, setting2, labelstring, options, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 135;
 
@@ -387,7 +387,7 @@ function addDoubleStringComboBox(group, setting1, setting2, labelstring, options
 	return [comboBox1, comboBox2]
 }
 
-function addTripleStringComboBox(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
+function addTripleStringDropDown(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 85;
 
@@ -487,7 +487,7 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function buildStringComboBox(settings,setting,options,width){
+function buildStringDropDown(settings,setting,options,width){
 	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
 		valign: Gtk.Align.CENTER,
 		halign: Gtk.Align.END,
