@@ -392,12 +392,28 @@ function addTripleStringComboBox(group, setting1, setting2, setting3, labelstrin
 	let width = 85;
 
 	let comboBox1 = buildDropDown(settings, setting1, options1,width);
-	row.add_suffix(comboBox1);
-
 	let comboBox2 = buildDropDown(settings, setting2, options2,width);
-	row.add_suffix(comboBox2);
-
 	let comboBox3 = buildDropDown(settings, setting3, options3,width);
+	let thisResetButton = buildDropDownResetButton([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3])
+
+	comboBox1.connect('notify::selected-item', () => {
+		settings.set_string(setting1,Object.values(options1)[comboBox1.get_selected()]);
+		thisResetButton.set_visible(true);
+	});
+
+	comboBox2.connect('notify::selected-item', () => {
+		settings.set_string(setting2,Object.values(options2)[comboBox2.get_selected()]);
+		thisResetButton.set_visible(true);
+	});
+
+	comboBox3.connect('notify::selected-item', () => {
+		settings.set_string(setting3,Object.values(options3)[comboBox3.get_selected()]);
+		thisResetButton.set_visible(true);
+	});
+
+	row.add_suffix(thisResetButton);
+	row.add_suffix(comboBox1);
+	row.add_suffix(comboBox2);
 	row.add_suffix(comboBox3);
 
 	group.add(row)
