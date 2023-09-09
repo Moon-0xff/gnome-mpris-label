@@ -35,20 +35,10 @@ function fillPreferencesWindow(window){
 	addSpinButton(group,'reposition-delay','Panel reposition at startup (delay in seconds)',0,300,"Increase this value if extension index isn't respected at startup");
 	addSwitch(group,'reposition-on-button-press','Update panel position on every button press',undefined);
 
-	//Reset Button
-	addButton(group,'Reset Panel settings', () => {
-		settings.reset('show-icon');
-		settings.reset('left-padding');
-		settings.reset('right-padding');
-		settings.reset('extension-index');
-		settings.reset('extension-place');
-		settings.reset('reposition-delay');
-		settings.reset('reposition-on-button-press');
-		settings.reset('use-album');
-		settings.reset('album-size');
-		settings.reset('symbolic-source-icon');
-		settings.reset('icon-padding');
-	});
+	addResetButton(group,'Reset Panel settings',[
+		'show-icon','left-padding','right-padding','extension-index','extension-place','reposition-delay','reposition-on-button-press','use-album',
+		'album-size','symbolic-source-icon','icon-padding']
+	);
 
 //label page:
 	page = addPreferencesPage(window,'Label','document-edit-symbolic');
@@ -70,23 +60,10 @@ function fillPreferencesWindow(window){
 	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
 	let [firstFieldComboBox, secondFieldComboBox, lastFieldComboBox] = addTripleStringDropDown(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
-	//Reset Button
-	addButton(group,'Reset Label settings', () => {
-		settings.reset('max-string-length');
-		settings.reset('refresh-rate');
-		settings.reset('button-placeholder');
-		settings.reset('label-filtered-list');
-		settings.reset('divider-string');
-		settings.reset('first-field');
-		settings.reset('second-field');
-		settings.reset('last-field');
-		settings.reset('remove-text-when-paused');
-		settings.reset('remove-text-paused-delay');
-		settings.reset('auto-switch-to-most-recent');
-		firstFieldComboBox.set_active_id(settings.get_string('first-field'));
-		secondFieldComboBox.set_active_id(settings.get_string('second-field'));
-		lastFieldComboBox.set_active_id(settings.get_string('last-field'));
-	});
+	addResetButton(group,'Reset Label settings',[
+		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
+		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent']
+	);
 
 //filters page:
 	page = addPreferencesPage(window,'Filters','dialog-error-symbolic');
@@ -112,13 +89,9 @@ function fillPreferencesWindow(window){
 	group = addGroup(page,'Players excluded from using album art as icon');
 	addWideEntry(group,'album-blacklist','Separate entries with commas',undefined);
 
-	//Reset Button
-	addButton(group,'Reset Filters settings', () => {
-		settings.reset('mpris-sources-blacklist');
-		settings.reset('mpris-sources-whitelist');
-		settings.reset('use-whitelisted-sources-only');
-		settings.reset('album-blacklist');
-	});
+	addResetButton(group,'Reset Filters settings',[
+		'mpris-sources-blacklist','mpris-sources-whitelist','use-whitelisted-sources-only','album-blacklist']
+	);
 
 //controls page:
 	page = addPreferencesPage(window,'Controls','input-mouse-symbolic');
@@ -161,35 +134,11 @@ function fillPreferencesWindow(window){
 	let VolumeControlComboBox = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
 	VolumeControlComboBox.set_size_request(140,-1); //match size with previous button
 
-	//Reset Button
-	addButton(group,'Reset Controls settings',() => {
-		settings.reset('enable-double-clicks');
-		settings.reset('double-click-time');
-		settings.reset('left-click-action');
-		settings.reset('left-double-click-action');
-		settings.reset('middle-click-action');
-		settings.reset('middle-double-click-action');
-		settings.reset('right-click-action');
-		settings.reset('right-double-click-action');
-		settings.reset('scroll-action');
-		settings.reset('thumb-forward-action');
-		settings.reset('thumb-double-forward-action');
-		settings.reset('thumb-backward-action');
-		settings.reset('thumb-double-backward-action');
-		settings.reset('volume-control-scheme');
-		leftClickComboBox.set_active_id(settings.get_string('left-click-action'));
-		leftDoubleClickComboBox.set_active_id(settings.get_string('left-double-click-action'));
-		middleClickComboBox.set_active_id(settings.get_string('middle-click-action'));
-		middleDoubleClickComboBox.set_active_id(settings.get_string('middle-double-click-action'));
-		rightClickComboBox.set_active_id(settings.get_string('right-click-action'));
-		rightDoubleClickComboBox.set_active_id(settings.get_string('right-double-click-action'));
-		scrollComboBox.set_active_id(settings.get_string('scroll-action'));
-		thumbForwardComboBox.set_active_id(settings.get_string('thumb-forward-action'));
-		thumbDoubleForwardComboBox.set_active_id(settings.get_string('thumb-double-forward-action'));
-		thumbBackwardComboBox.set_active_id(settings.get_string('thumb-backward-action'));
-		thumbDoubleBackwardComboBox.set_active_id(settings.get_string('thumb-double-backward-action'));
-		VolumeControlComboBox.set_active_id(settings.get_string('volume-control-scheme'));
-	});
+	addResetButton(group,'Reset Controls settings',[
+		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
+		'right-click-action','right-double-click-action','scroll-action','thumb-forward-action','thumb-double-forward-action','thumb-backward-action',
+		'thumb-double-backward-action','volume-control-scheme']
+	);
 
 	[doubleClickTime, doubleClickLabel, leftDoubleClickComboBox, middleDoubleClickComboBox, rightDoubleClickComboBox, thumbDoubleForwardComboBox, thumbDoubleBackwardComboBox]
 		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
@@ -394,16 +343,22 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function addButton(group,labelstring,callback){
-	button = new Gtk.Button({
-		label: labelstring,
-		margin_top: 30,
-		visible: true
+function addResetButton(group,labelstring,options){
+	let thisButton = buildButton(labelstring, () => {
+		options.forEach(option => {
+			settings.reset(option);
+		});
 	});
-	button.connect('clicked',callback);
-	group.add(button);
 
-	return button
+	group.add(thisButton);
+
+	return thisButton;
+}
+
+function addButton(group,labelstring,callback){
+	let thisButton = buildButton(labelstring,callback);
+	group.add(thisButton);
+	return thisButton;
 }
 
 // 'build' functions, they build "generic" widgets for the specified type and returns it
@@ -521,7 +476,18 @@ function buildStringDropDown(settings,setting,options,width){
 		settings.set_string(setting,thisComboBox.get_active_id());
 	});
 
-	return thisComboBox
+	return thisComboBox;
+}
+
+function buildButton(labelstring,callback){
+	let button = new Gtk.Button({
+		label: labelstring,
+		margin_top: 30,
+		visible: true
+	});
+	button.connect('clicked',callback);
+
+	return button;
 }
 
 // helper functions
