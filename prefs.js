@@ -355,7 +355,7 @@ function addButton(group,labelstring,callback){
 	return thisButton;
 }
 
-// 'build' functions, they build "generic" widgets for the specified type and returns it
+// 'build' functions, they build "generic" widgets of the specified type and returns it
 
 function buildActionRow(labelstring,labeltooltip){
 	let row = new Adw.ActionRow({ title: labelstring });
@@ -451,26 +451,6 @@ function buildDropDownResetButton(setting,combobox,options){
 	});
 
 	return thisResetButton;
-}
-
-function buildStringDropDown(settings,setting,options,width){
-	let thisComboBox = new Gtk.ComboBoxText({//consider using Adw.ComboRow
-		valign: Gtk.Align.CENTER,
-		halign: Gtk.Align.END,
-		visible: true
-	});
-	if (width)
-		thisComboBox.set_size_request(105,-1);
-
-	for (let option in options){
-		thisComboBox.append(options[option],option);
-	}
-	thisComboBox.set_active_id(settings.get_string(setting));
-	thisComboBox.connect('changed', () => {
-		settings.set_string(setting,thisComboBox.get_active_id());
-	});
-
-	return thisComboBox;
 }
 
 function buildButton(labelstring,callback){
