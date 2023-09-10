@@ -57,7 +57,7 @@ function fillPreferencesWindow(window){
 
 	addResetButton(group,'Reset Label settings',[
 		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
-		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent']
+		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
 	);
 
 //filters page:
@@ -132,7 +132,9 @@ function fillPreferencesWindow(window){
 	addResetButton(group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
 		'right-click-action','right-double-click-action','scroll-action','thumb-forward-action','thumb-double-forward-action','thumb-backward-action',
-		'thumb-double-backward-action','volume-control-scheme']
+		'thumb-double-backward-action','volume-control-scheme'],[leftClickDropDown, leftDoubleClickDropDown,middleClickDropDown, middleDoubleClickDropDown,
+		rightClickDropDown, rightDoubleClickDropDown,thumbForwardDropDown, thumbDoubleForwardDropDown,thumbBackwardDropDown, thumbDoubleBackwardDropDown,
+		scrollDropDown,VolumeControlDropDown]
 	);
 
 	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
@@ -197,12 +199,6 @@ function addDropDown(group,setting,labelstring,options,labeltooltip){
 		settings.set_string(setting,Object.values(options)[thisComboRow.get_selected()]);
 		thisResetButton.set_visible(true);
 	});
-
-	//label for debugging
-	let thisLabel = new Gtk.Label({
-		label: 'default: '+thisComboRow._defaultValueIndex.toString()
-	})
-	row.add_suffix(thisLabel);
 
 	row.add_suffix(thisResetButton);
 	row.add_suffix(thisComboRow);
@@ -349,13 +345,14 @@ function addResetButton(group,labelstring,options,dropDowns){
 		options.forEach(option => {
 			settings.reset(option);
 		});
+		thisButton.set_tooltip_text('clicked');
+		if (dropDowns){
+			thisButton.set_tooltip_text('there are dropdowns');
+			dropDowns.forEach(dropDown => {
+				dropDown.set_selected(dropDown._defaultValueIndex);
+			});
+		}
 	});
-
-	if (dropDowns){
-		dropDowns.forEach(dropDown => {
-			dropDown.set_selected(dropDown._defaultValueIndex);
-		});
-	}
 
 	group.add(thisButton);
 
