@@ -345,9 +345,7 @@ function addResetButton(group,labelstring,options,dropDowns){
 		options.forEach(option => {
 			settings.reset(option);
 		});
-		thisButton.set_tooltip_text('clicked');
 		if (dropDowns){
-			thisButton.set_tooltip_text('there are dropdowns');
 			dropDowns.forEach(dropDown => {
 				dropDown.set_selected(dropDown._defaultValueIndex);
 			});
