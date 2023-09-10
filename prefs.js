@@ -198,6 +198,12 @@ function addDropDown(group,setting,labelstring,options,labeltooltip){
 		thisResetButton.set_visible(true);
 	});
 
+	//label for debugging
+	let thisLabel = new Gtk.Label({
+		label: 'default: '+thisComboRow._defaultValueIndex.toString()
+	})
+	row.add_suffix(thisLabel);
+
 	row.add_suffix(thisResetButton);
 	row.add_suffix(thisComboRow);
 
