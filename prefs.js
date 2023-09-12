@@ -328,7 +328,12 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 			settings.reset(setting)
 		});
 
-		thisEntry.connect('changed',() => {	thisEntry.set_icon_from_icon_name(1,'edit-clear-symbolic');	})
+		thisEntry.connect('changed',() => {
+			if (settings.get_string(setting)) //default for WideEntry is to be empty
+				thisEntry.set_icon_from_icon_name(1,'edit-clear-symbolic');	
+			else
+				thisEntry.set_icon_from_icon_name(1,'');
+		})
 
 		if (settings.get_string(setting))
 			thisEntry.set_icon_from_icon_name(1,'edit-clear-symbolic');
