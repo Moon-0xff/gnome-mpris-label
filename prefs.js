@@ -285,7 +285,7 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 	thisSwitch.connect('state-set',() => {
 		if (settings.get_boolean(setting) == Boolean(settings.get_default_value(setting)))
 			resetButton.set_visible(false);
-		else 
+		else
 			resetButton.set_visible(true)
 	})
 
@@ -313,7 +313,7 @@ function addEntry(group,setting,labelstring,labeltooltip){
 }
 
 function addWideEntry(group,setting,placeholder,labeltooltip){
-	let thisEntry = new Gtk.Entry({ 
+	let thisEntry = new Gtk.Entry({
 		visible: true,
 		secondary_icon_name: '',
 		secondary_icon_tooltip_text: "Reset to Default"
@@ -330,7 +330,7 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 
 		thisEntry.connect('changed',() => {
 			if (settings.get_string(setting)) //default for WideEntry is to be empty
-				thisEntry.set_icon_from_icon_name(1,'edit-clear-symbolic');	
+				thisEntry.set_icon_from_icon_name(1,'edit-clear-symbolic');
 			else
 				thisEntry.set_icon_from_icon_name(1,'');
 		})
