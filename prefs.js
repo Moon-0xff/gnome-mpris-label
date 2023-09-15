@@ -481,7 +481,7 @@ function buildButton(labelstring,callback){
 // helper functions
 
 function bindEnabled(settings, setting, element) {
-	settings.bind(setting, element, 'visible', Gio.SettingsBindFlags.GET);
+	settings.bind(setting, element, 'sensitive', Gio.SettingsBindFlags.GET);
 }
 
 // specific job/usage functions
