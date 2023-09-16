@@ -181,7 +181,12 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	row.add_suffix(resetButton);
 	row.add_suffix(thisSpinButton);
 
-	thisSpinButton.connect('changed',() => {resetButton.set_visible(true)})
+	thisSpinButton.connect('changed',() => {
+		if (thisSpinButton.text == settings.get_default_value(setting).print(true))
+			resetButton.set_visible(false)
+		else
+			resetButton.set_visible(true)
+	})
 
 	group.add(row);
 	return row;
@@ -282,8 +287,8 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 	settings.bind(setting,thisSwitch,'active',Gio.SettingsBindFlags.DEFAULT);
 	row.add_suffix(thisSwitch);
 
-	thisSwitch.connect('state-set',() => {
-		if (settings.get_boolean(setting) == Boolean(settings.get_default_value(setting)))
+	thisSwitch.connect('notify::active',() => {
+		if (thisSwitch.state == (settings.get_default_value(setting).print(true) === "true"))
 			resetButton.set_visible(false);
 		else
 			resetButton.set_visible(true)
@@ -307,7 +312,12 @@ function addEntry(group,setting,labelstring,labeltooltip){
 	settings.bind(setting,thisEntry,'text',Gio.SettingsBindFlags.DEFAULT);
 	row.add_suffix(thisEntry);
 
-	thisEntry.connect('changed',() => {resetButton.set_visible(true)})
+	thisEntry.connect('changed',() => {
+		if (thisEntry.text == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
+			resetButton.set_visible(false);
+		else
+			resetButton.set_visible(true)
+	})
 
 	group.add(row)
 }
@@ -410,8 +420,10 @@ function buildResetButton(setting){
 	});
 
 	//hide if default setting
-	if (settings.get_user_value(setting) != null)
-		thisResetButton.set_visible(true)
+	if (settings.get_user_value(setting) != null){
+		if(settings.get_user_value(setting).print(true) != settings.get_default_value(setting).print(true))
+			thisResetButton.set_visible(true);
+	}
 
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
