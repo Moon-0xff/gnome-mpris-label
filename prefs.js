@@ -201,8 +201,10 @@ function addDropDown(group,setting,labelstring,options,labeltooltip){
 	let thisResetButton = buildDropDownResetButton([setting],[thisComboRow],[options])
 
 	thisComboRow.connect('notify::selected-item', () => {
-		settings.set_string(setting,Object.values(options)[thisComboRow.get_selected()]);
-		thisResetButton.set_visible(true);
+		let dropDownValue = Object.values(options)[thisComboRow.get_selected()]
+		settings.set_string(setting,dropDownValue);
+		let setVisible = setComboResetVisibility([setting],[thisComboRow],[options]);
+		thisResetButton.set_visible(setVisible)
 	});
 
 	row.add_suffix(thisResetButton);
@@ -222,13 +224,22 @@ function addDoubleStringDropDown(group, setting1, setting2, labelstring, options
 	let thisResetButton = buildDropDownResetButton([setting1,setting2],[comboBox1,comboBox2],[options,options])
 
 	comboBox1.connect('notify::selected-item', () => {
-		settings.set_string(setting1,Object.values(options)[comboBox1.get_selected()]);
-		thisResetButton.set_visible(true);
+		let dropDownValue = Object.values(options)[comboBox1.get_selected()];
+		settings.set_string(setting1,dropDownValue);
+		let setVisible = setComboResetVisibility([setting1,setting2],[comboBox1,comboBox2],[options,options]);
+		thisResetButton.set_visible(setVisible)
 	});
 
 	comboBox2.connect('notify::selected-item', () => {
-		settings.set_string(setting2,Object.values(options)[comboBox2.get_selected()]);
-		thisResetButton.set_visible(true);
+		let dropDownValue = Object.values(options)[comboBox2.get_selected()];
+		settings.set_string(setting2,dropDownValue);
+		let setVisible = setComboResetVisibility([setting1,setting2],[comboBox1,comboBox2],[options,options]);
+		thisResetButton.set_visible(setVisible)
+		// //hide reset button if both values match default
+		// if (dropDownValue1 == settings.get_default_value(setting1).print(true).replaceAll('\'', '') && dropDownValue2 == settings.get_default_value(setting2).print(true).replaceAll('\'', ''))
+		// 	thisResetButton.set_visible(false);
+		// else
+		// 	thisResetButton.set_visible(true);
 	});
 
 	row.add_suffix(thisResetButton);
@@ -251,17 +262,20 @@ function addTripleStringDropDown(group, setting1, setting2, setting3, labelstrin
 
 	comboBox1.connect('notify::selected-item', () => {
 		settings.set_string(setting1,Object.values(options1)[comboBox1.get_selected()]);
-		thisResetButton.set_visible(true);
+		let setVisible = setComboResetVisibility([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3]);
+		thisResetButton.set_visible(setVisible)
 	});
 
 	comboBox2.connect('notify::selected-item', () => {
 		settings.set_string(setting2,Object.values(options2)[comboBox2.get_selected()]);
-		thisResetButton.set_visible(true);
+		let setVisible = setComboResetVisibility([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3]);
+		thisResetButton.set_visible(setVisible)
 	});
 
 	comboBox3.connect('notify::selected-item', () => {
 		settings.set_string(setting3,Object.values(options3)[comboBox3.get_selected()]);
-		thisResetButton.set_visible(true);
+		let setVisible = setComboResetVisibility([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3]);
+		thisResetButton.set_visible(setVisible)
 	});
 
 	row.add_suffix(thisResetButton);
@@ -271,6 +285,16 @@ function addTripleStringDropDown(group, setting1, setting2, setting3, labelstrin
 
 	group.add(row)
 	return [comboBox1, comboBox2, comboBox3]
+}
+
+function setComboResetVisibility(settingsList,dropDownList,optionsList){ //show reset button if any of the values is different from default
+	let setVisible = false;
+	for (let i = 0; i < dropDownList.length; i++) {
+		let dropDownValue = Object.values(optionsList[i])[dropDownList[i].get_selected()];
+		if (dropDownValue != settings.get_default_value(settingsList[i]).print(true).replaceAll('\'', ''))
+			setVisible = true;
+	}
+	return setVisible;
 }
 
 function addSwitch(group,setting,labelstring,labeltooltip){
@@ -461,7 +485,7 @@ function buildDropDownResetButton(setting,combobox,options){
 
 	//hide if default setting
 	setting.forEach((item) => {
-		if (settings.get_user_value(item) != null && settings.get_user_value(item) != settings.get_default_value(item))
+		if (settings.get_value(item).print(true) != settings.get_default_value(item).print(true))
 			thisResetButton.set_visible(true);
 	})
 
