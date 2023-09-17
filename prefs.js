@@ -196,44 +196,44 @@ function addDropDown(group,setting,labelstring,options,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 105;
 
-	let thisComboRow = buildDropDown(settings,setting,options,width)
+	let thisDropDownRow = buildDropDown(settings,setting,options,width)
 
-	let thisResetButton = buildDropDownResetButton([setting],[thisComboRow],[options])
+	let thisResetButton = buildDropDownResetButton([setting],[thisDropDownRow],[options])
 
-	thisComboRow.connect('notify::selected-item', () => {
-		let dropDownValue = Object.values(options)[thisComboRow.get_selected()]
+	thisDropDownRow.connect('notify::selected-item', () => {
+		let dropDownValue = Object.values(options)[thisDropDownRow.get_selected()]
 		settings.set_string(setting,dropDownValue);
-		let setVisible = setComboResetVisibility([setting],[thisComboRow],[options]);
+		let setVisible = setDropDownResetVisibility([setting],[thisDropDownRow],[options]);
 		thisResetButton.set_visible(setVisible)
 	});
 
 	row.add_suffix(thisResetButton);
-	row.add_suffix(thisComboRow);
+	row.add_suffix(thisDropDownRow);
 
 	group.add(row);
 
-	return thisComboRow;
+	return thisDropDownRow;
 }
 
 function addDoubleStringDropDown(group, setting1, setting2, labelstring, options, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 135;
 
-	let comboBox1 = buildDropDown(settings, setting1, options, width);
-	let comboBox2 = buildDropDown(settings, setting2, options, width);
-	let thisResetButton = buildDropDownResetButton([setting1,setting2],[comboBox1,comboBox2],[options,options])
+	let dropDown1 = buildDropDown(settings, setting1, options, width);
+	let dropDown2 = buildDropDown(settings, setting2, options, width);
+	let thisResetButton = buildDropDownResetButton([setting1,setting2],[dropDown1,dropDown2],[options,options])
 
-	comboBox1.connect('notify::selected-item', () => {
-		let dropDownValue = Object.values(options)[comboBox1.get_selected()];
+	dropDown1.connect('notify::selected-item', () => {
+		let dropDownValue = Object.values(options)[dropDown1.get_selected()];
 		settings.set_string(setting1,dropDownValue);
-		let setVisible = setComboResetVisibility([setting1,setting2],[comboBox1,comboBox2],[options,options]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2],[dropDown1,dropDown2],[options,options]);
 		thisResetButton.set_visible(setVisible)
 	});
 
-	comboBox2.connect('notify::selected-item', () => {
-		let dropDownValue = Object.values(options)[comboBox2.get_selected()];
+	dropDown2.connect('notify::selected-item', () => {
+		let dropDownValue = Object.values(options)[dropDown2.get_selected()];
 		settings.set_string(setting2,dropDownValue);
-		let setVisible = setComboResetVisibility([setting1,setting2],[comboBox1,comboBox2],[options,options]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2],[dropDown1,dropDown2],[options,options]);
 		thisResetButton.set_visible(setVisible)
 		// //hide reset button if both values match default
 		// if (dropDownValue1 == settings.get_default_value(setting1).print(true).replaceAll('\'', '') && dropDownValue2 == settings.get_default_value(setting2).print(true).replaceAll('\'', ''))
@@ -243,51 +243,51 @@ function addDoubleStringDropDown(group, setting1, setting2, labelstring, options
 	});
 
 	row.add_suffix(thisResetButton);
-	row.add_suffix(comboBox1);
-	row.add_suffix(comboBox2);
+	row.add_suffix(dropDown1);
+	row.add_suffix(dropDown2);
 
 	group.add(row)
 
-	return [comboBox1, comboBox2]
+	return [dropDown1, dropDown2]
 }
 
 function addTripleStringDropDown(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 81;
 
-	let comboBox1 = buildDropDown(settings, setting1, options1,width);
-	let comboBox2 = buildDropDown(settings, setting2, options2,width);
-	let comboBox3 = buildDropDown(settings, setting3, options3,width);
-	let thisResetButton = buildDropDownResetButton([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3])
+	let dropDown1 = buildDropDown(settings, setting1, options1,width);
+	let dropDown2 = buildDropDown(settings, setting2, options2,width);
+	let dropDown3 = buildDropDown(settings, setting3, options3,width);
+	let thisResetButton = buildDropDownResetButton([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3])
 
-	comboBox1.connect('notify::selected-item', () => {
-		settings.set_string(setting1,Object.values(options1)[comboBox1.get_selected()]);
-		let setVisible = setComboResetVisibility([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3]);
+	dropDown1.connect('notify::selected-item', () => {
+		settings.set_string(setting1,Object.values(options1)[dropDown1.get_selected()]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3]);
 		thisResetButton.set_visible(setVisible)
 	});
 
-	comboBox2.connect('notify::selected-item', () => {
-		settings.set_string(setting2,Object.values(options2)[comboBox2.get_selected()]);
-		let setVisible = setComboResetVisibility([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3]);
+	dropDown2.connect('notify::selected-item', () => {
+		settings.set_string(setting2,Object.values(options2)[dropDown2.get_selected()]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3]);
 		thisResetButton.set_visible(setVisible)
 	});
 
-	comboBox3.connect('notify::selected-item', () => {
-		settings.set_string(setting3,Object.values(options3)[comboBox3.get_selected()]);
-		let setVisible = setComboResetVisibility([setting1,setting2,setting3],[comboBox1,comboBox2,comboBox3],[options1,options2,options3]);
+	dropDown3.connect('notify::selected-item', () => {
+		settings.set_string(setting3,Object.values(options3)[dropDown3.get_selected()]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3]);
 		thisResetButton.set_visible(setVisible)
 	});
 
 	row.add_suffix(thisResetButton);
-	row.add_suffix(comboBox1);
-	row.add_suffix(comboBox2);
-	row.add_suffix(comboBox3);
+	row.add_suffix(dropDown1);
+	row.add_suffix(dropDown2);
+	row.add_suffix(dropDown3);
 
 	group.add(row)
-	return [comboBox1, comboBox2, comboBox3]
+	return [dropDown1, dropDown2, dropDown3]
 }
 
-function setComboResetVisibility(settingsList,dropDownList,optionsList){ //show reset button if any of the values is different from default
+function setDropDownResetVisibility(settingsList,dropDownList,optionsList){ //show reset button if any of the values is different from default
 	let setVisible = false;
 	for (let i = 0; i < dropDownList.length; i++) {
 		let dropDownValue = Object.values(optionsList[i])[dropDownList[i].get_selected()];
@@ -476,7 +476,7 @@ function buildDropDown(settings,setting,options,width){
 	return thisDropDown;
 }
 
-function buildDropDownResetButton(setting,combobox,options){
+function buildDropDownResetButton(setting,dropDown,options){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic-rtl',
@@ -495,7 +495,7 @@ function buildDropDownResetButton(setting,combobox,options){
 	thisResetButton.connect('clicked',() => {
 		 for (let i = 0; i < setting.length; i++) {
 			settings.reset(setting[i]);
-			combobox[i].set_selected(Object.values(options[i]).indexOf(settings.get_string(setting[i])));
+			dropDown[i].set_selected(Object.values(options[i]).indexOf(settings.get_string(setting[i])));
 		}
 		thisResetButton.set_visible(false);
 	});
