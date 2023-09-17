@@ -447,10 +447,7 @@ function buildResetButton(setting){
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
 
-	thisResetButton.connect('clicked',() => {
-		settings.reset(setting);
-		thisResetButton.set_visible(false)
-	});
+	thisResetButton.connect('clicked',() => {settings.reset(setting)});
 
 	return thisResetButton;
 }
@@ -492,7 +489,6 @@ function buildDropDownResetButton(setting,dropDown,options){
 			settings.reset(setting[i]);
 			dropDown[i].set_selected(Object.values(options[i]).indexOf(settings.get_string(setting[i])));
 		}
-		thisResetButton.set_visible(false);
 	});
 
 	return thisResetButton;
