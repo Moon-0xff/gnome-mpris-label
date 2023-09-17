@@ -164,7 +164,7 @@ function addGroup(page,title){
 function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let resetButton = buildResetButton(setting);
+	let thisResetButton = buildResetButton(setting);
 
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
@@ -178,14 +178,14 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	});
 	settings.bind(setting,thisSpinButton,'value',Gio.SettingsBindFlags.DEFAULT);
 
-	row.add_suffix(resetButton);
+	row.add_suffix(thisResetButton);
 	row.add_suffix(thisSpinButton);
 
 	thisSpinButton.connect('changed',() => {
 		if (thisSpinButton.text == settings.get_default_value(setting).print(true))
-			resetButton.set_visible(false)
+			thisResetButton.set_visible(false)
 		else
-			resetButton.set_visible(true)
+			thisResetButton.set_visible(true)
 	})
 
 	group.add(row);
@@ -300,8 +300,8 @@ function setDropDownResetVisibility(settingsList,dropDownList,optionsList){ //sh
 function addSwitch(group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let resetButton = buildResetButton(setting);
-	row.add_suffix(resetButton);
+	let thisResetButton = buildResetButton(setting);
+	row.add_suffix(thisResetButton);
 
 	let thisSwitch = new Gtk.Switch({
 		valign: Gtk.Align.CENTER,
@@ -313,9 +313,9 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 
 	thisSwitch.connect('notify::active',() => {
 		if (thisSwitch.state == (settings.get_default_value(setting).print(true) === "true"))
-			resetButton.set_visible(false);
+			thisResetButton.set_visible(false);
 		else
-			resetButton.set_visible(true)
+			thisResetButton.set_visible(true)
 	})
 
 	group.add(row)
@@ -324,8 +324,8 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 function addEntry(group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let resetButton = buildResetButton(setting);
-	row.add_suffix(resetButton);
+	let thisResetButton = buildResetButton(setting);
+	row.add_suffix(thisResetButton);
 
 	let thisEntry = new Gtk.Entry({
 		valign: Gtk.Align.CENTER,
@@ -338,9 +338,9 @@ function addEntry(group,setting,labelstring,labeltooltip){
 
 	thisEntry.connect('changed',() => {
 		if (thisEntry.text == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
-			resetButton.set_visible(false);
+			thisResetButton.set_visible(false);
 		else
-			resetButton.set_visible(true)
+			thisResetButton.set_visible(true)
 	})
 
 	group.add(row)
