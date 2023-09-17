@@ -201,8 +201,8 @@ function addDropDown(group,setting,labelstring,options,labeltooltip){
 	let thisResetButton = buildDropDownResetButton([setting],[thisDropDownRow],[options])
 
 	thisDropDownRow.connect('notify::selected-item', () => {
-		let dropDownValue = Object.values(options)[thisDropDownRow.get_selected()]
-		settings.set_string(setting,dropDownValue);
+		let thisDropDownValue = Object.values(options)[thisDropDownRow.get_selected()]
+		settings.set_string(setting,thisDropDownValue);
 		let setVisible = setDropDownResetVisibility([setting],[thisDropDownRow],[options]);
 		thisResetButton.set_visible(setVisible)
 	});
@@ -219,79 +219,74 @@ function addDoubleStringDropDown(group, setting1, setting2, labelstring, options
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 135;
 
-	let dropDown1 = buildDropDown(settings, setting1, options, width);
-	let dropDown2 = buildDropDown(settings, setting2, options, width);
-	let thisResetButton = buildDropDownResetButton([setting1,setting2],[dropDown1,dropDown2],[options,options])
+	let thisDropDown1 = buildDropDown(settings, setting1, options, width);
+	let thisDropDown2 = buildDropDown(settings, setting2, options, width);
+	let thisResetButton = buildDropDownResetButton([setting1,setting2],[thisDropDown1,thisDropDown2],[options,options])
 
-	dropDown1.connect('notify::selected-item', () => {
-		let dropDownValue = Object.values(options)[dropDown1.get_selected()];
-		settings.set_string(setting1,dropDownValue);
-		let setVisible = setDropDownResetVisibility([setting1,setting2],[dropDown1,dropDown2],[options,options]);
+	thisDropDown1.connect('notify::selected-item', () => {
+		let thisDropDownValue = Object.values(options)[thisDropDown1.get_selected()];
+		settings.set_string(setting1,thisDropDownValue);
+		let setVisible = setDropDownResetVisibility([setting1,setting2],[thisDropDown1,thisDropDown2],[options,options]);
 		thisResetButton.set_visible(setVisible)
 	});
 
-	dropDown2.connect('notify::selected-item', () => {
-		let dropDownValue = Object.values(options)[dropDown2.get_selected()];
-		settings.set_string(setting2,dropDownValue);
-		let setVisible = setDropDownResetVisibility([setting1,setting2],[dropDown1,dropDown2],[options,options]);
+	thisDropDown2.connect('notify::selected-item', () => {
+		let thisDropDownValue = Object.values(options)[thisDropDown2.get_selected()];
+		settings.set_string(setting2,thisDropDownValue);
+		let setVisible = setDropDownResetVisibility([setting1,setting2],[thisDropDown1,thisDropDown2],[options,options]);
 		thisResetButton.set_visible(setVisible)
-		// //hide reset button if both values match default
-		// if (dropDownValue1 == settings.get_default_value(setting1).print(true).replaceAll('\'', '') && dropDownValue2 == settings.get_default_value(setting2).print(true).replaceAll('\'', ''))
-		// 	thisResetButton.set_visible(false);
-		// else
-		// 	thisResetButton.set_visible(true);
 	});
 
 	row.add_suffix(thisResetButton);
-	row.add_suffix(dropDown1);
-	row.add_suffix(dropDown2);
+	row.add_suffix(thisDropDown1);
+	row.add_suffix(thisDropDown2);
 
 	group.add(row)
 
-	return [dropDown1, dropDown2]
+	return [thisDropDown1, thisDropDown2]
 }
 
 function addTripleStringDropDown(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 	let width = 81;
 
-	let dropDown1 = buildDropDown(settings, setting1, options1,width);
-	let dropDown2 = buildDropDown(settings, setting2, options2,width);
-	let dropDown3 = buildDropDown(settings, setting3, options3,width);
-	let thisResetButton = buildDropDownResetButton([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3])
+	let thisDropDown1 = buildDropDown(settings, setting1, options1,width);
+	let thisDropDown2 = buildDropDown(settings, setting2, options2,width);
+	let thisDropDown3 = buildDropDown(settings, setting3, options3,width);
+	let thisResetButton = buildDropDownResetButton([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3])
 
-	dropDown1.connect('notify::selected-item', () => {
-		settings.set_string(setting1,Object.values(options1)[dropDown1.get_selected()]);
-		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3]);
+	thisDropDown1.connect('notify::selected-item', () => {
+		settings.set_string(setting1,Object.values(options1)[thisDropDown1.get_selected()]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3]);
 		thisResetButton.set_visible(setVisible)
 	});
 
-	dropDown2.connect('notify::selected-item', () => {
-		settings.set_string(setting2,Object.values(options2)[dropDown2.get_selected()]);
-		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3]);
+	thisDropDown2.connect('notify::selected-item', () => {
+		settings.set_string(setting2,Object.values(options2)[thisDropDown2.get_selected()]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3]);
 		thisResetButton.set_visible(setVisible)
 	});
 
-	dropDown3.connect('notify::selected-item', () => {
-		settings.set_string(setting3,Object.values(options3)[dropDown3.get_selected()]);
-		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[dropDown1,dropDown2,dropDown3],[options1,options2,options3]);
+	thisDropDown3.connect('notify::selected-item', () => {
+		settings.set_string(setting3,Object.values(options3)[thisDropDown3.get_selected()]);
+		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3]);
 		thisResetButton.set_visible(setVisible)
 	});
 
 	row.add_suffix(thisResetButton);
-	row.add_suffix(dropDown1);
-	row.add_suffix(dropDown2);
-	row.add_suffix(dropDown3);
+	row.add_suffix(thisDropDown1);
+	row.add_suffix(thisDropDown2);
+	row.add_suffix(thisDropDown3);
 
 	group.add(row)
-	return [dropDown1, dropDown2, dropDown3]
+	return [thisDropDown1, thisDropDown2, thisDropDown3]
 }
 
-function setDropDownResetVisibility(settingsList,dropDownList,optionsList){ //show reset button if any of the values is different from default
+function setDropDownResetVisibility(settingsList,thisDropDownList,optionsList){ //show reset button if any of the values is different from default
 	let setVisible = false;
-	for (let i = 0; i < dropDownList.length; i++) {
-		let dropDownValue = Object.values(optionsList[i])[dropDownList[i].get_selected()];
-		if (dropDownValue != settings.get_default_value(settingsList[i]).print(true).replaceAll('\'', ''))
+	for (let i = 0; i < thisDropDownList.length; i++) {
+		let thisDropDownValue = Object.values(optionsList[i])[thisDropDownList[i].get_selected()];
+		if (thisDropDownValue != settings.get_default_value(settingsList[i]).print(true).replaceAll('\'', ''))
 			setVisible = true;
 	}
 	return setVisible;
