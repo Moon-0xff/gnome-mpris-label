@@ -438,11 +438,9 @@ function buildResetButton(setting){
 		visible: false
 	});
 
-	//hide if default setting
-	if (settings.get_user_value(setting) != null){
-		if(settings.get_user_value(setting).print(true) != settings.get_default_value(setting).print(true))
+	//hide if matches default setting
+	if (settings.get_value(setting).print(true) != settings.get_default_value(setting).print(true))
 			thisResetButton.set_visible(true);
-	}
 
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
