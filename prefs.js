@@ -126,15 +126,15 @@ function fillPreferencesWindow(window){
 	scrollDropDown.set_size_request(140,-1); //match size with next button
 
 	group = addGroup(page,'Behaviour');
-	let VolumeControlDropDown = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
-	VolumeControlDropDown.set_size_request(140,-1); //match size with previous button
+	let volumeControlDropDown = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
+	volumeControlDropDown.set_size_request(140,-1); //match size with previous button
 
 	addResetButton(group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
 		'right-click-action','right-double-click-action','scroll-action','thumb-forward-action','thumb-double-forward-action','thumb-backward-action',
 		'thumb-double-backward-action','volume-control-scheme'],[leftClickDropDown, leftDoubleClickDropDown,middleClickDropDown, middleDoubleClickDropDown,
 		rightClickDropDown, rightDoubleClickDropDown,thumbForwardDropDown, thumbDoubleForwardDropDown,thumbBackwardDropDown, thumbDoubleBackwardDropDown,
-		scrollDropDown,VolumeControlDropDown]
+		scrollDropDown,volumeControlDropDown]
 	);
 
 	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
