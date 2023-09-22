@@ -282,16 +282,6 @@ function addTripleStringDropDown(group, setting1, setting2, setting3, labelstrin
 	return [thisDropDown1, thisDropDown2, thisDropDown3]
 }
 
-function setDropDownResetVisibility(settingsList,thisDropDownList,optionsList){ //show reset button if any of the values is different from default
-	let setVisible = false;
-	for (let i = 0; i < thisDropDownList.length; i++) {
-		let thisDropDownValue = Object.values(optionsList[i])[thisDropDownList[i].get_selected()];
-		if (thisDropDownValue != settings.get_default_value(settingsList[i]).print(true).replaceAll('\'', ''))
-			setVisible = true;
-	}
-	return setVisible;
-}
-
 function addSwitch(group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
@@ -504,6 +494,16 @@ function buildButton(labelstring,callback){
 }
 
 // helper functions
+
+function setDropDownResetVisibility(settingsList,thisDropDownList,optionsList){ //show reset button if any of the values is different from default
+	let setVisible = false;
+	for (let i = 0; i < thisDropDownList.length; i++) {
+		let thisDropDownValue = Object.values(optionsList[i])[thisDropDownList[i].get_selected()];
+		if (thisDropDownValue != settings.get_default_value(settingsList[i]).print(true).replaceAll('\'', ''))
+			setVisible = true;
+	}
+	return setVisible;
+}
 
 function bindEnabled(settings, setting, element) {
 	settings.bind(setting, element, 'sensitive', Gio.SettingsBindFlags.GET);
