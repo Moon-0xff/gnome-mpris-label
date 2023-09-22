@@ -73,16 +73,11 @@ function fillPreferencesWindow(window){
 	});
 	updateButton.set_margin_top(10);
 
-	group = addGroup(page,'Ignore list');
-	addWideEntry(group,'mpris-sources-blacklist','Separate entries with commas',undefined);
-
-	group = addGroup(page,'Allow list');
+	group = addGroup(page,'Filters for MPRIS sources');
+	addEntry(group,'mpris-sources-blacklist','Ignore list','Separate entries with commas');
+	addEntry(group,'mpris-sources-whitelist','Allow list','Separate entries with commas');
 	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones',"This option is ignored if the allow list is empty");
-	let allowListEntry = addWideEntry(group,'mpris-sources-whitelist','Separate entries with commas',undefined);
-	allowListEntry.set_margin_top(10);
-
-	group = addGroup(page,'Players excluded from using album art as icon');
-	addWideEntry(group,'album-blacklist','Separate entries with commas',undefined);
+	addEntry(group,'album-blacklist','Players excluded from using album art','Separate entries with commas');
 
 	addResetButton(group,'Reset Filters settings',[
 		'mpris-sources-blacklist','mpris-sources-whitelist','use-whitelisted-sources-only','album-blacklist']
