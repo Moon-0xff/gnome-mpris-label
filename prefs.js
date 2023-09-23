@@ -189,7 +189,7 @@ function addDropDownsList(group, settingsList, labelstring, optionsList, labelto
 	let row = buildActionRow(labelstring,labeltooltip);
 
 	let thisDropDownList = [];//keep list of all dropDowns created (required for reset button generation/visibility)
-	for (let i = 0; i < settingsList.length; i++)//generate dropdow for each setting
+	for (let i = 0; i < settingsList.length; i++)//generate dropdown for each setting
 		thisDropDownList.push(buildDropDown(settings, settingsList[i], optionsList[i],width));
 
 	//generate reset button (single button for all drop downs)
