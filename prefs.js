@@ -53,7 +53,7 @@ function fillPreferencesWindow(window){
 	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
 	let fieldOptions2 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
 	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
-	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleDropDown(group,['first-field','second-field','last-field'],'Visible fields and order',[fieldOptions1,fieldOptions2,fieldOptions3],undefined);
+	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleDropDown(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
 	addResetButton(group,'Reset Label settings',[
 		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
@@ -218,9 +218,8 @@ function addDoubleDropDown(group,setting1,setting2,labelstring,options1,options2
 	return addDropDownsList(group, [setting1,setting2], labelstring, [options1,options2], labeltooltip,width);
 }
 
-function addTripleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=81){
-	let thisDropDown = addDropDownsList(group, settingsList, labelstring, optionsList, labeltooltip,width);
-	return thisDropDown;
+function addTripleDropDown(group,setting1,setting2,setting3,labelstring,options1,options2,options3,labeltooltip,width=81){
+	return addDropDownsList(group, [setting1,setting2,setting3], labelstring, [options1,options2,options3], labeltooltip,width);
 }
 
 function addSwitch(group,setting,labelstring,labeltooltip){
