@@ -187,7 +187,7 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 
 function addDropDownsList(group, settingsList, labelstring, optionsList, labeltooltip,width){
 	let row = buildActionRow(labelstring,labeltooltip);
-	
+
 	let thisDropDownList = [];//keep list of all dropDowns created (required for reset button generation/visibility)
 	for (let i = 0; i < settingsList.length; i++)//generate dropdow for each setting
 		thisDropDownList.push(buildDropDown(settings, settingsList[i], optionsList[i],width));
