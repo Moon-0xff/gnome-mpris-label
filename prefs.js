@@ -53,7 +53,7 @@ function fillPreferencesWindow(window){
 	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
 	let fieldOptions2 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
 	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
-	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleStringDropDown(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
+	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleDropDown(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
 	addResetButton(group,'Reset Label settings',[
 		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
@@ -110,19 +110,17 @@ function fillPreferencesWindow(window){
 	row.add_suffix(doubleClickLabel);
 	group.add(row);
 
-	let [leftClickDropDown, leftDoubleClickDropDown] = addDoubleStringDropDown(group,'left-click-action','left-double-click-action','Left click',buttonActions,undefined);
-	let [middleClickDropDown, middleDoubleClickDropDown] = addDoubleStringDropDown(group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,undefined,);
-	let [rightClickDropDown, rightDoubleClickDropDown] = addDoubleStringDropDown(group,'right-click-action','right-double-click-action','Right click',buttonActions,undefined);
-	let [thumbForwardDropDown, thumbDoubleForwardDropDown] = addDoubleStringDropDown(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,undefined);
-	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleStringDropDown(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,undefined);
+	let [leftClickDropDown, leftDoubleClickDropDown] = addDoubleDropDown(group,'left-click-action','left-double-click-action','Left click',buttonActions,buttonActions,undefined);
+	let [middleClickDropDown, middleDoubleClickDropDown] = addDoubleDropDown(group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,buttonActions,undefined);
+	let [rightClickDropDown, rightDoubleClickDropDown] = addDoubleDropDown(group,'right-click-action','right-double-click-action','Right click',buttonActions,buttonActions,undefined);
+	let [thumbForwardDropDown, thumbDoubleForwardDropDown] = addDoubleDropDown(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,buttonActions,undefined);
+	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let scrollDropDown = addDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined);
-	scrollDropDown.set_size_request(140,-1); //match size with next button
+	let scrollDropDown = addDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
 
 	group = addGroup(page,'Behaviour');
-	let volumeControlDropDown = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined);
-	volumeControlDropDown.set_size_request(140,-1); //match size with previous button
+	let volumeControlDropDown = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
 
 	addResetButton(group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
@@ -187,94 +185,41 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	return row;
 }
 
-function addDropDown(group,setting,labelstring,options,labeltooltip){
+function addDropDownsList(group, settingsList, labelstring, optionsList, labeltooltip,width){
 	let row = buildActionRow(labelstring,labeltooltip);
-	let width = 105;
 
-	let thisDropDownRow = buildDropDown(settings,setting,options,width)
+	let thisDropDownList = [];//keep list of all dropDowns created (required for reset button generation/visibility)
+	for (let i = 0; i < settingsList.length; i++)//generate dropdown for each setting
+		thisDropDownList.push(buildDropDown(settings, settingsList[i], optionsList[i],width));
 
-	let thisResetButton = buildDropDownResetButton([setting],[thisDropDownRow],[options])
-
-	thisDropDownRow.connect('notify::selected-item', () => {
-		let thisDropDownValue = Object.values(options)[thisDropDownRow.get_selected()]
-		settings.set_string(setting,thisDropDownValue);
-		let setVisible = setDropDownResetVisibility([setting],[thisDropDownRow],[options]);
-		thisResetButton.set_visible(setVisible)
-	});
-
+	//generate reset button (single button for all drop downs)
+	let thisResetButton = buildDropDownResetButton(settingsList,thisDropDownList,optionsList);
 	row.add_suffix(thisResetButton);
-	row.add_suffix(thisDropDownRow);
+
+	for (let i = 0; i < thisDropDownList.length; i++) {
+		thisDropDownList[i].connect('notify::selected-item', () => {
+			settings.set_string(settingsList[i],Object.values(optionsList[i])[thisDropDownList[i].get_selected()]);
+			//set reset button visibility to true if any of the settings is different from default
+			let setVisible = setDropDownResetVisibility(settingsList,thisDropDownList,optionsList);
+			thisResetButton.set_visible(setVisible);
+		});
+		row.add_suffix(thisDropDownList[i]);
+	}
 
 	group.add(row);
-
-	return thisDropDownRow;
+	return thisDropDownList;
 }
 
-function addDoubleStringDropDown(group, setting1, setting2, labelstring, options, labeltooltip){
-	let row = buildActionRow(labelstring,labeltooltip);
-	let width = 135;
-
-	let thisDropDown1 = buildDropDown(settings, setting1, options, width);
-	let thisDropDown2 = buildDropDown(settings, setting2, options, width);
-	let thisResetButton = buildDropDownResetButton([setting1,setting2],[thisDropDown1,thisDropDown2],[options,options])
-
-	thisDropDown1.connect('notify::selected-item', () => {
-		let thisDropDownValue = Object.values(options)[thisDropDown1.get_selected()];
-		settings.set_string(setting1,thisDropDownValue);
-		let setVisible = setDropDownResetVisibility([setting1,setting2],[thisDropDown1,thisDropDown2],[options,options]);
-		thisResetButton.set_visible(setVisible)
-	});
-
-	thisDropDown2.connect('notify::selected-item', () => {
-		let thisDropDownValue = Object.values(options)[thisDropDown2.get_selected()];
-		settings.set_string(setting2,thisDropDownValue);
-		let setVisible = setDropDownResetVisibility([setting1,setting2],[thisDropDown1,thisDropDown2],[options,options]);
-		thisResetButton.set_visible(setVisible)
-	});
-
-	row.add_suffix(thisResetButton);
-	row.add_suffix(thisDropDown1);
-	row.add_suffix(thisDropDown2);
-
-	group.add(row)
-
-	return [thisDropDown1, thisDropDown2]
+function addDropDown(group,settings,labelstring,options,labeltooltip,width=105){
+	return addDropDownsList(group, [settings], labelstring, [options], labeltooltip,width);
 }
 
-function addTripleStringDropDown(group, setting1, setting2, setting3, labelstring, options1, options2, options3, labeltooltip){
-	let row = buildActionRow(labelstring,labeltooltip);
-	let width = 81;
+function addDoubleDropDown(group,setting1,setting2,labelstring,options1,options2,labeltooltip,width=135){
+	return addDropDownsList(group, [setting1,setting2], labelstring, [options1,options2], labeltooltip,width);
+}
 
-	let thisDropDown1 = buildDropDown(settings, setting1, options1,width);
-	let thisDropDown2 = buildDropDown(settings, setting2, options2,width);
-	let thisDropDown3 = buildDropDown(settings, setting3, options3,width);
-	let thisResetButton = buildDropDownResetButton([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3])
-
-	thisDropDown1.connect('notify::selected-item', () => {
-		settings.set_string(setting1,Object.values(options1)[thisDropDown1.get_selected()]);
-		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3]);
-		thisResetButton.set_visible(setVisible)
-	});
-
-	thisDropDown2.connect('notify::selected-item', () => {
-		settings.set_string(setting2,Object.values(options2)[thisDropDown2.get_selected()]);
-		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3]);
-		thisResetButton.set_visible(setVisible)
-	});
-
-	thisDropDown3.connect('notify::selected-item', () => {
-		settings.set_string(setting3,Object.values(options3)[thisDropDown3.get_selected()]);
-		let setVisible = setDropDownResetVisibility([setting1,setting2,setting3],[thisDropDown1,thisDropDown2,thisDropDown3],[options1,options2,options3]);
-		thisResetButton.set_visible(setVisible)
-	});
-
-	row.add_suffix(thisResetButton);
-	row.add_suffix(thisDropDown1);
-	row.add_suffix(thisDropDown2);
-	row.add_suffix(thisDropDown3);
-
-	group.add(row)
-	return [thisDropDown1, thisDropDown2, thisDropDown3]
+function addTripleDropDown(group,setting1,setting2,setting3,labelstring,options1,options2,options3,labeltooltip,width=81){
+	return addDropDownsList(group, [setting1,setting2,setting3], labelstring, [options1,options2,options3], labeltooltip,width);
 }
 
 function addSwitch(group,setting,labelstring,labeltooltip){
