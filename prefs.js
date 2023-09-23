@@ -110,11 +110,11 @@ function fillPreferencesWindow(window){
 	row.add_suffix(doubleClickLabel);
 	group.add(row);
 
-	let [leftClickDropDown, leftDoubleClickDropDown] = addDoubleDropDown(group,['left-click-action','left-double-click-action'],'Left click',[buttonActions,buttonActions],undefined);
-	let [middleClickDropDown, middleDoubleClickDropDown] = addDoubleDropDown(group,['middle-click-action','middle-double-click-action'],'Middle click',[buttonActions,buttonActions],undefined);
-	let [rightClickDropDown, rightDoubleClickDropDown] = addDoubleDropDown(group,['right-click-action','right-double-click-action'],'Right click',[buttonActions,buttonActions],undefined);
-	let [thumbForwardDropDown, thumbDoubleForwardDropDown] = addDoubleDropDown(group,['thumb-forward-action','thumb-double-forward-action'],'Thumb-tip button',[buttonActions,buttonActions],undefined);
-	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(group,['thumb-backward-action','thumb-double-backward-action'],'Inner-thumb button',[buttonActions,buttonActions],undefined);
+	let [leftClickDropDown, leftDoubleClickDropDown] = addDoubleDropDown(group,'left-click-action','left-double-click-action','Left click',buttonActions,buttonActions,undefined);
+	let [middleClickDropDown, middleDoubleClickDropDown] = addDoubleDropDown(group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,buttonActions,undefined);
+	let [rightClickDropDown, rightDoubleClickDropDown] = addDoubleDropDown(group,'right-click-action','right-double-click-action','Right click',buttonActions,buttonActions,undefined);
+	let [thumbForwardDropDown, thumbDoubleForwardDropDown] = addDoubleDropDown(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,buttonActions,undefined);
+	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
 
 	group = addGroup(page,'');
 	let scrollDropDown = addDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
@@ -211,12 +211,11 @@ function addDropDownsList(group, settingsList, labelstring, optionsList, labelto
 }
 
 function addDropDown(group,settings,labelstring,options,labeltooltip,width=105){
-	return thisDropDown = addDropDownsList(group, [settings], labelstring, [options], labeltooltip,width);
+	return addDropDownsList(group, [settings], labelstring, [options], labeltooltip,width);
 }
 
-function addDoubleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=135){
-	let thisDropDown = addDropDownsList(group, settingsList, labelstring, optionsList, labeltooltip,width);
-	return thisDropDown;
+function addDoubleDropDown(group,setting1,setting2,labelstring,options1,options2,labeltooltip,width=135){
+	return addDropDownsList(group, [setting1,setting2], labelstring, [options1,options2], labeltooltip,width);
 }
 
 function addTripleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=81){
