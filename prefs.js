@@ -210,26 +210,17 @@ function addDropDown(group, settingsList, labelstring, optionsList, labeltooltip
 	return thisDropDownList;
 }
 
-function addSingleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width){
-	if (!width) //default width
-		width = 105;
-
+function addSingleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=105){
 	let thisDropDown = addDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width);
 	return thisDropDown;
 }
 
-function addDoubleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width){
-	if (!width) //default width
-		width = 135;
-
+function addDoubleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=135){
 	let thisDropDown = addDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width);
 	return thisDropDown;
 }
 
-function addTripleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width){
-	if (!width) //default width
-		width = 81;
-
+function addTripleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=81){
 	let thisDropDown = addDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width);
 	return thisDropDown;
 }
