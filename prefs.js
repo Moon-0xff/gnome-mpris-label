@@ -13,7 +13,7 @@ function fillPreferencesWindow(window){
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
 
 	let group = addGroup(page,'Icon');
-	let showIconDropDown = addSingleDropDown(group,['show-icon'],'Show source icon',[{'off':'','left':'left','right':'right'}],undefined);
+	let showIconDropDown = addSingleDropDown(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
 	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
 	addSwitch(group,'use-album','Use album art as icon when available',undefined);
@@ -117,10 +117,10 @@ function fillPreferencesWindow(window){
 	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(group,['thumb-backward-action','thumb-double-backward-action'],'Inner-thumb button',[buttonActions,buttonActions],undefined);
 
 	group = addGroup(page,'');
-	let scrollDropDown = addSingleDropDown(group,['scroll-action'],'Scroll up/down',[{'volume control':'volume-controls','none':'none'}],undefined,140);
+	let scrollDropDown = addSingleDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
 
 	group = addGroup(page,'Behaviour');
-	let volumeControlDropDown = addSingleDropDown(group,['volume-control-scheme'],'Volume control scheme',[{'application':'application','global':'global'}],undefined,140);
+	let volumeControlDropDown = addSingleDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
 
 	addResetButton(group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
@@ -210,9 +210,8 @@ function addDropDown(group, settingsList, labelstring, optionsList, labeltooltip
 	return thisDropDownList;
 }
 
-function addSingleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=105){
-	let thisDropDown = addDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width);
-	return thisDropDown;
+function addSingleDropDown(group,settings,labelstring,options,labeltooltip,width=105){
+	return thisDropDown = addDropDown(group, [settings], labelstring, [options], labeltooltip,width);
 }
 
 function addDoubleDropDown(group, settingsList, labelstring, optionsList, labeltooltip,width=135){
