@@ -486,11 +486,8 @@ class MprisLabel extends PanelMenu.Button {
 		try{
 			if(this.player == null || undefined)
 				this.label.set_text("")
-			else{
-				this.label.set_text("You Label Here");
-				// log(Date().substring(16,24)+' extension.js: buildLabel '+buildLabel(this.players));
-				// this.label.set_text(buildLabel(this.players));
-			}
+			else
+				this.label.set_text(buildLabel(this.players));
 		}
 		catch(err){
 			log("Mpris Label: " + err);
