@@ -1,6 +1,8 @@
-const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const CurrentExtension = ExtensionUtils.getCurrentExtension();
+import Gio from 'gi://Gio';
+import Shell from 'gi://Shell';
+import St from 'gi://St';
+
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const mprisInterface = `
 <node>
@@ -41,13 +43,14 @@ const dBusInterface = `
 	</interface>
 </node>`
 
-var Players = class Players {
+export var Players = class Players {
 	constructor(){
 		this.list = [];
 		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		// this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		this.settings = Extension.lookupByURL(import.meta.url).getSettings()
 	}
 	pick(){
 		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
