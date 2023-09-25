@@ -1,5 +1,4 @@
-const ExtensionUtils = imports.misc.extensionUtils;
-const CurrentExtension = ExtensionUtils.getCurrentExtension();
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
@@ -7,7 +6,7 @@ let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
 	MAX_STRING_LENGTH,DIVIDER_STRING;
 
 function getSettings(){
-	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+	const settings = Extension.lookupByURL(import.meta.url).getSettings();
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
 	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
@@ -20,7 +19,7 @@ function getSettings(){
 	LAST_FIELD = settings.get_string('last-field');
 }
 
-var buildLabel = function buildLabel(players){
+export var buildLabel = function buildLabel(players){
 	getSettings();
 
 	// the placeholder string is a hint for the user to switch players
@@ -77,7 +76,7 @@ function parseMetadataField(data) {
 		const sanitizedInput = LABEL_FILTERED_LIST.replace(CtrlCharactersRegex,"")
 
 		if(sanitizedInput != LABEL_FILTERED_LIST){
-			const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+			const settings = Extension.lookupByURL(import.meta.url).getSettings();
 			settings.set_string('label-filtered-list',sanitizedInput);
 		}
 
