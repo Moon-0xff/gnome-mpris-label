@@ -19,6 +19,7 @@ function getSettings(){
 
 export var buildLabel = function buildLabel(players){
 	getSettings();
+
 	// the placeholder string is a hint for the user to switch players
 	// it should appear if labelstring is empty and there's another player playing
 	// avoid returning empty strings directly, use "placeholder" instead
@@ -26,7 +27,7 @@ export var buildLabel = function buildLabel(players){
 	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing")
 		placeholder = BUTTON_PLACEHOLDER;
 
-		if(REMOVE_TEXT_WHEN_PAUSED && players.selected.playbackStatus != "Playing"){
+	if(REMOVE_TEXT_WHEN_PAUSED && players.selected.playbackStatus != "Playing"){
 		const statusTimestamp = players.selected.statusTimestamp / 1000;
 		const currentTimestamp = new Date().getTime() / 1000;
 

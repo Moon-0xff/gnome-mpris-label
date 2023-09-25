@@ -49,7 +49,6 @@ export var Players = class Players {
 		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
-		// this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 		this.settings = Extension.lookupByURL(import.meta.url).getSettings()
 	}
 	pick(){
