@@ -2,13 +2,11 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
 	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
-	MAX_STRING_LENGTH,DIVIDER_STRING;
+	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD;
 
 function getSettings(){
 	const settings = Extension.lookupByURL(import.meta.url).getSettings();
 	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	REFRESH_RATE = settings.get_int('refresh-rate');
 	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 	DIVIDER_STRING = settings.get_string('divider-string');
