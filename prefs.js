@@ -1,13 +1,12 @@
-const {Adw,Gio,Gtk} = imports.gi;
+import Gio from 'gi://Gio';
+import Gtk from 'gi://Gtk';
+import Adw from 'gi://Adw';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Config = imports.misc.config;
-const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-function init(){}
-
-function fillPreferencesWindow(window){
-	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+export default class MprisLabelPreferences extends ExtensionPreferences {
+	fillPreferencesWindow(window){
+	const settings = this.getSettings();
 	window.default_height = 950;
 
 //panel page:
@@ -134,6 +133,7 @@ function fillPreferencesWindow(window){
 	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
 		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
 }
+}
 
 // Adwaita "design" and "structure" functions
 
@@ -247,10 +247,10 @@ function addSwitch(settings,group,setting,labelstring,labeltooltip){
 	group.add(row)
 }
 
-function addEntry(group,setting,labelstring,labeltooltip){
+function addEntry(settings,group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let thisResetButton = buildResetButton(setting);
+	let thisResetButton = buildResetButton(settings,setting);
 	row.add_suffix(thisResetButton);
 
 	let thisEntry = new Gtk.Entry({
@@ -272,7 +272,7 @@ function addEntry(group,setting,labelstring,labeltooltip){
 	group.add(row)
 }
 
-function addWideEntry(group,setting,placeholder,labeltooltip){
+function addWideEntry(settings,group,setting,placeholder,labeltooltip){
 	let thisEntry = new Gtk.Entry({
 		visible: true,
 		secondary_icon_name: '',
@@ -305,7 +305,7 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function addResetButton(group,labelstring,options,dropDowns){
+function addResetButton(settings,group,labelstring,options,dropDowns){
 	let thisButton = buildButton(labelstring, () => {
 		options.forEach(option => {
 			settings.reset(option);
@@ -362,7 +362,7 @@ function buildInfoButton(labeltooltip){
 	return thisInfoButton;
 }
 
-function buildResetButton(setting){
+function buildResetButton(settings, setting){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic-rtl',
