@@ -395,7 +395,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 	//settings shortcut:
-		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
+		this.menu.addAction(_('Settings'), () => Extension.lookupByURL(import.meta.url).openPreferences());
 	}
 
 	_refresh() {
