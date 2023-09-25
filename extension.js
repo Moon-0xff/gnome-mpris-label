@@ -1,24 +1,33 @@
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const {Clutter,Gio,GLib,GObject,St} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const CurrentExtension = ExtensionUtils.getCurrentExtension();
-const Volume = imports.ui.status.volume;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
-const { Players } = CurrentExtension.imports.players;
-const { buildLabel } = CurrentExtension.imports.label;
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
+
+import {Players} from './players.js';
+import {buildLabel} from './label.js';
 
 let indicator = null;
 
-function enable(){
-	indicator = new MprisLabel();
-}
+export default class MprisLabelExtension extends Extension {
 
-function disable(){
-	indicator._disable();
-	indicator.destroy();
-	indicator = null;
+	enable(){
+		indicator = new MprisLabel();
+	}
+
+	disable(){
+		indicator._disable();
+		indicator.destroy();
+		indicator = null;
+	}
 }
 
 var MprisLabel = GObject.registerClass(
@@ -27,7 +36,7 @@ class MprisLabel extends PanelMenu.Button {
 	_init(){
 		super._init(0.0,'Mpris Label',false);
 
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		this.settings = Extension.lookupByURL(import.meta.url).getSettings();
 
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
@@ -477,8 +486,11 @@ class MprisLabel extends PanelMenu.Button {
 		try{
 			if(this.player == null || undefined)
 				this.label.set_text("")
-			else
-				this.label.set_text(buildLabel(this.players));
+			else{
+				this.label.set_text("You Label Here");
+				// log(Date().substring(16,24)+' extension.js: buildLabel '+buildLabel(this.players));
+				// this.label.set_text(buildLabel(this.players));
+			}
 		}
 		catch(err){
 			log("Mpris Label: " + err);
@@ -514,6 +526,7 @@ class MprisLabel extends PanelMenu.Button {
 			GLib.Source.remove(this._repositionTimeout);
 			this._repositionTimeout = null;
 		}
+		this.settings = null;
 	}
 });
 
