@@ -347,6 +347,7 @@ class MprisLabel extends PanelMenu.Button {
 	//player selection submenu:
 		this.players.list.forEach(player => {
 			let settingsMenuItem = new PopupMenu.PopupMenuItem(player.identity);
+			settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
 
 			if (AUTO_SWITCH_TO_MOST_RECENT){
 				if(!this.unfocusColor)
@@ -382,6 +383,7 @@ class MprisLabel extends PanelMenu.Button {
 	//automode entry:
 		if (this.players.list.length > 0){
 			let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
+			settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
 			if (AUTO_SWITCH_TO_MOST_RECENT) {
 				settingsMenuItem.setOrnament(PopupMenu.Ornament.CHECK);
 				settingsMenuItem.label.set_style('font-weight:bold');
@@ -395,7 +397,12 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 	//settings shortcut:
-		this.menu.addAction(_('Settings'), () => Extension.lookupByURL(import.meta.url).openPreferences());
+		let settingsMenuItem = new PopupMenu.PopupMenuItem('Settings');
+		settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
+		settingsMenuItem.connect('activate', () =>{
+			Extension.lookupByURL(import.meta.url).openPreferences();
+		});
+		this.menu.addMenuItem(settingsMenuItem);
 	}
 
 	_refresh() {
