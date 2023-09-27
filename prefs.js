@@ -13,14 +13,14 @@ export default class MprisLabelPreferences extends ExtensionPreferences {
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
 
 	let group = addGroup(page,'Icon');
-	let showIconDropDown = addDropDown(settings,group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
+	let [showIconDropDown] = addDropDown(settings,group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
 	addSpinButton(settings,group, 'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(settings,group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
 	addSwitch(settings,group,'use-album','Use album art as icon when available',undefined);
 	addSpinButton(settings,group,'album-size','Album art scaling (in %)',20,250,undefined);
 
 	group = addGroup(page,'Position');
-	let extensionPlaceDropDown = addDropDown(settings,group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
+	let [extensionPlaceDropDown] = addDropDown(settings,group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(settings,group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
 	addSpinButton(settings,group,'left-padding','Left padding',0,500,undefined);
 	addSpinButton(settings,group,'right-padding','Right padding',0,500,undefined);
@@ -117,10 +117,10 @@ export default class MprisLabelPreferences extends ExtensionPreferences {
 	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(settings,group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let scrollDropDown = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
+	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
 
 	group = addGroup(page,'Behaviour');
-	let volumeControlDropDown = addDropDown(settings,group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
+	let [volumeControlDropDown] = addDropDown(settings,group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
 
 	addResetButton(settings,group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
