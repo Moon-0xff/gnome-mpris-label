@@ -13,14 +13,14 @@ function fillPreferencesWindow(window){
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
 
 	let group = addGroup(page,'Icon');
-	let showIconDropDown = addDropDown(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
+	let [showIconDropDown] = addDropDown(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
 	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
 	addSwitch(group,'use-album','Use album art as icon when available',undefined);
 	addSpinButton(group,'album-size','Album art scaling (in %)',20,250,undefined);
 
 	group = addGroup(page,'Position');
-	let extensionPlaceDropDown = addDropDown(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
+	let [extensionPlaceDropDown] = addDropDown(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
 	addSpinButton(group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
 	addSpinButton(group,'left-padding','Left padding',0,500,undefined);
 	addSpinButton(group,'right-padding','Right padding',0,500,undefined);
@@ -117,10 +117,10 @@ function fillPreferencesWindow(window){
 	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let scrollDropDown = addDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
+	let [scrollDropDown] = addDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
 
 	group = addGroup(page,'Behaviour');
-	let volumeControlDropDown = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
+	let [volumeControlDropDown] = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
 
 	addResetButton(group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
