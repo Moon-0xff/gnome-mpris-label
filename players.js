@@ -198,7 +198,7 @@ class Player {
 		if ( matchedEntries.length > 0 )
 			this.desktopApp = this._matchRunningApps(matchedEntries)
 
-		this.icon = this.getIcon(this.desktopApp);
+		this.icon = this.getIcon();
 	}
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();
