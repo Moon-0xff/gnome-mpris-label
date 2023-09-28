@@ -1,3 +1,5 @@
+'use strict';
+
 const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const CurrentExtension = ExtensionUtils.getCurrentExtension();
