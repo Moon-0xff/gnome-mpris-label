@@ -2,34 +2,34 @@ const {Adw,Gio,Gtk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Config = imports.misc.config;
-const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 
 function init(){}
 
 function fillPreferencesWindow(window){
+	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 	window.default_height = 950;
 
 //panel page:
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
 
 	let group = addGroup(page,'Icon');
-	let [showIconDropDown] = addDropDown(group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
-	addSpinButton(group, 'icon-padding', 'Icon padding', 0, 50, undefined);
-	addSwitch(group, 'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
-	addSwitch(group,'use-album','Use album art as icon when available',undefined);
-	addSpinButton(group,'album-size','Album art scaling (in %)',20,250,undefined);
+	let [showIconDropDown] = addDropDown(settings,group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
+	addSpinButton(settings,group,'icon-padding', 'Icon padding', 0, 50, undefined);
+	addSwitch(settings,group,'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
+	addSwitch(settings,group,'use-album','Use album art as icon when available',undefined);
+	addSpinButton(settings,group,'album-size','Album art scaling (in %)',20,250,undefined);
 
 	group = addGroup(page,'Position');
-	let [extensionPlaceDropDown] = addDropDown(group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
-	addSpinButton(group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
-	addSpinButton(group,'left-padding','Left padding',0,500,undefined);
-	addSpinButton(group,'right-padding','Right padding',0,500,undefined);
+	let [extensionPlaceDropDown] = addDropDown(settings,group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
+	addSpinButton(settings,group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
+	addSpinButton(settings,group,'left-padding','Left padding',0,500,undefined);
+	addSpinButton(settings,group,'right-padding','Right padding',0,500,undefined);
 
 	group = addGroup(page,'Wrong index at loadup mitigations');
-	addSpinButton(group,'reposition-delay','Panel reposition at startup (delay in seconds)',0,300,"Increase this value if extension index isn't respected at startup");
-	addSwitch(group,'reposition-on-button-press','Update panel position on every button press',undefined);
+	addSpinButton(settings,group,'reposition-delay','Panel reposition at startup (delay in seconds)',0,300,"Increase this value if extension index isn't respected at startup");
+	addSwitch(settings,group,'reposition-on-button-press','Update panel position on every button press',undefined);
 
-	addResetButton(group,'Reset Panel settings',[
+	addResetButton(settings,group,'Reset Panel settings',[
 		'show-icon','left-padding','right-padding','extension-index','extension-place','reposition-delay','reposition-on-button-press','use-album',
 		'album-size','symbolic-source-icon','icon-padding'],
 		[showIconDropDown,extensionPlaceDropDown]
@@ -39,23 +39,23 @@ function fillPreferencesWindow(window){
 	page = addPreferencesPage(window,'Label','document-edit-symbolic');
 
 	group = addGroup(page,'Behaviour');
-	addSwitch(group,'auto-switch-to-most-recent','Switch to the most recent source automatically',"This option can be annoying without the use of filter lists");
-	addSwitch(group,'remove-text-when-paused','Hide when paused',undefined);
-	addSpinButton(group,'remove-text-paused-delay','Hide when paused delay (seconds)',0,9999,undefined);
-	addSpinButton(group,'refresh-rate','Refresh rate (milliseconds)',30,3000,undefined);
-	addEntry(group,'label-filtered-list','Filter segments containing',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
+	addSwitch(settings,group,'auto-switch-to-most-recent','Switch to the most recent source automatically',"This option can be annoying without the use of filter lists");
+	addSwitch(settings,group,'remove-text-when-paused','Hide when paused',undefined);
+	addSpinButton(settings,group,'remove-text-paused-delay','Hide when paused delay (seconds)',0,9999,undefined);
+	addSpinButton(settings,group,'refresh-rate','Refresh rate (milliseconds)',30,3000,undefined);
+	addEntry(settings,group,'label-filtered-list','Filter segments containing',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
 	group = addGroup(page,'Appearance');
-	addSpinButton(group,'max-string-length','Max string length (each field)',1,150,undefined);
-	addEntry(group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
-	addEntry(group,'divider-string','Divider string (you can use spaces)',undefined);
+	addSpinButton(settings,group,'max-string-length','Max string length (each field)',1,150,undefined);
+	addEntry(settings,group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
+	addEntry(settings,group,'divider-string','Divider string (you can use spaces)',undefined);
 
 	let fieldOptions1 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title'};
 	let fieldOptions2 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
 	let fieldOptions3 = {'artist':'xesam:artist','album':'xesam:album','title':'xesam:title','none':''};
-	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleDropDown(group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
+	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleDropDown(settings,group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
-	addResetButton(group,'Reset Label settings',[
+	addResetButton(settings,group,'Reset Label settings',[
 		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
 		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
 	);
@@ -64,7 +64,7 @@ function fillPreferencesWindow(window){
 	page = addPreferencesPage(window,'Filters','dialog-error-symbolic');
 
 	group = addGroup(page,'List of available MPRIS Sources');
-	let sourcesListEntry = addWideEntry(group,undefined,'',"Press the button below to update");
+	let sourcesListEntry = addWideEntry(settings,group,undefined,'',"Press the button below to update");
 	sourcesListEntry.set_text(playersToString());
 	sourcesListEntry.set_editable(false);
 
@@ -74,12 +74,12 @@ function fillPreferencesWindow(window){
 	updateButton.set_margin_top(10);
 
 	group = addGroup(page,'Filters for MPRIS sources');
-	addEntry(group,'mpris-sources-blacklist','Ignore list','Separate entries with commas');
-	addEntry(group,'mpris-sources-whitelist','Allow list','Separate entries with commas');
-	addSwitch(group,'use-whitelisted-sources-only','Ignore all sources except allowed ones',"This option is ignored if the allow list is empty");
-	addEntry(group,'album-blacklist','Players excluded from using album art','Separate entries with commas');
+	addEntry(settings,group,'mpris-sources-blacklist','Ignore list','Separate entries with commas');
+	addEntry(settings,group,'mpris-sources-whitelist','Allow list','Separate entries with commas');
+	addSwitch(settings,group,'use-whitelisted-sources-only','Ignore all sources except allowed ones',"This option is ignored if the allow list is empty");
+	addEntry(settings,group,'album-blacklist','Players excluded from using album art','Separate entries with commas');
 
-	addResetButton(group,'Reset Filters settings',[
+	addResetButton(settings,group,'Reset Filters settings',[
 		'mpris-sources-blacklist','mpris-sources-whitelist','use-whitelisted-sources-only','album-blacklist']
 	);
 
@@ -92,8 +92,8 @@ function fillPreferencesWindow(window){
 	};
 
 	group = addGroup(page,'Double Click');
-	addSwitch(group, 'enable-double-clicks', 'Enable double clicks', undefined);
-	let doubleClickTime = addSpinButton(group, 'double-click-time', 'Double click time (milliseconds)', 1, 1000, undefined);
+	addSwitch(settings,group, 'enable-double-clicks', 'Enable double clicks', undefined);
+	let doubleClickTime = addSpinButton(settings,group, 'double-click-time', 'Double click time (milliseconds)', 1, 1000, undefined);
 
 	group = addGroup(page,'Mouse bindings');
 
@@ -110,19 +110,19 @@ function fillPreferencesWindow(window){
 	row.add_suffix(doubleClickLabel);
 	group.add(row);
 
-	let [leftClickDropDown, leftDoubleClickDropDown] = addDoubleDropDown(group,'left-click-action','left-double-click-action','Left click',buttonActions,buttonActions,undefined);
-	let [middleClickDropDown, middleDoubleClickDropDown] = addDoubleDropDown(group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,buttonActions,undefined);
-	let [rightClickDropDown, rightDoubleClickDropDown] = addDoubleDropDown(group,'right-click-action','right-double-click-action','Right click',buttonActions,buttonActions,undefined);
-	let [thumbForwardDropDown, thumbDoubleForwardDropDown] = addDoubleDropDown(group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,buttonActions,undefined);
-	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
+	let [leftClickDropDown, leftDoubleClickDropDown] = addDoubleDropDown(settings,group,'left-click-action','left-double-click-action','Left click',buttonActions,buttonActions,undefined);
+	let [middleClickDropDown, middleDoubleClickDropDown] = addDoubleDropDown(settings,group,'middle-click-action','middle-double-click-action','Middle click',buttonActions,buttonActions,undefined);
+	let [rightClickDropDown, rightDoubleClickDropDown] = addDoubleDropDown(settings,group,'right-click-action','right-double-click-action','Right click',buttonActions,buttonActions,undefined);
+	let [thumbForwardDropDown, thumbDoubleForwardDropDown] = addDoubleDropDown(settings,group,'thumb-forward-action','thumb-double-forward-action','Thumb-tip button',buttonActions,buttonActions,undefined);
+	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(settings,group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let [scrollDropDown] = addDropDown(group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
+	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
 
 	group = addGroup(page,'Behaviour');
-	let [volumeControlDropDown] = addDropDown(group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
+	let [volumeControlDropDown] = addDropDown(settings,group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
 
-	addResetButton(group,'Reset Controls settings',[
+	addResetButton(settings,group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
 		'right-click-action','right-double-click-action','scroll-action','thumb-forward-action','thumb-double-forward-action','thumb-backward-action',
 		'thumb-double-backward-action','volume-control-scheme'],[leftClickDropDown, leftDoubleClickDropDown,middleClickDropDown, middleDoubleClickDropDown,
@@ -154,10 +154,10 @@ function addGroup(page,title){
 
 // Adwaita 'Row' functions, they add a row to the target group with the widget(s) specified
 
-function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
+function addSpinButton(settings,group,setting,labelstring,lower,upper,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let thisResetButton = buildResetButton(setting);
+	let thisResetButton = buildResetButton(settings,setting);
 
 	let thisSpinButton = new Gtk.SpinButton({
 		adjustment: new Gtk.Adjustment({
@@ -185,22 +185,22 @@ function addSpinButton(group,setting,labelstring,lower,upper,labeltooltip){
 	return row;
 }
 
-function addDropDownsList(group, settingsList, labelstring, optionsList, labeltooltip,width){
+function addDropDownsList(settings,group, settingsList, labelstring, optionsList, labeltooltip,width){
 	let row = buildActionRow(labelstring,labeltooltip);
 
 	let thisDropDownList = [];//keep list of all dropDowns created (required for reset button generation/visibility)
 	for (let i = 0; i < settingsList.length; i++)//generate dropdown for each setting
-		thisDropDownList.push(buildDropDown(settings, settingsList[i], optionsList[i],width));
+		thisDropDownList.push(buildDropDown(settings,settingsList[i],optionsList[i],width));
 
 	//generate reset button (single button for all drop downs)
-	let thisResetButton = buildDropDownResetButton(settingsList,thisDropDownList,optionsList);
+	let thisResetButton = buildDropDownResetButton(settings,settingsList,thisDropDownList,optionsList);
 	row.add_suffix(thisResetButton);
 
 	for (let i = 0; i < thisDropDownList.length; i++) {
 		thisDropDownList[i].connect('notify::selected-item', () => {
 			settings.set_string(settingsList[i],Object.values(optionsList[i])[thisDropDownList[i].get_selected()]);
 			//set reset button visibility to true if any of the settings is different from default
-			let setVisible = setDropDownResetVisibility(settingsList,thisDropDownList,optionsList);
+			let setVisible = setDropDownResetVisibility(settings,settingsList,thisDropDownList,optionsList);
 			thisResetButton.set_visible(setVisible);
 		});
 		row.add_suffix(thisDropDownList[i]);
@@ -210,22 +210,22 @@ function addDropDownsList(group, settingsList, labelstring, optionsList, labelto
 	return thisDropDownList;
 }
 
-function addDropDown(group,settings,labelstring,options,labeltooltip,width=105){
-	return addDropDownsList(group, [settings], labelstring, [options], labeltooltip,width);
+function addDropDown(settings,group,setting,labelstring,options,labeltooltip,width=105){
+	return addDropDownsList(settings,group, [setting], labelstring, [options], labeltooltip,width);
 }
 
-function addDoubleDropDown(group,setting1,setting2,labelstring,options1,options2,labeltooltip,width=135){
-	return addDropDownsList(group, [setting1,setting2], labelstring, [options1,options2], labeltooltip,width);
+function addDoubleDropDown(settings,group,setting1,setting2,labelstring,options1,options2,labeltooltip,width=135){
+	return addDropDownsList(settings,group, [setting1,setting2], labelstring, [options1,options2], labeltooltip,width);
 }
 
-function addTripleDropDown(group,setting1,setting2,setting3,labelstring,options1,options2,options3,labeltooltip,width=81){
-	return addDropDownsList(group, [setting1,setting2,setting3], labelstring, [options1,options2,options3], labeltooltip,width);
+function addTripleDropDown(settings,group,setting1,setting2,setting3,labelstring,options1,options2,options3,labeltooltip,width=81){
+	return addDropDownsList(settings,group, [setting1,setting2,setting3], labelstring, [options1,options2,options3], labeltooltip,width);
 }
 
-function addSwitch(group,setting,labelstring,labeltooltip){
+function addSwitch(settings,group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let thisResetButton = buildResetButton(setting);
+	let thisResetButton = buildResetButton(settings,setting);
 	row.add_suffix(thisResetButton);
 
 	let thisSwitch = new Gtk.Switch({
@@ -246,10 +246,10 @@ function addSwitch(group,setting,labelstring,labeltooltip){
 	group.add(row)
 }
 
-function addEntry(group,setting,labelstring,labeltooltip){
+function addEntry(settings,group,setting,labelstring,labeltooltip){
 	let row = buildActionRow(labelstring,labeltooltip);
 
-	let thisResetButton = buildResetButton(setting);
+	let thisResetButton = buildResetButton(settings,setting);
 	row.add_suffix(thisResetButton);
 
 	let thisEntry = new Gtk.Entry({
@@ -271,7 +271,7 @@ function addEntry(group,setting,labelstring,labeltooltip){
 	group.add(row)
 }
 
-function addWideEntry(group,setting,placeholder,labeltooltip){
+function addWideEntry(settings,group,setting,placeholder,labeltooltip){
 	let thisEntry = new Gtk.Entry({
 		visible: true,
 		secondary_icon_name: '',
@@ -304,7 +304,7 @@ function addWideEntry(group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function addResetButton(group,labelstring,options,dropDowns){
+function addResetButton(settings,group,labelstring,options,dropDowns){
 	let thisButton = buildButton(labelstring, () => {
 		options.forEach(option => {
 			settings.reset(option);
@@ -361,7 +361,7 @@ function buildInfoButton(labeltooltip){
 	return thisInfoButton;
 }
 
-function buildResetButton(setting){
+function buildResetButton(settings,setting){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic-rtl',
@@ -396,7 +396,7 @@ function buildDropDown(settings,setting,options,width){
 	return thisDropDown;
 }
 
-function buildDropDownResetButton(setting,dropDown,options){
+function buildDropDownResetButton(settings,setting,dropDown,options){
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic-rtl',
@@ -435,7 +435,7 @@ function buildButton(labelstring,callback){
 
 // helper functions
 
-function setDropDownResetVisibility(settingsList,thisDropDownList,optionsList){ //show reset button if any of the values is different from default
+function setDropDownResetVisibility(settings,settingsList,thisDropDownList,optionsList){ //show reset button if any of the values is different from default
 	let setVisible = false;
 	for (let i = 0; i < thisDropDownList.length; i++) {
 		let thisDropDownValue = Object.values(optionsList[i])[thisDropDownList[i].get_selected()];
