@@ -1,8 +1,6 @@
 'use strict';
 
 const {Gio,Shell,St} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const CurrentExtension = ExtensionUtils.getCurrentExtension();
 
 const mprisInterface = `
 <node>
@@ -44,12 +42,12 @@ const dBusInterface = `
 </node>`
 
 var Players = class Players {
-	constructor(){
+	constructor(settings){
 		this.list = [];
 		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		this.settings = settings;
 	}
 	pick(){
 		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');

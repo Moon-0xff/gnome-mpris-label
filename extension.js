@@ -47,7 +47,7 @@ class MprisLabel extends PanelMenu.Button {
 		});
 		this.box.add_child(this.label);
 
-		this.players = new Players();
+		this.players = new Players(this.settings);
 
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
