@@ -1,23 +1,15 @@
 'use strict';
 
-let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
-	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD;
-
-function getSettings(settings){
-	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
-	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
-	DIVIDER_STRING = settings.get_string('divider-string');
-	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
-	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
-	FIRST_FIELD = settings.get_string('first-field');
-	SECOND_FIELD = settings.get_string('second-field');
-	LAST_FIELD = settings.get_string('last-field');
-}
-
 var buildLabel = function buildLabel(players,settings){
-	getSettings(settings);
+	let MAX_STRING_LENGTH = settings.get_int('max-string-length');
+	let BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
+	let LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
+	let DIVIDER_STRING = settings.get_string('divider-string');
+	let REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
+	let REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
+	let FIRST_FIELD = settings.get_string('first-field');
+	let SECOND_FIELD = settings.get_string('second-field');
+	let LAST_FIELD = settings.get_string('last-field');
 
 	// the placeholder string is a hint for the user to switch players
 	// it should appear if labelstring is empty and there's another player playing
@@ -44,8 +36,9 @@ var buildLabel = function buildLabel(players,settings){
 
 	let labelstring = "";
 	fields.forEach(field => {
-		let fieldString = players.selected.stringFromMetadata(field,metadata); //"extract" the string from metadata
-		fieldString = parseMetadataField(fieldString,settings); //check, filter, customize and add divider to the extracted string
+		let labelSettings = [LABEL_FILTERED_LIST,MAX_STRING_LENGTH,DIVIDER_STRING]
+		let fieldString = players.selected.stringFromMetadata(field,metadata,labelSettings); //"extract" the string from metadata
+		fieldString = parseMetadataField(fieldString,settings,labelSettings); //check, filter, customize and add divider to the extracted string
 		labelstring += fieldString; //add it to the string to be displayed
 	});
 
@@ -57,7 +50,7 @@ var buildLabel = function buildLabel(players,settings){
 	return labelstring
 }
 
-function parseMetadataField(data,settings) {
+function parseMetadataField(data,settings,[LABEL_FILTERED_LIST,MAX_STRING_LENGTH,DIVIDER_STRING]) {
 	if (data == undefined || data.length == 0)
 		return ""
 
