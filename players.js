@@ -50,7 +50,6 @@ var Players = class Players {
 		this.settings = settings;
 	}
 	pick(){
-		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		if(this.list.length == 0){
