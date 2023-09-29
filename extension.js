@@ -14,7 +14,7 @@ const { buildLabel } = CurrentExtension.imports.label;
 let indicator = null;
 
 function enable(){
-	indicator = new MprisLabel();
+	indicator = new MprisLabel(ExtensionUtils.getSettings());
 }
 
 function disable(){
@@ -26,10 +26,10 @@ function disable(){
 var MprisLabel = GObject.registerClass(
 	{ GTypeName: 'MprisLabel' },
 class MprisLabel extends PanelMenu.Button {
-	_init(){
+	_init(settings){
 		super._init(0.0,'Mpris Label',false);
 
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		this.settings = settings;
 
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
