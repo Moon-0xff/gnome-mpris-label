@@ -14,13 +14,15 @@ const { buildLabel } = CurrentExtension.imports.label;
 let indicator = null;
 
 function enable(){
-	indicator = new MprisLabel(ExtensionUtils.getSettings());
+	this.settings = ExtensionUtils.getSettings()
+	indicator = new MprisLabel(this.settings);
 }
 
 function disable(){
 	indicator._disable();
 	indicator.destroy();
 	indicator = null;
+	this.settings = null;
 }
 
 var MprisLabel = GObject.registerClass(
