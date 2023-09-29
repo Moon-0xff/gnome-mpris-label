@@ -1,15 +1,15 @@
 'use strict';
 
 var buildLabel = function buildLabel(players,settings){
-	let MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	let BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
-	let LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
-	let DIVIDER_STRING = settings.get_string('divider-string');
-	let REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
-	let REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
-	let FIRST_FIELD = settings.get_string('first-field');
-	let SECOND_FIELD = settings.get_string('second-field');
-	let LAST_FIELD = settings.get_string('last-field');
+	const MAX_STRING_LENGTH = settings.get_int('max-string-length');
+	const BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
+	const LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
+	const DIVIDER_STRING = settings.get_string('divider-string');
+	const REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
+	const REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
+	const FIRST_FIELD = settings.get_string('first-field');
+	const SECOND_FIELD = settings.get_string('second-field');
+	const LAST_FIELD = settings.get_string('last-field');
 
 	// the placeholder string is a hint for the user to switch players
 	// it should appear if labelstring is empty and there's another player playing
