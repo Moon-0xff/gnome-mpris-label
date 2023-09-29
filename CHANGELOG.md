@@ -63,3 +63,8 @@ Includes new options to customize the icon alongside the label:
 - Uses Adwaita for the preferences window
 - Removes support for GNOME 3.36, 3.38, 40, 41, and 42
   (The extension may still work in GNOME 42 but it's untested)
+
+# Version 25
+- Uses Adwaita extensively, giving a polished and up-to-date look to the
+  preferences window
+- Adds 'individual' reset buttons for every settings row
