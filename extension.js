@@ -12,7 +12,7 @@ const { buildLabel } = CurrentExtension.imports.label;
 let indicator = null;
 
 function enable(){
-	indicator = new MprisLabel();
+	indicator = new MprisLabel(ExtensionUtils.getSettings());
 }
 
 function disable(){
@@ -24,10 +24,10 @@ function disable(){
 var MprisLabel = GObject.registerClass(
 	{ GTypeName: 'MprisLabel' },
 class MprisLabel extends PanelMenu.Button {
-	_init(){
+	_init(settings){
 		super._init(0.0,'Mpris Label',false);
 
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		this.settings = settings;
 
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
@@ -45,7 +45,7 @@ class MprisLabel extends PanelMenu.Button {
 		});
 		this.box.add_child(this.label);
 
-		this.players = new Players();
+		this.players = new Players(this.settings);
 
 		this.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
@@ -479,7 +479,7 @@ class MprisLabel extends PanelMenu.Button {
 			if(this.player == null || undefined)
 				this.label.set_text("")
 			else
-				this.label.set_text(buildLabel(this.players));
+				this.label.set_text(buildLabel(this.players,this.settings));
 		}
 		catch(err){
 			log("Mpris Label: " + err);

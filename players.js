@@ -1,6 +1,4 @@
-const {Clutter,Gio,GLib,GObject,Shell,St} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const CurrentExtension = ExtensionUtils.getCurrentExtension();
+const {Gio,Shell,St} = imports.gi;
 
 const mprisInterface = `
 <node>
@@ -42,15 +40,14 @@ const dBusInterface = `
 </node>`
 
 var Players = class Players {
-	constructor(){
+	constructor(settings){
 		this.list = [];
 		this.activePlayers= [];
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
-		this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+		this.settings = settings;
 	}
 	pick(){
-		const REMOVE_TEXT_WHEN_PAUSED = this.settings.get_boolean('remove-text-when-paused');
 		const AUTO_SWITCH_TO_MOST_RECENT = this.settings.get_boolean('auto-switch-to-most-recent');
 
 		if(this.list.length == 0){
@@ -196,7 +193,7 @@ class Player {
 		if ( matchedEntries.length > 0 )
 			this.desktopApp = this._matchRunningApps(matchedEntries)
 
-		this.icon = this.getIcon(this.desktopApp);
+		this.icon = this.getIcon();
 	}
 	_matchRunningApps(matchedEntries){
 		const activeApps = Shell.AppSystem.get_default().get_running();

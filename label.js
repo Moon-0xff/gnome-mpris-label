@@ -1,27 +1,13 @@
-const ExtensionUtils = imports.misc.extensionUtils;
-const CurrentExtension = ExtensionUtils.getCurrentExtension();
-
-let MAX_STRING_LENGTH,BUTTON_PLACEHOLDER,LABEL_FILTERED_LIST,
-	DIVIDER_STRING,REMOVE_TEXT_WHEN_PAUSED,
-	REMOVE_TEXT_PAUSED_DELAY,FIRST_FIELD,SECOND_FIELD,LAST_FIELD
-	MAX_STRING_LENGTH,DIVIDER_STRING;
-
-function getSettings(){
-	const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-	MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	REFRESH_RATE = settings.get_int('refresh-rate');
-	BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
-	LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
-	DIVIDER_STRING = settings.get_string('divider-string');
-	REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
-	REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
-	FIRST_FIELD = settings.get_string('first-field');
-	SECOND_FIELD = settings.get_string('second-field');
-	LAST_FIELD = settings.get_string('last-field');
-}
-
-var buildLabel = function buildLabel(players){
-	getSettings();
+var buildLabel = function buildLabel(players,settings){
+	const MAX_STRING_LENGTH = settings.get_int('max-string-length');
+	const BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
+	const LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
+	const DIVIDER_STRING = settings.get_string('divider-string');
+	const REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
+	const REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
+	const FIRST_FIELD = settings.get_string('first-field');
+	const SECOND_FIELD = settings.get_string('second-field');
+	const LAST_FIELD = settings.get_string('last-field');
 
 	// the placeholder string is a hint for the user to switch players
 	// it should appear if labelstring is empty and there's another player playing
@@ -48,8 +34,9 @@ var buildLabel = function buildLabel(players){
 
 	let labelstring = "";
 	fields.forEach(field => {
-		let fieldString = players.selected.stringFromMetadata(field,metadata); //"extract" the string from metadata
-		fieldString = parseMetadataField(fieldString); //check, filter, customize and add divider to the extracted string
+		let labelSettings = [LABEL_FILTERED_LIST,MAX_STRING_LENGTH,DIVIDER_STRING]
+		let fieldString = players.selected.stringFromMetadata(field,metadata,labelSettings); //"extract" the string from metadata
+		fieldString = parseMetadataField(fieldString,settings,labelSettings); //check, filter, customize and add divider to the extracted string
 		labelstring += fieldString; //add it to the string to be displayed
 	});
 
@@ -61,7 +48,7 @@ var buildLabel = function buildLabel(players){
 	return labelstring
 }
 
-function parseMetadataField(data) {
+function parseMetadataField(data,settings,[LABEL_FILTERED_LIST,MAX_STRING_LENGTH,DIVIDER_STRING]) {
 	if (data == undefined || data.length == 0)
 		return ""
 
@@ -77,7 +64,6 @@ function parseMetadataField(data) {
 		const sanitizedInput = LABEL_FILTERED_LIST.replace(CtrlCharactersRegex,"")
 
 		if(sanitizedInput != LABEL_FILTERED_LIST){
-			const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
 			settings.set_string('label-filtered-list',sanitizedInput);
 		}
 

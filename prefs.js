@@ -97,13 +97,13 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'Mouse bindings');
 
-	row = new Adw.ActionRow({ title: ''});
+	let row = new Adw.ActionRow({ title: ''});
 	let singleClickLabel = new Gtk.Label({ //not sure how to underline or reduce height
 		label: 'Single click',
 		width_chars: 17
 	});
 	row.add_suffix(singleClickLabel);
-	doubleClickLabel = new Gtk.Label({
+	let doubleClickLabel = new Gtk.Label({
 		label: 'Double click',
 		width_chars: 17
 	});
@@ -478,7 +478,7 @@ function playersToString(){
 
 	let newList = [];
 	list.forEach(element => {
-		entryProxy = entryWrapper(Gio.DBus.session,element,"/org/mpris/MediaPlayer2");
+		let entryProxy = entryWrapper(Gio.DBus.session,element,"/org/mpris/MediaPlayer2");
 		let identity = entryProxy.Identity;
 		newList.push(identity);
 	});
