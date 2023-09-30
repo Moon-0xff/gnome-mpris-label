@@ -1,5 +1,3 @@
-'use strict';
-
 const {Gio,Shell,St} = imports.gi;
 
 const mprisInterface = `
