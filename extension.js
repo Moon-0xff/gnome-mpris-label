@@ -387,7 +387,10 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 	//settings shortcut:
-		this.menu.addAction(_('Settings'), () => ExtensionUtils.openPrefs());
+		let settingsMenuItem = new PopupMenu.PopupMenuItem('Switch Automatically');
+		settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
+		settingsMenuItem.connect('activate', () => ExtensionUtils.openPrefs() );
+		this.menu.addMenuItem(settingsMenuItem);
 	}
 
 	_refresh() {
