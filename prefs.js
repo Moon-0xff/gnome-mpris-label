@@ -1,7 +1,6 @@
 const {Adw,Gio,Gtk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
-const Config = imports.misc.config;
 
 function init(){}
 
