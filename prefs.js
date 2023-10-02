@@ -1,11 +1,14 @@
-const {Adw,Gio,Gtk} = imports.gi;
+import Adw from 'gi://Adw';
+import Gio from 'gi://Gio';
+import Gtk from 'gi://Gtk';
 
-const ExtensionUtils = imports.misc.extensionUtils;
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 function init(){}
 
-function fillPreferencesWindow(window){
-	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
+export default class MprisLabelPreferences extends ExtensionPreferences {
+fillPreferencesWindow(window){
+	const settings = this.getSettings();
 	window.default_height = 950;
 
 //panel page:
@@ -131,6 +134,7 @@ function fillPreferencesWindow(window){
 
 	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
 		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
+}
 }
 
 // Adwaita "design" and "structure" functions
