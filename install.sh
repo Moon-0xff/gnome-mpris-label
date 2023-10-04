@@ -10,8 +10,8 @@ cd "$(dirname "$0")"
 printf "\e[32mCopying extension files to target directory:\n\e[0m"
 cp -Rv ./* $DEFAULT_INSTALL_DIR
 
-gnomeVersion=$(gnome-shell --version | awk -F'[ .]' '{print $3}') #get major Gnome version
-if [ $gnomeVersion -ge 45 ]; then #apply patch if Gnome 45+
+GNOME_VERSION=$(gnome-shell --version | awk -F'[ .]' '{print $3}') #get major Gnome version
+if [ $GNOME_VERSION -ge 45 ]; then #apply patch if Gnome 45+
 	if ! command -v patch > /dev/null #check if patch is installed...
 	then
 		printf "\e\n[31mYou are running GNOME 45 or greater and will need to apply the compatibility patch.\nPlease install the 'patch' utility and rerun this script. See README.md for instructions.\n\n\e[0m"
