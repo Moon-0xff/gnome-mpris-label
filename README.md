@@ -15,6 +15,15 @@ The idea of supporting all mpris compatible players (and how to do it) comes fro
 
 If this is your first time installing an extension perhaps you don't have the necessary software to do it though. Visit the page for further instructions
 
+### Installing the GNOME 45 version using git
+both `main` and `stable` branches provide the GNOME 43/44 compatible version of this extension.  
+To get 45 compatibility, you need to **patch it**.  
+Here's the instructions:
+1. Follow the instructions to install the 43/44 version with git below (Using Git / Using Git and the installation script)
+2. `cd` into the installation directory, default path is `~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
+3. Apply the patch: `$ patch < patches/gnome45-compatibility.patch`
+4. All done, log out and log back again and the extension should be compatible with 45, if not, raise an issue to let us know
+
 ### Using Git
 * Install the stable release with:  
     `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git -b stable ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
@@ -32,16 +41,6 @@ If this is your first time installing an extension perhaps you don't have the ne
 4. Run the installation script: `$ sh install.sh`
 
 Skip the third step if you want the latest development version (warning: it could be broken or buggy)
-
-### Installing the GNOME 45 version using git
-
-both `main` and `stable` branches provide the GNOME 43/44 compatible version of this extension.  
-To get 45 compatibility, you need to **patch it**.  
-Here's the instructions:
-1. Follow the instructions to install the 43/44 version with git above (Using Git / Using Git and the installation script)
-2. `cd` into the installation directory, default path is `~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
-3. Apply the patch: `$ patch < patches/gnome45-compatibility.patch`
-4. All done, log out and log back again and the extension should be compatible with 45, if not, raise an issue to let us know
 
 ## Contribution
 
