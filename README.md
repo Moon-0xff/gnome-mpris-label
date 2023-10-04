@@ -33,6 +33,16 @@ If this is your first time installing an extension perhaps you don't have the ne
 
 Skip the third step if you want the latest development version (warning: it could be broken or buggy)
 
+### Installing the GNOME 45 version using git
+
+both `main` and `stable` branches provide the GNOME 43/44 compatible version of this extension.  
+To get 45 compatibility, you need to **patch it**.  
+Here's the instructions:
+1. Follow the instructions to install the 43/44 version with git above (Using Git / Using Git and the installation script)
+2. `cd` into the installation directory, default path is `~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
+3. Apply the patch: `$ patch < patches/gnome45-compatibility.patch`
+4. All done, log out and log back again and the extension should be compatible with 45, if not, raise an issue to let us know
+
 ## Contribution
 
 Feel free to submit an issue if you have encountered a bug, want to ask something, want to share an idea for a feature, or something else entirely.
