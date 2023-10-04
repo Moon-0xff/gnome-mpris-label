@@ -15,4 +15,7 @@ if [ $XDG_SESSION_TYPE = "x11" ]; then
 else
 	printf "\n\e[32mAll files copied. \nPlease log out and log back in again to load the extension.\n\n\e[0m"
 fi
+
+printf "\e[33mIf you are running GNOME 45 you will need to apply the compatibility patch. See README.md for instructions.\n\n\e[0m"
+
 cd $OLDPWD
