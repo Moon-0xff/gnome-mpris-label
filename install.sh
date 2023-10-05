@@ -12,14 +12,8 @@ cp -Rv ./* $DEFAULT_INSTALL_DIR
 
 GNOME_VERSION=$(gnome-shell --version | awk -F'[ .]' '{print $3}') #get major Gnome version
 if [ $GNOME_VERSION -ge 45 ]; then #apply patch if Gnome 45+
-	if ! command -v patch > /dev/null #check if patch is installed...
-	then
-		printf "\e\n[31mYou are running GNOME 45 or greater and will need to apply the compatibility patch.\nPlease install the 'patch' utility and rerun this script. See README.md for instructions.\n\n\e[0m"
-		exit 1
-	else
-		printf "\e\n[33mYou are running GNOME 45 or greater. Applying the compatibility patch... \nSee README.md for details.\n\e[0m"
-		patch -d $DEFAULT_INSTALL_DIR < patches/gnome45-compatibility.patch
-	fi
+	echo "You are running GNOME 45 or above. The script will try to patch compatibility for this version. See README.md for details."
+	patch -d $DEFAULT_INSTALL_DIR < patches/gnome45-compatibility.patch && echo "Patch applied!" || echo "Patch failed!" && exit 1
 fi
 
 if [ $XDG_SESSION_TYPE = "x11" ]; then
