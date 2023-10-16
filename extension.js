@@ -455,7 +455,7 @@ class MprisLabel extends PanelMenu.Button {
 			let size = Math.floor(Main.panel.height*ALBUM_SIZE/100);
 
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
-			if(!blacklist.includes(this.player.identity.toLowerCase()))
+			if(!this.player.identity || !blacklist.includes(this.player.identity.toLowerCase()))
 				this.icon = this.player.getArtUrlIcon(size);
 		}
 
