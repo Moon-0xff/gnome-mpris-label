@@ -242,17 +242,17 @@ class MprisLabel extends PanelMenu.Button {
 	_changeVolume(delta){
 		let stream = [];
 		stream[0] = this.volumeControl.get_default_sink();
-		let stream_name = 'System Volume (Global)';
+		let streamName = 'System Volume (Global)';
 
 		const CONTROL_SCHEME = this.settings.get_string('volume-control-scheme');
 
 		if(CONTROL_SCHEME == 'application' && this.player){
-			if(this.stream.length == 0)
+			if(!this.stream || this.stream.length == 0)
 				this._getStream();
 
-			if (this.stream.length > 0){
+			if (this.stream && this.stream.length > 0){ //will fall back to System Volume (Global)
 				stream = this.stream;
-				stream_name = this.player.identity;
+				streamName = this.player.identity;
 			}
 		}
 
@@ -284,7 +284,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-		Main.osdWindowManager.show(monitor, icon, stream_name, volumeRatio);
+		Main.osdWindowManager.show(monitor, icon, streamName, volumeRatio);
 	}
 
 	_getStream(){
