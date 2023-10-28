@@ -19,7 +19,7 @@ It requires the installation of a browser plugin and a system package. Visit the
 ### Using Git and the installation script
 1. Clone this repository: `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git`
 2. `cd` into the directory: `$ cd gnome-mpris-label`
-3. Checkout stable branch: `$ git checkout stable`
+3. Checkout the stable branch: `$ git checkout stable`
 4. Run the installation script: `$ sh install.sh`
 
 Skip the third step to install the development version.  
@@ -35,7 +35,7 @@ GNOME 45+ compatibility isn't provided directly, it needs to be patched.
 The installation script will patch the extension if it detects a gnome-shell version above or equal to `45`.  
 You can patch it manually by running: `$ patch < patches/gnome45-compatibility.patch`
 
-Recently installed extensions are only available after `gnome-shell` is reloaded. On Gnome-Wayland is necessary to log out and log back in. On Gnome-Xorg the shell can be reloaded by running `r` on the 'Run as a command' prompt (default shortcut: `Alt+F2`)
+Recently installed extensions are only available after `gnome-shell` is reloaded. On Gnome-Wayland is necessary to log out and log back in. On Gnome-Xorg the shell can be reloaded by running `r` on the 'Run as a command' prompt (default shortcut: `Alt+F2`).
 
 ## Contribution
 
