@@ -88,8 +88,9 @@ index f1cfc3c..02c002a 100644
 @@ -3,7 +3,7 @@
      "name": "Media Label and Controls (Mpris Label)",
      "description": "Display a label in your panel with the song/title/album/artist information available from an mpris compatible player. You can also control the player, raise/lower its volume, customize the label, and a lot more! This extension works with Spotify, Vlc, Rhythmbox, Firefox, Chromium, and (probably) any MPRIS compatible player.",
-     "version": 25,
+-    "version": 25,
 -    "shell-version": [ "43", "44" ],
++    "version": 26,
 +    "shell-version": [ "45" ],
      "url": "https://github.com/Moon-0xff/gnome-mpris-label",
      "settings-schema": "org.gnome.shell.extensions.mpris-label"
