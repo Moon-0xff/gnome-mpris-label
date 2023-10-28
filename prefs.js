@@ -39,8 +39,9 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'Behaviour');
 	addSwitch(settings,group,'auto-switch-to-most-recent','Switch to the most recent source automatically',"This option can be annoying without the use of filter lists");
-	addSwitch(settings,group,'remove-text-when-paused','Hide when paused',undefined);
-	addSpinButton(settings,group,'remove-text-paused-delay','Hide when paused delay (seconds)',0,9999,undefined);
+	addSwitch(settings,group,'remove-text-when-paused','Hide label when paused',undefined);
+	addSwitch(settings,group,'remove-extension-when-paused','Hide extension when nothing is playing',"Hide extension where there is no active source or the active source is paused/stopped.\n\nNote: This option will prevent you from accessing the menu or other mouse controls when no music is playing");
+	addSpinButton(settings,group,'remove-text-paused-delay','Hide label/extension delay (seconds)',0,9999,undefined);
 	addSpinButton(settings,group,'refresh-rate','Refresh rate (milliseconds)',30,3000,undefined);
 	addEntry(settings,group,'label-filtered-list','Filter segments containing',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
@@ -56,7 +57,7 @@ function fillPreferencesWindow(window){
 
 	addResetButton(settings,group,'Reset Label settings',[
 		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
-		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
+		'last-field','remove-text-when-paused','remove-extension-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
 	);
 
 //filters page:

@@ -395,6 +395,8 @@ class MprisLabel extends PanelMenu.Button {
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
+		const REMOVE_EXTENSION_WHEN_PAUSED = this.settings.get_boolean('remove-extension-when-paused');
+		const REMOVE_TEXT_PAUSED_DELAY = this.settings.get_int('remove-text-paused-delay');
 
 		if(this._timeout) //prevent simultaneous timeouts
 			this._removeTimeout();
@@ -409,9 +411,13 @@ class MprisLabel extends PanelMenu.Button {
 			; //do nothing
 		}
 
-		if (this.players.list == 0){ //terminate function early, reset timer, and hide label
-			if(this.visible)
-				this.hide();
+		this.player = this.players.pick();
+		if (REMOVE_EXTENSION_WHEN_PAUSED && (!this.player || this.player.playbackStatus != "Playing")){ //terminate function early, reset timer, and hide label
+			const currentTimestamp = new Date().getTime() / 1000;
+			if(this.visible){
+				if(!this.player || (this.player.statusTimestamp / 1000 + REMOVE_TEXT_PAUSED_DELAY <= currentTimestamp))
+					this.hide();
+			}
 
 			this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
 				REFRESH_RATE, this._refresh.bind(this));
@@ -421,8 +427,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(!this.visible)
 			this.show();
-
-		this.player = this.players.pick();
 
 		if(this.player != prevPlayer)
 			this._getStream();

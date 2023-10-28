@@ -54,6 +54,10 @@
       <default>true</default>
     </key>
 
+    <key name="remove-extension-when-paused" type="b">
+      <default>false</default>
+    </key>
+
     <key name="remove-text-paused-delay" type="i">
       <default>3</default>
     </key>
