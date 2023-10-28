@@ -9,30 +9,12 @@ The idea of supporting all mpris compatible players (and how to do it) comes fro
 
 ## Installation
 
-### One click installation from extensions.gnome.org
+### Using extensions.gnome.org
+[Install this extension from extensions.gnome.org](https://extensions.gnome.org/extension/4928/mpris-label)
 
-[Install this extension in one click from extensions.gnome.org](https://extensions.gnome.org/extension/4928/mpris-label)
+This is the recommended way of installing GNOME extensions, the browser plugin will install the extension in one click, and is just as easy to remove or manage.
 
-If this is your first time installing an extension perhaps you don't have the necessary software to do it though. Visit the page for further instructions
-
-### Installing the GNOME 45 version using git
-both `main` and `stable` branches provide the GNOME 43/44 compatible version of this extension.  
-To get 45 compatibility, you need to **patch it**.  
-Here's the instructions:
-1. Follow the instructions to install the 43/44 version with git below (Using Git / Using Git and the installation script)
-2. `cd` into the installation directory, default path is `~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
-3. Apply the patch: `$ patch < patches/gnome45-compatibility.patch`
-4. All done, log out and log back again and the extension should be compatible with 45, if not, raise an issue to let us know
-
-### Using Git
-* Install the stable release with:  
-    `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git -b stable ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`
-
-* Install the latest development version with:  
-    `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com`  
-    **Warning:** the latest development version could be broken or buggy
-
-* Finally log out from GNOME and log in again. It should be enabled by default, check tweaks or extensions if it's not.
+It requires the installation of a browser plugin and a system package. Visit the page for further instructions.
 
 ### Using Git and the installation script
 1. Clone this repository: `$ git clone https://github.com/Moon-0xff/gnome-mpris-label.git`
@@ -40,7 +22,20 @@ Here's the instructions:
 3. Checkout stable branch: `$ git checkout stable`
 4. Run the installation script: `$ sh install.sh`
 
-Skip the third step if you want the latest development version (warning: it could be broken or buggy)
+Skip the third step to install the development version.  
+**Warning:** the latest development version could be broken or buggy
+
+### More info about the installation
+
+The default installation path is: `~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com/`
+
+This extension (for GNOME 44/43) can be installed by simply copying the repository to the default installation path.
+
+GNOME 45+ compatibility isn't provided directly, it needs to be patched.  
+The installation script will patch the extension if it detects a gnome-shell version above or equal to `45`.  
+You can patch it manually by running: `$ patch < patches/gnome45-compatibility.patch`
+
+Recently installed extensions are only available after `gnome-shell` is reloaded. On Gnome-Wayland is necessary to log out and log back in. On Gnome-Xorg the shell can be reloaded by running `r` on the 'Run as a command' prompt (default shortcut: `Alt+F2`)
 
 ## Contribution
 
