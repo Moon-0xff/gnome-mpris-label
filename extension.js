@@ -427,7 +427,17 @@ class MprisLabel extends PanelMenu.Button {
 		if(this.player != prevPlayer)
 			this._getStream();
 
-		this._setText();
+		try{
+			if(this.player == null || undefined)
+				this.label.set_text("")
+			else
+				this.label.set_text(buildLabel(this.players,this.settings));
+		}
+		catch(err){
+			log("Mpris Label: " + err);
+			this.label.set_text("");
+		}
+
 		this._setIcon();
 
 		this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
@@ -474,19 +484,6 @@ class MprisLabel extends PanelMenu.Button {
 				this.icon.set_style(this.icon.get_style() + "padding-left: 0px;padding-right: " + ICON_PADDING + "px;");
 				this.box.insert_child_at_index(this.icon,0);
 			}
-		}
-	}
-
-	_setText() {
-		try{
-			if(this.player == null || undefined)
-				this.label.set_text("")
-			else
-				this.label.set_text(buildLabel(this.players,this.settings));
-		}
-		catch(err){
-			log("Mpris Label: " + err);
-			this.label.set_text("");
 		}
 	}
 
