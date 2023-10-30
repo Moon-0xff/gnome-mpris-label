@@ -6,12 +6,15 @@ function init(){}
 
 function fillPreferencesWindow(window){
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-	window.default_height = 950;
+	window.default_height = 1048;
 
 //panel page:
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
 
-	let group = addGroup(page,'Icon');
+	let group = addGroup(page,'');
+	addDropDown(settings,group,'hide-level','Hide widget when:',{'there\'s no players available':0,'the label is empty':1},undefined);
+
+	group = addGroup(page,'Icon');
 	let [showIconDropDown] = addDropDown(settings,group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
 	addSpinButton(settings,group,'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(settings,group,'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
