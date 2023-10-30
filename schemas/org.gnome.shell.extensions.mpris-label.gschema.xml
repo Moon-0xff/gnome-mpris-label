@@ -162,5 +162,9 @@
       <default>""</default>
     </key>
 
+    <key name="hide-level" type="i">
+      <default>0</default>
+    </key>
+
   </schema>
 </schemalist>
