@@ -12,7 +12,8 @@ function fillPreferencesWindow(window){
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
 
 	let group = addGroup(page,'');
-	addDropDown(settings,group,'hide-level','Hide widget when:',{'there\'s no players available':0,'the label is empty':2},undefined);
+	//addDropDown(settings,group,'hide-level','Hide widget when:',{'there\'s no players available':0,'the label is empty':2},undefined);
+	addSpinButton(settings,group,'hide-level', 'Hide widget level:', 0, 2, undefined);
 
 	group = addGroup(page,'Icon');
 	let [showIconDropDown] = addDropDown(settings,group,'show-icon','Show source icon',{'off':'','left':'left','right':'right'},undefined);
