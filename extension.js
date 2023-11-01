@@ -395,38 +395,27 @@ class MprisLabel extends PanelMenu.Button {
 
 	_refresh() {
 		try {
-			let prevPlayer = this.player;
-
 			this._updateLists();
 
 			if (this.players.list == 0){ //terminate function early, reset timer, and hide label
 				if(this.visible)
 					this.hide();
-
-				this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
-					REFRESH_RATE, this._refresh.bind(this));
-
-				return
 			}
+
+			let prevPlayer = this.player;
+			this.player = this.players.pick();
 
 			if(!this.visible)
 				this.show();
 
-			this.player = this.players.pick();
-
 			if(this.player != prevPlayer)
 				this._getStream();
 
-			try{
-				if(this.player == null || undefined)
-					this.label.set_text("")
-				else
-					this.label.set_text(buildLabel(this.players,this.settings));
-			}
-			catch(err){
-				log("Mpris Label: " + err);
-				this.label.set_text("");
-			}
+			if(this.player == null || undefined)
+				this.label.set_text("")
+			else
+				this.label.set_text(buildLabel(this.players,this.settings));
+
 			this._setIcon();
 		}
 		catch(err) {
