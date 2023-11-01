@@ -397,16 +397,15 @@ class MprisLabel extends PanelMenu.Button {
 		try {
 			this._updateLists();
 
-			if (this.players.list == 0){ //terminate function early, reset timer, and hide label
-				if(this.visible)
-					this.hide();
+			if (this.players.list == 0){
+				this._hideWidget();
+				return
 			}
 
 			let prevPlayer = this.player;
 			this.player = this.players.pick();
 
-			if(!this.visible)
-				this.show();
+			this._showWidget();
 
 			if(this.player != prevPlayer)
 				this._getStream();
@@ -440,6 +439,16 @@ class MprisLabel extends PanelMenu.Button {
 		catch {
 			; //do nothing
 		}
+	}
+
+	_hideWidget(){
+		if(this.visible)
+			this.hide();
+	}
+
+	_showWidget(){
+		if(!this.visible)
+			this.show();
 	}
 
 	_setIcon(){
