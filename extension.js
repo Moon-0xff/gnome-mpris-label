@@ -397,13 +397,7 @@ class MprisLabel extends PanelMenu.Button {
 		try {
 			let prevPlayer = this.player;
 
-			try {
-				this.players.updateFilterList();
-				this.players.updateActiveList();
-			}
-			catch {
-				; //do nothing
-			}
+			this._updateLists();
 
 			if (this.players.list == 0){ //terminate function early, reset timer, and hide label
 				if(this.visible)
@@ -446,6 +440,16 @@ class MprisLabel extends PanelMenu.Button {
 			const REFRESH_RATE = this.settings.get_int('refresh-rate');
 			this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
 				REFRESH_RATE, this._refresh.bind(this));
+		}
+	}
+
+	_updateLists(){
+		try {
+			this.players.updateFilterList();
+			this.players.updateActiveList();
+		}
+		catch {
+			; //do nothing
 		}
 	}
 
