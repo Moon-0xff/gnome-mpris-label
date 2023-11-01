@@ -415,6 +415,11 @@ class MprisLabel extends PanelMenu.Button {
 
 			this.label.set_text(buildLabel(this.players,this.settings));
 
+			if(this.label.get_text() == "" && this.settings.get_int('hide-level') > 1){
+				this._hideWidget();
+				return
+			}
+
 			this._showWidget();
 			this._setIcon();
 		}
