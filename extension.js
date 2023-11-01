@@ -394,54 +394,59 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_refresh() {
-		const REFRESH_RATE = this.settings.get_int('refresh-rate');
-
-		if(this._timeout) //prevent simultaneous timeouts
-			this._removeTimeout();
-
-		let prevPlayer = this.player;
-
 		try {
-			this.players.updateFilterList();
-			this.players.updateActiveList();
+			let prevPlayer = this.player;
+
+			try {
+				this.players.updateFilterList();
+				this.players.updateActiveList();
+			}
+			catch {
+				; //do nothing
+			}
+
+			if (this.players.list == 0){ //terminate function early, reset timer, and hide label
+				if(this.visible)
+					this.hide();
+
+				this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+					REFRESH_RATE, this._refresh.bind(this));
+
+				return
+			}
+
+			if(!this.visible)
+				this.show();
+
+			this.player = this.players.pick();
+
+			if(this.player != prevPlayer)
+				this._getStream();
+
+			try{
+				if(this.player == null || undefined)
+					this.label.set_text("")
+				else
+					this.label.set_text(buildLabel(this.players,this.settings));
+			}
+			catch(err){
+				log("Mpris Label: " + err);
+				this.label.set_text("");
+			}
+			this._setIcon();
 		}
-		catch {
-			; //do nothing
-		}
-
-		if (this.players.list == 0){ //terminate function early, reset timer, and hide label
-			if(this.visible)
-				this.hide();
-
-			this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
-				REFRESH_RATE, this._refresh.bind(this));
-
-			return
-		}
-
-		if(!this.visible)
-			this.show();
-
-		this.player = this.players.pick();
-
-		if(this.player != prevPlayer)
-			this._getStream();
-
-		try{
-			if(this.player == null || undefined)
-				this.label.set_text("")
-			else
-				this.label.set_text(buildLabel(this.players,this.settings));
-		}
-		catch(err){
+		catch(err) {
 			log("Mpris Label: " + err);
 			this.label.set_text("");
 		}
+		finally {
+			if(this._timeout) //prevent simultaneous timeouts
+				this._removeTimeout();
 
-		this._setIcon();
-
-		this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
-			REFRESH_RATE, this._refresh.bind(this));
+			const REFRESH_RATE = this.settings.get_int('refresh-rate');
+			this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+				REFRESH_RATE, this._refresh.bind(this));
+		}
 	}
 
 	_setIcon(){
