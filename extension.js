@@ -405,16 +405,17 @@ class MprisLabel extends PanelMenu.Button {
 			let prevPlayer = this.player;
 			this.player = this.players.pick();
 
-			this._showWidget();
+			if(this.player == null || undefined){
+				this._hideWidget();
+				return
+			}
 
 			if(this.player != prevPlayer)
 				this._getStream();
 
-			if(this.player == null || undefined)
-				this.label.set_text("")
-			else
-				this.label.set_text(buildLabel(this.players,this.settings));
+			this.label.set_text(buildLabel(this.players,this.settings));
 
+			this._showWidget();
 			this._setIcon();
 		}
 		catch(err) {
