@@ -413,13 +413,17 @@ class MprisLabel extends PanelMenu.Button {
 			if(this.player != prevPlayer)
 				this._getStream();
 
-			this.label.set_text(buildLabel(this.players,this.settings));
+			let labelText = buildLabel(this.players,this.settings);
 
-			if(this.label.get_text() == "" && this.settings.get_int('hide-level') > 1){
+			if(this.settings.get_boolean('remove-text-when-paused') && this.player.playbackStatus != "Playing")
+				labelText = "";
+
+			if(labelText == "" && this.settings.get_int('hide-level') > 1){
 				this._hideWidget();
 				return
 			}
 
+			this.label.set_text(labelText);
 			this._showWidget();
 			this._setIcon();
 		}
