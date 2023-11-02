@@ -1,33 +1,15 @@
 var buildLabel = function buildLabel(players,settings){
 	const MAX_STRING_LENGTH = settings.get_int('max-string-length');
-	const BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
 	const LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 	const DIVIDER_STRING = settings.get_string('divider-string');
-	const REMOVE_TEXT_WHEN_PAUSED = settings.get_boolean('remove-text-when-paused');
-	const REMOVE_TEXT_PAUSED_DELAY = settings.get_int('remove-text-paused-delay');
 	const FIRST_FIELD = settings.get_string('first-field');
 	const SECOND_FIELD = settings.get_string('second-field');
 	const LAST_FIELD = settings.get_string('last-field');
 
-	// the placeholder string is a hint for the user to switch players
-	// it should appear if labelstring is empty and there's another player playing
-	// avoid returning empty strings directly, use "placeholder" instead
-	let placeholder = "";
-	if (players.activePlayers.length > 0 && players.selected.playbackStatus != "Playing")
-		placeholder = BUTTON_PLACEHOLDER;
-
-	if(REMOVE_TEXT_WHEN_PAUSED && players.selected.playbackStatus != "Playing"){
-		const statusTimestamp = players.selected.statusTimestamp / 1000;
-		const currentTimestamp = new Date().getTime() / 1000;
-
-		if(statusTimestamp + REMOVE_TEXT_PAUSED_DELAY <= currentTimestamp)
-			return placeholder
-	}
-
 	let metadata = players.selected.metadata;
 
 	if(metadata == null)
-		return placeholder
+		return ""
 
 	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD]; //order is user-defined
 	fields.filter(field => field != ""); //discard fields that the user defined as empty(none)
@@ -41,9 +23,6 @@ var buildLabel = function buildLabel(players,settings){
 	});
 
 	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length); //remove the trailing divider
-
-	if(labelstring.length === 0)
-		return placeholder
 
 	return labelstring
 }
