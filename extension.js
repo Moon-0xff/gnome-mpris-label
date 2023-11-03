@@ -422,6 +422,9 @@ class MprisLabel extends PanelMenu.Button {
 					labelText = "";
 			}
 
+			if(labelText == "" && this.players.activePlayers.length > 0 && this.player.playbackStatus != "Playing")
+				labelText = this.settings.get_string('button-placeholder');
+
 			if(labelText == "" && this.settings.get_int('hide-level') > 1){
 				this._hideWidget();
 				return
