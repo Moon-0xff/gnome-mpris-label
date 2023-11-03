@@ -415,8 +415,12 @@ class MprisLabel extends PanelMenu.Button {
 
 			let labelText = buildLabel(this.players,this.settings);
 
-			if(this.settings.get_boolean('remove-text-when-paused') && this.player.playbackStatus != "Playing")
-				labelText = "";
+			if(this.settings.get_boolean('remove-text-when-paused') && this.player.playbackStatus != "Playing"){
+				const REMOVE_TEXT_DELAY = this.settings.get_int('remove-text-paused-delay');
+
+				if(this.player.statusTimestamp / 1000 + REMOVE_TEXT_DELAY <= new Date().getTime() / 1000)
+					labelText = "";
+			}
 
 			if(labelText == "" && this.settings.get_int('hide-level') > 1){
 				this._hideWidget();
