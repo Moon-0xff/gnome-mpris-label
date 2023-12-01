@@ -78,9 +78,16 @@ function fillPreferencesWindow(window){
 	addSwitch(settings,group,'use-whitelisted-sources-only','Ignore all sources except allowed ones',"This option is ignored if the allow list is empty");
 	addEntry(settings,group,'album-blacklist','Players excluded from using album art','Separate entries with commas');
 
+	group = addGroup(page,'Ad-Block');
+	addSwitch(settings,group,'mute-spotify-ads','Mute Spotify app during ads','Mutes Spotify if the MPRIS Track ID Metadata identifies the song being played to be an ad.\nNote that this will work with the app, not when Spotify is played through a web browser');
+	let spotifyDelay = addSpinButton(settings,group,'mute-spotify-ads-delay','Delay before muting app (milliseconds)',0,9999,'As there tends to be a lag between mpris info update and ad/song starts, it is recommended \nto include some delay to avoid muting before the song ends or unmuting before the ad ends. \nNote that this may depend on your selected refresh rate.');
+
 	addResetButton(settings,group,'Reset Filters settings',[
-		'mpris-sources-blacklist','mpris-sources-whitelist','use-whitelisted-sources-only','album-blacklist']
+		'mpris-sources-blacklist','mpris-sources-whitelist','use-whitelisted-sources-only','album-blacklist','mute-spotify-ads','mute-spotify-ads-delay']
 	);
+
+	[spotifyDelay]
+		.forEach(el => bindEnabled(settings, 'mute-spotify-ads', el));
 
 //controls page:
 	page = addPreferencesPage(window,'Controls','input-mouse-symbolic');

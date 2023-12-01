@@ -291,7 +291,7 @@ class MprisLabel extends PanelMenu.Button {
 		if(!this.player || !this.player.identity)
 			return
 
-		const streamList = this.volumeControl.get_streams();
+		const streamList = this.volumeControl.get_sink_inputs();
 		this.stream = [];
 
 		streamList.forEach(stream => {
@@ -429,9 +429,38 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._setText();
 		this._setIcon();
+		this._muteAds();
 
 		this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
 			REFRESH_RATE, this._refresh.bind(this));
+	}
+
+	_muteAds(){
+		if (!this.player || this.stream.length == 0)
+			return
+
+		const MUTE_SPOTIFY_ADS = this.settings.get_boolean('mute-spotify-ads');
+		const MUTE_SPOTIFY_ADS_DELAY = this.settings.get_int('mute-spotify-ads-delay');
+
+		if(this.player.identity == "Spotify" && MUTE_SPOTIFY_ADS){
+			const isAd=this.player.stringFromMetadata("mpris:trackid").startsWith('/com/spotify/ad/'); //identify ad using trackID
+			
+			if (isAd && !this.stream[0].is_muted){ //mute if it's an ad and the player isn't already muted by user
+				GLib.timeout_add(GLib.PRIORITY_DEFAULT, MUTE_SPOTIFY_ADS_DELAY, () => {
+					this.player.mutedDuringAd = true;
+					this.stream.map(stream => stream.change_is_muted(true));
+					return GLib.SOURCE_REMOVE;
+				});
+			}
+			
+			if (!isAd && this.player.mutedDuringAd){ //unmute if it's no longer an ad and it was muted by this extension
+				GLib.timeout_add(GLib.PRIORITY_DEFAULT, MUTE_SPOTIFY_ADS_DELAY, () => {
+					this.player.mutedDuringAd = false;
+					this.stream.map(stream => stream.change_is_muted(false));
+					return GLib.SOURCE_REMOVE;
+				});
+			}
+		}
 	}
 
 	_setIcon(){
@@ -463,6 +492,13 @@ class MprisLabel extends PanelMenu.Button {
 			this.icon = this.player.getIcon(SYMBOLIC_ICON);
 			if (SYMBOLIC_ICON)
 				this.icon.set_style('-st-icon-style: symbolic;');
+		}
+
+		if (this.player.mutedDuringAd){ //replace icon with mute symbol if player muted during ad
+			this.icon = new St.Icon({
+				icon_name: 'audio-volume-muted-symbolic',
+				style_class: 'system-status-icon'
+			});
 		}
 
 		if (this.icon != null | undefined){
@@ -502,6 +538,20 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_disable(){
+		//optional: unmute any source which is currently muted by this extension on unload 
+		//generic on purpose to allow adblock functionality to be extended to additional players if required
+		const currentPlayer = this.player
+		this.players.list.forEach(player => { //in case muted player is no longer the active player
+			if (player.mutedDuringAd){ 
+				this.player = player;
+				this._getStream();
+				if (this.stream.length > 0)
+					this.stream.map(stream => stream.change_is_muted(false));
+
+				this.player = currentPlayer;
+			}
+		});
+
 		if(this.icon)
 			this.box.remove_child(this.icon);
 

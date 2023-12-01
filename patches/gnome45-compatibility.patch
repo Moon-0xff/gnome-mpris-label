@@ -139,7 +139,7 @@ index 856bd82..812ba72 100644
  	window.default_height = 950;
  
  //panel page:
-@@ -132,6 +135,7 @@ function fillPreferencesWindow(window){
+@@ -139,6 +142,7 @@ function fillPreferencesWindow(window){
  	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
  		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
  }
