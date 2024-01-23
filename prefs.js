@@ -116,7 +116,7 @@ function fillPreferencesWindow(window){
 	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(settings,group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
+	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls',"track change":"track-change" ,'none':'none'},undefined,140);
 
 	group = addGroup(page,'Behaviour');
 	let [volumeControlDropDown] = addDropDown(settings,group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
