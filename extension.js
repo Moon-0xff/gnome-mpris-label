@@ -179,7 +179,7 @@ class MprisLabel extends PanelMenu.Button {
 						break;
 					case "track-change":
 						if (this.__track_change_tid != null)
-							GLib.remove_source(this.__track_change_tid);	
+							GLib.remove_source(this.__track_change_tid);
 						let delay = 100; // max delay between scrolls to catch fast consecutive calls
 						this.__track_change_tid = GLib.timeout_add(GLib.PRIORITY_HIGH, delay, this._changeTrack.bind(this, delta));
 						break;
