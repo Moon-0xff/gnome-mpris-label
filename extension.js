@@ -65,9 +65,6 @@ class MprisLabel extends PanelMenu.Button {
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
-		
-		this.__scroll_delay = 75; // max delay between scrolls to catch fast consecutive calls
-
 		this.lastClick = new Map(); // place where occurrences of click actions will be stored
 
 		this._refresh();
@@ -179,10 +176,15 @@ class MprisLabel extends PanelMenu.Button {
 						this._changeVolume(delta);
 						break;
 					case "track-change":
-						if (this.__track_change_tid)
-							GLib.Source.remove(this.__track_change_tid);
-						this.__track_change_tid = GLib.timeout_add(GLib.PRIORITY_HIGH,
-							this.__scroll_delay, this._changeTrack.bind(this, delta));
+						let time_delta = Date.now() - this.last_scroll;
+						let delay = 100;
+						if (!this.last_scroll || time_delta > delay) {
+							if (delta > 0) 
+								this._activateAction("next-track");
+							else if (delta < 0) 
+								this._activateAction("prev-track");
+						}
+						this.last_scroll = new Date().getTime();
 						break;
 				}
 
@@ -297,17 +299,6 @@ class MprisLabel extends PanelMenu.Button {
 
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
 		Main.osdWindowManager.show(monitor, icon, streamName, volumeRatio);
-	}
-
-	_changeTrack(delta){
-
-		if (delta > 0) 
-			this._activateAction("next-track");
-		else if (delta < 0) 
-			this._activateAction("prev-track");
-
-		this.__track_change_tid = null;
-
 	}
 
 	_getStream(){
@@ -540,11 +531,6 @@ class MprisLabel extends PanelMenu.Button {
 		if (this._repositionTimeout){
 			GLib.Source.remove(this._repositionTimeout);
 			this._repositionTimeout = null;
-		}
-
-		if (this.__track_change_tid){
-			GLib.Source.remove(this.__track_change_tid);
-			this.__track_change_tid = null;
 		}
 	}
 });
