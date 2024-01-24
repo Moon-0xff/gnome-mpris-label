@@ -65,7 +65,8 @@ class MprisLabel extends PanelMenu.Button {
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
-		this.__track_change_tid = null;
+		
+		this.__scroll_delay = 75; // max delay between scrolls to catch fast consecutive calls
 
 		this.lastClick = new Map(); // place where occurrences of click actions will be stored
 
@@ -178,10 +179,10 @@ class MprisLabel extends PanelMenu.Button {
 						this._changeVolume(delta);
 						break;
 					case "track-change":
-						if (this.__track_change_tid != null)
-							GLib.remove_source(this.__track_change_tid);
-						let delay = 100; // max delay between scrolls to catch fast consecutive calls
-						this.__track_change_tid = GLib.timeout_add(GLib.PRIORITY_HIGH, delay, this._changeTrack.bind(this, delta));
+						if (this.__track_change_tid)
+							GLib.Source.remove(this.__track_change_tid);
+						this.__track_change_tid = GLib.timeout_add(GLib.PRIORITY_HIGH,
+							this.__scroll_delay, this._changeTrack.bind(this, delta));
 						break;
 				}
 
@@ -539,6 +540,11 @@ class MprisLabel extends PanelMenu.Button {
 		if (this._repositionTimeout){
 			GLib.Source.remove(this._repositionTimeout);
 			this._repositionTimeout = null;
+		}
+
+		if (this.__track_change_tid){
+			GLib.Source.remove(this.__track_change_tid);
+			this.__track_change_tid = null;
 		}
 	}
 });
