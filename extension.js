@@ -65,6 +65,7 @@ class MprisLabel extends PanelMenu.Button {
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
+		
 		this.lastClick = new Map(); // place where occurrences of click actions will be stored
 
 		this._refresh();
