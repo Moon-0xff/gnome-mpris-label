@@ -177,8 +177,8 @@ class MprisLabel extends PanelMenu.Button {
 						this._changeVolume(delta);
 						break;
 					case "track-change":
-						let time_delta = Date.now() - this.last_scroll;
-						let SCROLL_DELAY = this.settings.get_int('scroll-delay');
+						const time_delta = Date.now() - this.last_scroll;
+						const SCROLL_DELAY = this.settings.get_int('scroll-delay');
 						if (!this.last_scroll || time_delta > SCROLL_DELAY) {
 							if (delta > 0) 
 								this._activateAction("next-track");
