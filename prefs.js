@@ -117,6 +117,7 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'');
 	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls',"track change":"track-change" ,'none':'none'},undefined,140);
+	addSpinButton(settings,group,'scroll-delay','Scroll Delay for track change (milliseconds)',30,3000,'Defines the minimum time between consecutive track changes.\n\nIncrease the value if scrolls are found to generate multiple skips.\nDecrease value to allow faster consecutive skips.');
 
 	group = addGroup(page,'Behaviour');
 	let [volumeControlDropDown] = addDropDown(settings,group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
@@ -124,7 +125,7 @@ function fillPreferencesWindow(window){
 	addResetButton(settings,group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
 		'right-click-action','right-double-click-action','scroll-action','thumb-forward-action','thumb-double-forward-action','thumb-backward-action',
-		'thumb-double-backward-action','volume-control-scheme'],[leftClickDropDown, leftDoubleClickDropDown,middleClickDropDown, middleDoubleClickDropDown,
+		'thumb-double-backward-action','scroll-delay','volume-control-scheme'],[leftClickDropDown, leftDoubleClickDropDown,middleClickDropDown, middleDoubleClickDropDown,
 		rightClickDropDown, rightDoubleClickDropDown,thumbForwardDropDown, thumbDoubleForwardDropDown,thumbBackwardDropDown, thumbDoubleBackwardDropDown,
 		scrollDropDown,volumeControlDropDown]
 	);
