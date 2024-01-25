@@ -123,7 +123,7 @@ function fillPreferencesWindow(window){
 		if (scrollDropDown.get_selected() == 1)
 			scrollSpin.set_visible(true);
 		else scrollSpin.set_visible(false);
-	}; action()
+	}; action();
 	
 	scrollDropDown.connect('notify::selected-item', action);
 
