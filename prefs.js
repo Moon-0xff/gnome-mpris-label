@@ -119,14 +119,10 @@ function fillPreferencesWindow(window){
 	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls',"track change":"track-change" ,'none':'none'},undefined,140);
 	let scrollSpin = addSpinButton(settings,group,'scroll-delay','Scroll Delay (milliseconds)',30,3000,'Defines the minimum time between consecutive track changes.\n\nIncrease the value if scrolls are found to generate multiple skips.\nDecrease value to allow faster consecutive skips.');
 	
-	let action = () => {
-		if (scrollDropDown.get_selected() == 1)
-			scrollSpin.set_sensitive(true);
-		else scrollSpin.set_sensitive(false);
-	}; action();
+	let bindSensitive = () => { scrollSpin.set_sensitive((scrollDropDown.get_selected() == 1)); };
+	scrollDropDown.connect('notify::selected-item', bindSensitive);
+	bindSensitive();
 	
-	scrollDropDown.connect('notify::selected-item', action);
-
 	group = addGroup(page,'Behaviour');
 	let [volumeControlDropDown] = addDropDown(settings,group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
 
