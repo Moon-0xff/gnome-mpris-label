@@ -6,7 +6,7 @@ function init(){}
 
 function fillPreferencesWindow(window){
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-	window.default_height = 950;
+	window.default_height = 960;
 
 //panel page:
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
