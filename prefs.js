@@ -121,8 +121,8 @@ function fillPreferencesWindow(window){
 	
 	let action = () => {
 		if (scrollDropDown.get_selected() == 1)
-			scrollSpin.set_visible(true);
-		else scrollSpin.set_visible(false);
+			scrollSpin.set_sensitive(true);
+		else scrollSpin.set_sensitive(false);
 	}; action();
 	
 	scrollDropDown.connect('notify::selected-item', action);
