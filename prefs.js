@@ -6,7 +6,7 @@ function init(){}
 
 function fillPreferencesWindow(window){
 	let settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.mpris-label');
-	window.default_height = 950;
+	window.default_height = 960;
 
 //panel page:
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
@@ -116,15 +116,20 @@ function fillPreferencesWindow(window){
 	let [thumbBackwardDropDown, thumbDoubleBackwardDropDown] = addDoubleDropDown(settings,group,'thumb-backward-action','thumb-double-backward-action','Inner-thumb button',buttonActions,buttonActions,undefined);
 
 	group = addGroup(page,'');
-	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls','none':'none'},undefined,140);
-
+	let [scrollDropDown] = addDropDown(settings,group,'scroll-action','Scroll up/down',{'volume control':'volume-controls',"track change":"track-change" ,'none':'none'},undefined,140);
+	let scrollSpin = addSpinButton(settings,group,'scroll-delay','Scroll Delay (milliseconds)',30,3000,'Defines the minimum time between consecutive track changes.\n\nIncrease the value if scrolls are found to generate multiple skips.\nDecrease value to allow faster consecutive skips.');
+	
+	let bindSensitive = () => { scrollSpin.set_sensitive((scrollDropDown.get_selected() == 1)); };
+	scrollDropDown.connect('notify::selected-item', bindSensitive);
+	bindSensitive();
+	
 	group = addGroup(page,'Behaviour');
 	let [volumeControlDropDown] = addDropDown(settings,group,'volume-control-scheme','Volume control scheme',{'application':'application','global':'global'},undefined,140);
 
 	addResetButton(settings,group,'Reset Controls settings',[
 		'enable-double-clicks','double-click-time','left-click-action','left-double-click-action','middle-click-action','middle-double-click-action',
 		'right-click-action','right-double-click-action','scroll-action','thumb-forward-action','thumb-double-forward-action','thumb-backward-action',
-		'thumb-double-backward-action','volume-control-scheme'],[leftClickDropDown, leftDoubleClickDropDown,middleClickDropDown, middleDoubleClickDropDown,
+		'thumb-double-backward-action','scroll-delay','volume-control-scheme'],[leftClickDropDown, leftDoubleClickDropDown,middleClickDropDown, middleDoubleClickDropDown,
 		rightClickDropDown, rightDoubleClickDropDown,thumbForwardDropDown, thumbDoubleForwardDropDown,thumbBackwardDropDown, thumbDoubleBackwardDropDown,
 		scrollDropDown,volumeControlDropDown]
 	);

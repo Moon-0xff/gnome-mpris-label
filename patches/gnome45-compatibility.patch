@@ -62,7 +62,7 @@ index 1697aa6..259304f 100644
  }
  
  var MprisLabel = GObject.registerClass(
-@@ -389,7 +394,7 @@ class MprisLabel extends PanelMenu.Button {
+@@ -404,7 +409,7 @@ class MprisLabel extends PanelMenu.Button {
  	//settings shortcut:
  		let settingsMenuItem = new PopupMenu.PopupMenuItem('Settings');
  		settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
@@ -136,10 +136,10 @@ index 856bd82..812ba72 100644
 +export default class MprisLabelPreferences extends ExtensionPreferences {
 +fillPreferencesWindow(window){
 +	const settings = this.getSettings();
- 	window.default_height = 950;
+ 	window.default_height = 960;
  
  //panel page:
-@@ -132,6 +135,7 @@ function fillPreferencesWindow(window){
+@@ -137,6 +140,7 @@ function fillPreferencesWindow(window){
  	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
  		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
  }

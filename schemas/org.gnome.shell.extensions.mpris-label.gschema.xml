@@ -150,6 +150,10 @@
       <default>"none"</default>
     </key>
 
+    <key name="scroll-delay" type="i">
+      <default>100</default>
+    </key>
+
     <key name="use-album" type="b">
       <default>true</default>
     </key>

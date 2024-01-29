@@ -172,7 +172,22 @@ class MprisLabel extends PanelMenu.Button {
 			delta = Math.clamp(-1,delta,1);
 
 			if(!delta == 0)
-				this._changeVolume(delta)
+				switch(SCROLL_ACTION) {
+					case "volume-controls":
+						this._changeVolume(delta);
+						break;
+					case "track-change":
+						const time_delta = Date.now() - this.last_scroll;
+						const SCROLL_DELAY = this.settings.get_int('scroll-delay');
+						if (!this.last_scroll || time_delta > SCROLL_DELAY) {
+							if (delta > 0) 
+								this._activateAction("next-track");
+							else if (delta < 0) 
+								this._activateAction("prev-track");
+						}
+						this.last_scroll = new Date().getTime();
+						break;
+				}
 
 			return Clutter.EVENT_STOP;
 		}
