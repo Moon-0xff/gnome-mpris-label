@@ -30,6 +30,10 @@
       <default>"＿"</default>
     </key>
 
+    <key name="font-color" type="s">
+      <default>"#ffffff"</default>
+    </key>
+
     <key name="label-filtered-list" type="s">
       <default>"remaster,remix,featuring,live"</default>
     </key>

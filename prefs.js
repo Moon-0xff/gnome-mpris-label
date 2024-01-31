@@ -46,6 +46,7 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'Appearance');
 	addSpinButton(settings,group,'max-string-length','Max string length (each field)',1,150,undefined);
+	addEntry(settings,group,'font-color','Font color',"Specify alternative label font color using HEX code\n(e.g. #FF0000 for red, #FFFF00 for yellow,...)");
 	addEntry(settings,group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
 	addEntry(settings,group,'divider-string','Divider string (you can use spaces)',undefined);
 
@@ -55,7 +56,7 @@ function fillPreferencesWindow(window){
 	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleDropDown(settings,group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
 	addResetButton(settings,group,'Reset Label settings',[
-		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
+		'max-string-length','refresh-rate','font-color','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
 		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
 	);
 
