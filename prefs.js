@@ -1,4 +1,4 @@
-const {Adw,Gio,Gtk} = imports.gi;
+const {Adw,Gio,Gtk,Gdk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -46,7 +46,7 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'Appearance');
 	addSpinButton(settings,group,'max-string-length','Max string length (each field)',1,150,undefined);
-	addEntry(settings,group,'font-color','Font color',"Specify alternative label font color using HEX code\n(e.g. #FF0000 for red, #FFFF00 for yellow,...)");
+	let fontColorPicker = addColorPicker(settings, group, 'font-color', 'Font color', "Specify alternative label font color");
 	addEntry(settings,group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
 	addEntry(settings,group,'divider-string','Divider string (you can use spaces)',undefined);
 
@@ -57,7 +57,7 @@ function fillPreferencesWindow(window){
 
 	addResetButton(settings,group,'Reset Label settings',[
 		'max-string-length','refresh-rate','font-color','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
-		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
+		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown],[fontColorPicker]
 	);
 
 //filters page:
@@ -276,6 +276,62 @@ function addEntry(settings,group,setting,labelstring,labeltooltip){
 	group.add(row)
 }
 
+function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
+	let row = buildActionRow(labelstring, labeltooltip);
+
+	let thisColorButton = new Gtk.ColorButton({
+		valign: Gtk.Align.CENTER,
+		halign: Gtk.Align.END,
+		// #width_request: 200,
+		visible: true
+	});
+	settings.bind(setting, thisColorButton, 'text', Gio.SettingsBindFlags.DEFAULT);
+
+	let thisResetButton = buildColorResetButton(settings, setting, thisColorButton);
+	row.add_suffix(thisResetButton);
+
+	row.add_suffix(thisColorButton);
+
+	// link items required to be able to reset using reset button
+	thisColorButton._default = settings.get_default_value(setting).print(true).replaceAll('\'', '');
+	thisColorButton._resetButton = thisResetButton;
+
+	let rgba = new Gdk.RGBA();
+	rgba.parse(settings.get_string(setting));
+	thisColorButton.set_rgba(rgba);
+
+	thisColorButton.connect('notify', () => { //hide reset button if required
+		let colorRGB = thisColorButton.get_rgba();
+		let colorHEX = RGBtoHEX(colorRGB);
+		if (colorHEX == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
+			thisResetButton.set_visible(false);
+		else
+			thisResetButton.set_visible(true);
+	})
+
+	thisColorButton.connect('color-set', () => { //save selected colour
+		let colorRGB = thisColorButton.get_rgba();
+		let colorHEX = RGBtoHEX(colorRGB);
+		settings.set_string(setting, colorHEX);
+	})
+
+	group.add(row)
+	return thisColorButton
+}
+
+function RGBtoHEX(color) {
+	let hexValue = '#';
+
+	let red = Math.floor(255 * color.red)
+	hexValue = hexValue + red.toString(16).padStart(2, '0');
+	let green = Math.floor(255 * color.green)
+	hexValue = hexValue + green.toString(16).padStart(2, '0');
+	let blue = Math.floor(255 * color.blue)
+	hexValue = hexValue + blue.toString(16).padStart(2, '0');
+
+	return hexValue;
+}
+
 function addWideEntry(settings,group,setting,placeholder,labeltooltip){
 	let thisEntry = new Gtk.Entry({
 		visible: true,
@@ -309,7 +365,7 @@ function addWideEntry(settings,group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function addResetButton(settings,group,labelstring,options,dropDowns){
+function addResetButton(settings,group,labelstring,options,dropDowns,colorPickers){
 	let thisButton = buildButton(labelstring, () => {
 		options.forEach(option => {
 			settings.reset(option);
@@ -317,6 +373,13 @@ function addResetButton(settings,group,labelstring,options,dropDowns){
 		if (dropDowns){
 			dropDowns.forEach(dropDown => {
 				dropDown.set_selected(dropDown._defaultValueIndex);
+			});
+		}
+		if (colorPickers) {
+			colorPickers.forEach(colorPicker => {
+				let rgba = new Gdk.RGBA();
+				rgba.parse(colorPicker._default);
+				colorPicker.set_rgba(rgba);
 			});
 		}
 	});
@@ -381,6 +444,32 @@ function buildResetButton(settings,setting){
 	thisResetButton.set_tooltip_text('Reset to Default');
 
 	thisResetButton.connect('clicked',() => {settings.reset(setting)});
+
+	return thisResetButton;
+}
+
+function buildColorResetButton(settings, setting, button) {
+	let thisResetButton = new Gtk.Button({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'edit-clear-symbolic-rtl',
+		visible: false
+	});
+
+	//hide if matches default setting
+	if (settings.get_value(setting).print(true) != settings.get_default_value(setting).print(true))
+		thisResetButton.set_visible(true);
+
+	thisResetButton.add_css_class('flat');
+	thisResetButton.set_tooltip_text('Reset to Default');
+
+	thisResetButton.connect('clicked', () => {
+		settings.reset(setting);
+		thisResetButton.set_visible(false);
+		//also reset button colour to default
+		let rgba = new Gdk.RGBA();
+		rgba.parse(settings.get_string(setting));
+		button.set_rgba(rgba);
+	});
 
 	return thisResetButton;
 }

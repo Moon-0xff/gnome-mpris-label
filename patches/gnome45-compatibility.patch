@@ -120,11 +120,12 @@ diff --git a/prefs.js b/prefs.js
 index 856bd82..812ba72 100644
 --- a/prefs.js
 +++ b/prefs.js
-@@ -1,11 +1,14 @@
--const {Adw,Gio,Gtk} = imports.gi;
+@@ -1,11 +1,15 @@
+-const {Adw,Gio,Gtk,Gdk} = imports.gi;
 +import Adw from 'gi://Adw';
 +import Gio from 'gi://Gio';
 +import Gtk from 'gi://Gtk';
++import Gdk from 'gi://Gdk';
  
 -const ExtensionUtils = imports.misc.extensionUtils;
 +import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
