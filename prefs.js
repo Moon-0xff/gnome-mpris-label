@@ -46,7 +46,7 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'Appearance');
 	addSpinButton(settings,group,'max-string-length','Max string length (each field)',1,150,undefined);
-	let fontColorPicker = addColorPicker(settings, group, 'font-color', 'Font color', "Specify alternative label font color");
+	addColorPicker(settings, group, 'font-color', 'Font color', "Specify alternative label font color");
 	addEntry(settings,group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
 	addEntry(settings,group,'divider-string','Divider string (you can use spaces)',undefined);
 
@@ -57,7 +57,7 @@ function fillPreferencesWindow(window){
 
 	addResetButton(settings,group,'Reset Label settings',[
 		'max-string-length','refresh-rate','font-color','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
-		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown],[fontColorPicker]
+		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
 	);
 
 //filters page:
@@ -285,7 +285,18 @@ function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
 		// #width_request: 200,
 		visible: true
 	});
-	settings.bind(setting, thisColorButton, 'text', Gio.SettingsBindFlags.DEFAULT);
+
+	// bind/connect setting change to trigger update in button color
+	settings.connect('changed::'+setting, () => {
+		let rgba = new Gdk.RGBA();
+		rgba.parse(settings.get_string(setting));
+		thisColorButton.set_rgba(rgba);
+
+		if (settings.get_string(setting) == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
+			thisResetButton.set_visible(false);
+		else
+			thisResetButton.set_visible(true);
+	});
 
 	let thisResetButton = buildColorResetButton(settings, setting, thisColorButton);
 	row.add_suffix(thisResetButton);
@@ -300,21 +311,12 @@ function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
 	rgba.parse(settings.get_string(setting));
 	thisColorButton.set_rgba(rgba);
 
-	thisColorButton.connect('notify', () => { //hide reset button if required
-		let colorRGB = thisColorButton.get_rgba().to_string();
-		if (colorRGB == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
-			thisResetButton.set_visible(false);
-		else
-			thisResetButton.set_visible(true);
-	})
-
-	thisColorButton.connect('color-set', () => { //save selected colour
+	thisColorButton.connect('color-set', () => { //save selected colour as string
 		let colorRGB = thisColorButton.get_rgba().to_string();
 		settings.set_string(setting, colorRGB);
 	})
 
 	group.add(row)
-	return thisColorButton
 }
 
 function addWideEntry(settings,group,setting,placeholder,labeltooltip){
@@ -350,7 +352,7 @@ function addWideEntry(settings,group,setting,placeholder,labeltooltip){
 	return thisEntry;
 }
 
-function addResetButton(settings,group,labelstring,options,dropDowns,colorPickers){
+function addResetButton(settings,group,labelstring,options,dropDowns){
 	let thisButton = buildButton(labelstring, () => {
 		options.forEach(option => {
 			settings.reset(option);
@@ -358,13 +360,6 @@ function addResetButton(settings,group,labelstring,options,dropDowns,colorPicker
 		if (dropDowns){
 			dropDowns.forEach(dropDown => {
 				dropDown.set_selected(dropDown._defaultValueIndex);
-			});
-		}
-		if (colorPickers) {
-			colorPickers.forEach(colorPicker => {
-				let rgba = new Gdk.RGBA();
-				rgba.parse(colorPicker._default);
-				colorPicker.set_rgba(rgba);
 			});
 		}
 	});
@@ -447,13 +442,7 @@ function buildColorResetButton(settings, setting, button) {
 	thisResetButton.add_css_class('flat');
 	thisResetButton.set_tooltip_text('Reset to Default');
 
-	thisResetButton.connect('clicked', () => {
-		settings.reset(setting);
-		//also reset button colour to default
-		let rgba = new Gdk.RGBA();
-		rgba.parse(settings.get_string(setting));
-		button.set_rgba(rgba);
-	});
+	thisResetButton.connect('clicked', () => {settings.reset(setting);});
 
 	return thisResetButton;
 }
