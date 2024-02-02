@@ -301,35 +301,20 @@ function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
 	thisColorButton.set_rgba(rgba);
 
 	thisColorButton.connect('notify', () => { //hide reset button if required
-		let colorRGB = thisColorButton.get_rgba();
-		let colorHEX = RGBtoHEX(colorRGB);
-		if (colorHEX == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
+		let colorRGB = thisColorButton.get_rgba().to_string();
+		if (colorRGB == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
 			thisResetButton.set_visible(false);
 		else
 			thisResetButton.set_visible(true);
 	})
 
 	thisColorButton.connect('color-set', () => { //save selected colour
-		let colorRGB = thisColorButton.get_rgba();
-		let colorHEX = RGBtoHEX(colorRGB);
-		settings.set_string(setting, colorHEX);
+		let colorRGB = thisColorButton.get_rgba().to_string();
+		settings.set_string(setting, colorRGB);
 	})
 
 	group.add(row)
 	return thisColorButton
-}
-
-function RGBtoHEX(color) {
-	let hexValue = '#';
-
-	let red = Math.floor(255 * color.red)
-	hexValue = hexValue + red.toString(16).padStart(2, '0');
-	let green = Math.floor(255 * color.green)
-	hexValue = hexValue + green.toString(16).padStart(2, '0');
-	let blue = Math.floor(255 * color.blue)
-	hexValue = hexValue + blue.toString(16).padStart(2, '0');
-
-	return hexValue;
 }
 
 function addWideEntry(settings,group,setting,placeholder,labeltooltip){
@@ -464,7 +449,6 @@ function buildColorResetButton(settings, setting, button) {
 
 	thisResetButton.connect('clicked', () => {
 		settings.reset(setting);
-		thisResetButton.set_visible(false);
 		//also reset button colour to default
 		let rgba = new Gdk.RGBA();
 		rgba.parse(settings.get_string(setting));
