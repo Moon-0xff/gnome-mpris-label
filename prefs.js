@@ -295,7 +295,6 @@ function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
 	settings.connect('changed::'+setting, () => setColorPicker(settings,setting,thisColorButton,thisResetButton));
 
 	// link items required to be able to reset using reset button
-	thisColorButton._default = settings.get_default_value(setting).print(true).replaceAll('\'', '');
 	thisColorButton._resetButton = thisResetButton;
 
 	setColorPicker(settings,setting,thisColorButton,thisResetButton);
@@ -434,7 +433,7 @@ function buildResetButton(settings,setting){
 	return thisResetButton;
 }
 
-function buildColorResetButton(settings, setting, button) {
+function buildColorResetButton(settings,setting) {
 	let thisResetButton = new Gtk.Button({
 		valign: Gtk.Align.CENTER,
 		icon_name: 'edit-clear-symbolic-rtl',
