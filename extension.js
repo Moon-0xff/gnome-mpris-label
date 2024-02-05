@@ -508,15 +508,8 @@ class MprisLabel extends PanelMenu.Button {
 	}
 
 	_setLabelStyle() {
-		// save default font color in settings for future use in prefs.js
-		const FONT_COLOR_DEFAULT = Main.panel.statusArea.activities.get_theme_node().get_foreground_color().to_string();
-		this.settings.set_string('font-color-default',FONT_COLOR_DEFAULT);
-
 		const FONT_COLOR = this.settings.get_string('font-color');
-		if (FONT_COLOR)
-			this.label.set_style('color: '+FONT_COLOR);
-		else
-			this.label.set_style('color: '+FONT_COLOR_DEFAULT);
+		this.label.set_style('color: '+FONT_COLOR);
 	}
 
 	_removeTimeout() {

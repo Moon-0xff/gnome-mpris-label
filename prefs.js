@@ -286,18 +286,29 @@ function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
 		visible: true
 	});
 
-	let thisResetButton = buildColorResetButton(settings, setting, thisColorButton);
-
-	row.add_suffix(thisResetButton);
-	row.add_suffix(thisColorButton);
-
 	// bind/connect setting change to trigger update in button color
-	settings.connect('changed::'+setting, () => setColorPicker(settings,setting,thisColorButton,thisResetButton));
+	settings.connect('changed::'+setting, () => {
+		let rgba = new Gdk.RGBA();
+		rgba.parse(settings.get_string(setting));
+		thisColorButton.set_rgba(rgba);
+
+		if (settings.get_string(setting) == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
+			thisResetButton.set_visible(false);
+		else
+			thisResetButton.set_visible(true);
+	});
+
+	let thisResetButton = buildColorResetButton(settings, setting, thisColorButton);
+	row.add_suffix(thisResetButton);
+
+	row.add_suffix(thisColorButton);
 
 	// link items required to be able to reset using reset button
 	thisColorButton._resetButton = thisResetButton;
 
-	setColorPicker(settings,setting,thisColorButton,thisResetButton);
+	let rgba = new Gdk.RGBA();
+	rgba.parse(settings.get_string(setting));
+	thisColorButton.set_rgba(rgba);
 
 	thisColorButton.connect('color-set', () => { //save selected colour as string
 		let colorRGB = thisColorButton.get_rgba().to_string();
@@ -305,23 +316,6 @@ function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
 	})
 
 	group.add(row)
-}
-
-function setColorPicker(settings,setting,colorButton,resetButton){ //set ColorPicker color and reset button
-	const FONT_COLOR = settings.get_string(setting);
-	const FONT_COLOR_DEFAULT = settings.get_string(setting+"-default");
-
-	let rgba = new Gdk.RGBA();
-	if (FONT_COLOR){
-		rgba.parse(FONT_COLOR);
-		resetButton.set_visible(true);
-	}
-	else {
-		rgba.parse(FONT_COLOR_DEFAULT);
-		resetButton.set_visible(false);
-	}
-
-	colorButton.set_rgba(rgba);
 }
 
 function addWideEntry(settings,group,setting,placeholder,labeltooltip){
