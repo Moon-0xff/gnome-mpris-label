@@ -62,7 +62,7 @@ index 1697aa6..259304f 100644
  }
  
  var MprisLabel = GObject.registerClass(
-@@ -404,7 +409,7 @@ class MprisLabel extends PanelMenu.Button {
+@@ -406,7 +411,7 @@ class MprisLabel extends PanelMenu.Button {
  	//settings shortcut:
  		let settingsMenuItem = new PopupMenu.PopupMenuItem('Settings');
  		settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
@@ -120,11 +120,12 @@ diff --git a/prefs.js b/prefs.js
 index 856bd82..812ba72 100644
 --- a/prefs.js
 +++ b/prefs.js
-@@ -1,11 +1,14 @@
--const {Adw,Gio,Gtk} = imports.gi;
+@@ -1,11 +1,15 @@
+-const {Adw,Gio,Gtk,Gdk} = imports.gi;
 +import Adw from 'gi://Adw';
 +import Gio from 'gi://Gio';
 +import Gtk from 'gi://Gtk';
++import Gdk from 'gi://Gdk';
  
 -const ExtensionUtils = imports.misc.extensionUtils;
 +import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
@@ -139,7 +140,7 @@ index 856bd82..812ba72 100644
  	window.default_height = 960;
  
  //panel page:
-@@ -137,6 +140,7 @@ function fillPreferencesWindow(window){
+@@ -138,6 +141,7 @@ function fillPreferencesWindow(window){
  	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
  		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
  }

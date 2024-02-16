@@ -1,4 +1,4 @@
-const {Adw,Gio,Gtk} = imports.gi;
+const {Adw,Gio,Gtk,Gdk} = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -46,6 +46,7 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'Appearance');
 	addSpinButton(settings,group,'max-string-length','Max string length (each field)',1,150,undefined);
+	addColorPicker(settings, group, 'font-color', 'Label Font color', "Specify alternative for color for label\nDefault falls back to color defined by user theme");
 	addEntry(settings,group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
 	addEntry(settings,group,'divider-string','Divider string (you can use spaces)',undefined);
 
@@ -55,7 +56,7 @@ function fillPreferencesWindow(window){
 	let [firstFieldDropDown, secondFieldDropDown, lastFieldDropDown] = addTripleDropDown(settings,group,'first-field','second-field','last-field','Visible fields and order',fieldOptions1,fieldOptions2,fieldOptions3,undefined);
 
 	addResetButton(settings,group,'Reset Label settings',[
-		'max-string-length','refresh-rate','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
+		'max-string-length','refresh-rate','font-color','button-placeholder','label-filtered-list','divider-string','first-field','second-field',
 		'last-field','remove-text-when-paused','remove-text-paused-delay','auto-switch-to-most-recent'],[firstFieldDropDown, secondFieldDropDown, lastFieldDropDown]
 	);
 
@@ -275,6 +276,48 @@ function addEntry(settings,group,setting,labelstring,labeltooltip){
 	group.add(row)
 }
 
+function addColorPicker(settings, group, setting, labelstring, labeltooltip) {
+	let row = buildActionRow(labelstring, labeltooltip);
+
+	let thisColorButton = new Gtk.ColorButton({
+		valign: Gtk.Align.CENTER,
+		halign: Gtk.Align.END,
+		// #width_request: 200,
+		visible: true
+	});
+
+	// bind/connect setting change to trigger update in button color
+	settings.connect('changed::'+setting, () => {
+		let rgba = new Gdk.RGBA();
+		rgba.parse(settings.get_string(setting));
+		thisColorButton.set_rgba(rgba);
+
+		if (settings.get_string(setting) == settings.get_default_value(setting).print(true).replaceAll('\'', ''))
+			thisResetButton.set_visible(false);
+		else
+			thisResetButton.set_visible(true);
+	});
+
+	let thisResetButton = buildColorResetButton(settings, setting, thisColorButton);
+	row.add_suffix(thisResetButton);
+
+	row.add_suffix(thisColorButton);
+
+	// link items required to be able to reset using reset button
+	thisColorButton._resetButton = thisResetButton;
+
+	let rgba = new Gdk.RGBA();
+	rgba.parse(settings.get_string(setting));
+	thisColorButton.set_rgba(rgba);
+
+	thisColorButton.connect('color-set', () => { //save selected colour as string
+		let colorRGB = thisColorButton.get_rgba().to_string();
+		settings.set_string(setting, colorRGB);
+	})
+
+	group.add(row)
+}
+
 function addWideEntry(settings,group,setting,placeholder,labeltooltip){
 	let thisEntry = new Gtk.Entry({
 		visible: true,
@@ -380,6 +423,25 @@ function buildResetButton(settings,setting){
 	thisResetButton.set_tooltip_text('Reset to Default');
 
 	thisResetButton.connect('clicked',() => {settings.reset(setting)});
+
+	return thisResetButton;
+}
+
+function buildColorResetButton(settings,setting) {
+	let thisResetButton = new Gtk.Button({
+		valign: Gtk.Align.CENTER,
+		icon_name: 'edit-clear-symbolic-rtl',
+		visible: false
+	});
+
+	//hide if matches default setting
+	if (settings.get_value(setting).print(true) != settings.get_default_value(setting).print(true))
+		thisResetButton.set_visible(true);
+
+	thisResetButton.add_css_class('flat');
+	thisResetButton.set_tooltip_text('Reset to Default');
+
+	thisResetButton.connect('clicked', () => {settings.reset(setting);});
 
 	return thisResetButton;
 }

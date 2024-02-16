@@ -43,6 +43,7 @@ class MprisLabel extends PanelMenu.Button {
 			text: "",
 			y_align: Clutter.ActorAlign.CENTER
 		});
+		this._setLabelStyle();
 		this.box.add_child(this.label);
 
 		this.players = new Players(this.settings);
@@ -61,6 +62,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
+		this.settings.connect('changed::font-color', this._setLabelStyle.bind(this));
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
@@ -495,7 +497,7 @@ class MprisLabel extends PanelMenu.Button {
 	_setText() {
 		try{
 			if(this.player == null || undefined)
-				this.label.set_text("")
+				this.label.set_text("");
 			else
 				this.label.set_text(buildLabel(this.players,this.settings));
 		}
@@ -503,6 +505,11 @@ class MprisLabel extends PanelMenu.Button {
 			log("Mpris Label: " + err);
 			this.label.set_text("");
 		}
+	}
+
+	_setLabelStyle() {
+		const FONT_COLOR = this.settings.get_string('font-color');
+		this.label.set_style('color: '+FONT_COLOR);
 	}
 
 	_removeTimeout() {
