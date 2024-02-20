@@ -46,7 +46,7 @@ function fillPreferencesWindow(window){
 
 	group = addGroup(page,'Appearance');
 	addSpinButton(settings,group,'max-string-length','Max string length (each field)',1,150,undefined);
-	addColorPicker(settings, group, 'font-color', 'Label Font color', "Specify alternative for color for label\nDefault falls back to color defined by user theme");
+	addColorPicker(settings, group, 'font-color', 'Label Font color', "Default falls back to color defined by user theme");
 	addEntry(settings,group,'button-placeholder','Button placeholder',"The button placeholder is a hint for the user and can be left empty.\n\nIt appears when the label is empty and another available source is active");
 	addEntry(settings,group,'divider-string','Divider string (you can use spaces)',undefined);
 
