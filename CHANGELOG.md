@@ -68,3 +68,9 @@ Includes new options to customize the icon alongside the label:
 - Uses Adwaita extensively, giving a polished and up-to-date look to the
   preferences window
 - Adds 'individual' reset buttons for every settings row
+
+# Version 27 (v28 for GNOME 45)
+- Solves various problems triggered by an empty `Identity` field on a player
+- Allows binding the action 'Next/Prev track' to scroll up/down
+- Allows different font colors for the label text
+Note: The unlisted version 26 for GNOME 45 users already included the `Identity` fixes
