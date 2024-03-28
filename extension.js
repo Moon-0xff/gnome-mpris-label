@@ -111,6 +111,9 @@ class MprisLabel extends PanelMenu.Button {
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 
+		if(this._timeout) //prevent refreshes while changing position
+			this._removeTimeout();
+
 		if (this.container.get_parent())
 			this.container.get_parent().remove_child(this.container);
 
@@ -123,6 +126,8 @@ class MprisLabel extends PanelMenu.Button {
 		else if (EXTENSION_PLACE == "right"){
 			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
 		}
+
+		this._refresh(); //call and re-enable the refresh loop
 	}
 
 	_onClick(event){
