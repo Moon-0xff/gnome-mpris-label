@@ -1,18 +1,18 @@
-From f8ae2c87b0a5967b29019634ddca904183348f6d Mon Sep 17 00:00:00 2001
-From: Batwam <56710655+Batwam@users.noreply.github.com>
-Date: Tue, 3 Oct 2023 07:36:08 +0800
-Subject: [PATCH] code update for gnome45 compatibility
+From 45005da93ce6154c6c81d0c3ce7e040ebd453766 Mon Sep 17 00:00:00 2001
+From: Moon-0xff <moon-0xff@protonmail.com>
+Date: Thu, 28 Mar 2024 23:03:09 -0300
+Subject: [PATCH] Code changes for GNOME 45/46 compatibility
 
 ---
  extension.js  | 41 +++++++++++++++++++++++------------------
  label.js      |  2 +-
- metadata.json |  2 +-
+ metadata.json |  4 ++--
  players.js    |  6 ++++--
- prefs.js      | 12 ++++++++----
- 5 files changed, 37 insertions(+), 26 deletions(-)
+ prefs.js      | 13 +++++++++----
+ 5 files changed, 39 insertions(+), 27 deletions(-)
 
 diff --git a/extension.js b/extension.js
-index 1697aa6..259304f 100644
+index bf41b08..48dd73e 100644
 --- a/extension.js
 +++ b/extension.js
 @@ -1,24 +1,29 @@
@@ -62,7 +62,7 @@ index 1697aa6..259304f 100644
  }
  
  var MprisLabel = GObject.registerClass(
-@@ -406,7 +411,7 @@ class MprisLabel extends PanelMenu.Button {
+@@ -411,7 +416,7 @@ class MprisLabel extends PanelMenu.Button {
  	//settings shortcut:
  		let settingsMenuItem = new PopupMenu.PopupMenuItem('Settings');
  		settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
@@ -82,16 +82,17 @@ index f3becea..4e31dbf 100644
  	const BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
  	const LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 diff --git a/metadata.json b/metadata.json
-index f1cfc3c..02c002a 100644
+index aa49e4f..7e62623 100644
 --- a/metadata.json
 +++ b/metadata.json
-@@ -3,7 +3,7 @@
+@@ -2,8 +2,8 @@
+     "uuid": "mprisLabel@moon-0xff.github.com",
      "name": "Media Label and Controls (Mpris Label)",
      "description": "Display a label in your panel with the song/title/album/artist information available from an mpris compatible player. You can also control the player, raise/lower its volume, customize the label, and a lot more! This extension works with Spotify, Vlc, Rhythmbox, Firefox, Chromium, and (probably) any MPRIS compatible player.",
 -    "version": 27,
 -    "shell-version": [ "43", "44" ],
 +    "version": 28,
-+    "shell-version": [ "45" ],
++    "shell-version": [ "45", "46" ],
      "url": "https://github.com/Moon-0xff/gnome-mpris-label",
      "settings-schema": "org.gnome.shell.extensions.mpris-label"
  }
@@ -117,7 +118,7 @@ index 3e110dc..ae2463b 100644
  		this.list = [];
  		this.activePlayers= [];
 diff --git a/prefs.js b/prefs.js
-index 856bd82..812ba72 100644
+index 1ee7752..4f12f3b 100644
 --- a/prefs.js
 +++ b/prefs.js
 @@ -1,11 +1,15 @@
@@ -140,7 +141,7 @@ index 856bd82..812ba72 100644
  	window.default_height = 960;
  
  //panel page:
-@@ -138,6 +141,7 @@ function fillPreferencesWindow(window){
+@@ -138,6 +142,7 @@ function fillPreferencesWindow(window){
  	[doubleClickTime, doubleClickLabel, leftDoubleClickDropDown, middleDoubleClickDropDown, rightDoubleClickDropDown, thumbDoubleForwardDropDown, thumbDoubleBackwardDropDown]
  		.forEach(el => bindEnabled(settings, 'enable-double-clicks', el));
  }
@@ -149,5 +150,5 @@ index 856bd82..812ba72 100644
  // Adwaita "design" and "structure" functions
  
 -- 
-2.39.2
+2.43.2
 
