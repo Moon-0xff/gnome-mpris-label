@@ -74,3 +74,8 @@ Includes new options to customize the icon alongside the label:
 - Allows binding the action 'Next/Prev track' to scroll up/down
 - Allows different font colors for the label text
 Note: The unlisted version 26 for GNOME 45 users already included the `Identity` fixes
+
+# Version 29 (v30 for GNOME 45/46)
+- Adds support for GNOME 46
+- Prevents shell crashes when changing the extension position in the panel
+
