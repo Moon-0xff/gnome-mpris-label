@@ -393,7 +393,7 @@ function buildActionRow(labelstring,labeltooltip){
 function buildInfoButton(labeltooltip){
 	let thisInfoButton = new Gtk.MenuButton({
 		valign: Gtk.Align.CENTER,
-		icon_name: 'info-symbolic',
+		icon_name: 'dialog-information-symbolic',
 		visible: true
 	});
 	thisInfoButton.add_css_class('flat');
