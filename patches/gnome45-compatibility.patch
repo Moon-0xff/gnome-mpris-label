@@ -1,6 +1,6 @@
-From 45005da93ce6154c6c81d0c3ce7e040ebd453766 Mon Sep 17 00:00:00 2001
-From: Moon-0xff <moon-0xff@protonmail.com>
-Date: Thu, 28 Mar 2024 23:03:09 -0300
+From 6f568cff0f564e9dfcd04bd57304847e521c75c1 Mon Sep 17 00:00:00 2001
+From: Batwam <56710655+Batwam@users.noreply.github.com>
+Date: Tue, 30 Apr 2024 16:55:35 -0400
 Subject: [PATCH] Code changes for GNOME 45/46 compatibility
 
 ---
@@ -8,8 +8,8 @@ Subject: [PATCH] Code changes for GNOME 45/46 compatibility
  label.js      |  2 +-
  metadata.json |  4 ++--
  players.js    |  6 ++++--
- prefs.js      | 13 +++++++++----
- 5 files changed, 39 insertions(+), 27 deletions(-)
+ prefs.js      | 15 ++++++++++-----
+ 5 files changed, 40 insertions(+), 28 deletions(-)
 
 diff --git a/extension.js b/extension.js
 index bf41b08..48dd73e 100644
@@ -82,7 +82,7 @@ index f3becea..4e31dbf 100644
  	const BUTTON_PLACEHOLDER = settings.get_string('button-placeholder');
  	const LABEL_FILTERED_LIST = settings.get_string('label-filtered-list');
 diff --git a/metadata.json b/metadata.json
-index aa49e4f..7e62623 100644
+index 2a15493..8a01794 100644
 --- a/metadata.json
 +++ b/metadata.json
 @@ -2,8 +2,8 @@
@@ -118,7 +118,7 @@ index 3e110dc..ae2463b 100644
  		this.list = [];
  		this.activePlayers= [];
 diff --git a/prefs.js b/prefs.js
-index 1ee7752..4f12f3b 100644
+index 1ee7752..e6f05e9 100644
 --- a/prefs.js
 +++ b/prefs.js
 @@ -1,11 +1,15 @@
@@ -149,6 +149,15 @@ index 1ee7752..4f12f3b 100644
  
  // Adwaita "design" and "structure" functions
  
+@@ -393,7 +398,7 @@ function buildActionRow(labelstring,labeltooltip){
+ function buildInfoButton(labeltooltip){
+ 	let thisInfoButton = new Gtk.MenuButton({
+ 		valign: Gtk.Align.CENTER,
+-		icon_name: 'info-symbolic',
++		icon_name: 'dialog-information-symbolic',
+ 		visible: true
+ 	});
+ 	thisInfoButton.add_css_class('flat');
 -- 
 2.43.2
 
