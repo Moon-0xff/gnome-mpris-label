@@ -167,20 +167,29 @@ class MprisLabel extends PanelMenu.Button {
 
 	_onScroll(event) {
 		const SCROLL_ACTION = this.settings.get_string('scroll-action');
-
+		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: --------------------------------------------------------------- ');
+		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: SCROLL_ACTION - '+SCROLL_ACTION);
+		
 		if(SCROLL_ACTION == 'none')
 			return Clutter.EVENT_STOP
 
+		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: is_pointer_emulated - '+event.is_pointer_emulated());
+		
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
+		
+		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: get_scroll_direction - '+event.get_scroll_direction());
 
 		if (event.get_scroll_direction() == Clutter.ScrollDirection.SMOOTH){
 			let delta = -event.get_scroll_delta()[1];
+			log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - '+delta);
+
 			delta = Math.clamp(-1,delta,1);
 
 			if(!delta == 0)
 				switch(SCROLL_ACTION) {
 					case "volume-controls":
+						log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta2 - '+delta);
 						this._changeVolume(delta);
 						break;
 					case "track-change":
