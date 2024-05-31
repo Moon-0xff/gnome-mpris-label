@@ -167,7 +167,7 @@ class MprisLabel extends PanelMenu.Button {
 
 	_onScroll(event) {
 		const SCROLL_ACTION = this.settings.get_string('scroll-action');
-		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: --------------------------------------------------------------- ');
+		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: ---------------------------------- ');
 		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: SCROLL_ACTION - '+SCROLL_ACTION);
 		
 		if(SCROLL_ACTION == 'none')
@@ -185,7 +185,7 @@ class MprisLabel extends PanelMenu.Button {
 			// UP=0,DOWN=1,LEFT=2,RIGHT=3,SMOOTH=4
 			case Clutter.ScrollDirection.SMOOTH:
 				delta = -event.get_scroll_delta()[1];
-				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - '+delta);
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - Smooth '+delta);
 				delta = Math.clamp(-1,delta,1);
 				break;
 
@@ -221,7 +221,7 @@ class MprisLabel extends PanelMenu.Button {
 					this.last_scroll = new Date().getTime();
 					break;
 			}
-
+		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: done');
 		return Clutter.EVENT_STOP;
 	}
 
