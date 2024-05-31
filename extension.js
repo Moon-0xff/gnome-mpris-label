@@ -180,33 +180,49 @@ class MprisLabel extends PanelMenu.Button {
 		
 		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: get_scroll_direction - '+event.get_scroll_direction());
 
-		if (event.get_scroll_direction() == Clutter.ScrollDirection.SMOOTH){
-			let delta = -event.get_scroll_delta()[1];
-			log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - '+delta);
+		switch (event.get_scroll_direction()) {
+			// UP=0,DOWN=1,LEFT=2,RIGHT=3,SMOOTH=4
+			case Clutter.ScrollDirection.SMOOTH:
+				let delta = -event.get_scroll_delta()[1];
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - '+delta);
+				delta = Math.clamp(-1,delta,1);
+				break;
 
-			delta = Math.clamp(-1,delta,1);
+			case Clutter.ScrollDirection.UP:
+				delta = 0.125;
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - Up '+delta);
+				break;
+		
+			case Clutter.ScrollDirection.DOWN:
+				delta = -0.125;
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - Down '+delta);
+				break;
 
-			if(!delta == 0)
-				switch(SCROLL_ACTION) {
-					case "volume-controls":
-						log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta2 - '+delta);
-						this._changeVolume(delta);
-						break;
-					case "track-change":
-						const time_delta = Date.now() - this.last_scroll;
-						const SCROLL_DELAY = this.settings.get_int('scroll-delay');
-						if (!this.last_scroll || time_delta > SCROLL_DELAY) {
-							if (delta > 0) 
-								this._activateAction("next-track");
-							else if (delta < 0) 
-								this._activateAction("prev-track");
-						}
-						this.last_scroll = new Date().getTime();
-						break;
-				}
-
-			return Clutter.EVENT_STOP;
+			default: //exit (do nothing)
+				return Clutter.EVENT_PROPAGATE;
 		}
+
+		if(!delta == 0) {
+			switch(SCROLL_ACTION) {
+				case "volume-controls":
+					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta2 - '+delta);
+					this._changeVolume(delta);
+					break;
+				case "track-change":
+					const time_delta = Date.now() - this.last_scroll;
+					const SCROLL_DELAY = this.settings.get_int('scroll-delay');
+					if (!this.last_scroll || time_delta > SCROLL_DELAY) {
+						if (delta > 0) 
+							this._activateAction("next-track");
+						else if (delta < 0) 
+							this._activateAction("prev-track");
+					}
+					this.last_scroll = new Date().getTime();
+					break;
+			}
+		}
+
+		return Clutter.EVENT_STOP;
 	}
 
 	_activateButtonAction(button,isDoubleClick) {
