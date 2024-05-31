@@ -180,10 +180,11 @@ class MprisLabel extends PanelMenu.Button {
 		
 		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: get_scroll_direction - '+event.get_scroll_direction());
 
+		let delta = 0;
 		switch (event.get_scroll_direction()) {
 			// UP=0,DOWN=1,LEFT=2,RIGHT=3,SMOOTH=4
 			case Clutter.ScrollDirection.SMOOTH:
-				let delta = -event.get_scroll_delta()[1];
+				delta = -event.get_scroll_delta()[1];
 				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - '+delta);
 				delta = Math.clamp(-1,delta,1);
 				break;
@@ -202,7 +203,7 @@ class MprisLabel extends PanelMenu.Button {
 				return Clutter.EVENT_PROPAGATE;
 		}
 
-		if(!delta == 0) {
+		if(!delta == 0)
 			switch(SCROLL_ACTION) {
 				case "volume-controls":
 					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta2 - '+delta);
@@ -220,7 +221,6 @@ class MprisLabel extends PanelMenu.Button {
 					this.last_scroll = new Date().getTime();
 					break;
 			}
-		}
 
 		return Clutter.EVENT_STOP;
 	}
