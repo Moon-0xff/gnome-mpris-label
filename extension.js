@@ -168,35 +168,38 @@ class MprisLabel extends PanelMenu.Button {
 	_onScroll(event) {
 		const SCROLL_ACTION = this.settings.get_string('scroll-action');
 		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: ---------------------------------- ');
-		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: SCROLL_ACTION - '+SCROLL_ACTION);
 		
 		if(SCROLL_ACTION == 'none')
 			return Clutter.EVENT_STOP
 
-		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: is_pointer_emulated - '+event.is_pointer_emulated());
-		
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
 		
 		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: get_scroll_direction - '+event.get_scroll_direction());
 
 		let delta = 0;
+		const time_delta = Date.now() - this.last_scroll;
 		switch (event.get_scroll_direction()) {
 			// UP=0,DOWN=1,LEFT=2,RIGHT=3,SMOOTH=4
 			case Clutter.ScrollDirection.SMOOTH:
 				delta = -event.get_scroll_delta()[1];
-				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - Smooth '+delta);
+				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: Smooth	'+delta);
 				delta = Math.clamp(-1,delta,1);
+				this.last_scroll = new Date().getTime();
 				break;
 
 			case Clutter.ScrollDirection.UP:
-				delta = 0.125;
-				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - Up '+delta);
+				if (!this.last_scroll || time_delta > 500) {
+					delta = 0.25;
+					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: UP	'+delta);
+				}
 				break;
 		
 			case Clutter.ScrollDirection.DOWN:
-				delta = -0.125;
-				log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta1 - Down '+delta);
+				if (!this.last_scroll || time_delta > 500) {
+					delta = -0.25;
+					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: DOWN	'+delta);
+				}
 				break;
 
 			default: //exit (do nothing)
@@ -206,7 +209,7 @@ class MprisLabel extends PanelMenu.Button {
 		if(!delta == 0)
 			switch(SCROLL_ACTION) {
 				case "volume-controls":
-					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: delta2 - '+delta);
+					log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: scroll	('+event.get_scroll_direction()+') '+delta);
 					this._changeVolume(delta);
 					break;
 				case "track-change":
@@ -221,8 +224,8 @@ class MprisLabel extends PanelMenu.Button {
 					this.last_scroll = new Date().getTime();
 					break;
 			}
-		log(Date().substring(16,24)+' gnome-mpris-label-batwam/extension.js: done');
-		return Clutter.EVENT_STOP;
+
+			return Clutter.EVENT_STOP;
 	}
 
 	_activateButtonAction(button,isDoubleClick) {
