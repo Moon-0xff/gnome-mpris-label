@@ -167,13 +167,13 @@ class MprisLabel extends PanelMenu.Button {
 
 	_onScroll(event) {
 		const SCROLL_ACTION = this.settings.get_string('scroll-action');
-		
+
 		if(SCROLL_ACTION == 'none')
 			return Clutter.EVENT_STOP
 
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
-		
+
 		let delta = 0;
 		const time_delta = Date.now() - this.last_scroll;
 		switch (event.get_scroll_direction()) {
@@ -187,13 +187,11 @@ class MprisLabel extends PanelMenu.Button {
 			case Clutter.ScrollDirection.UP:
 				if (!this.last_scroll || time_delta > 500)
 					delta = 0.25;
-
 				break;
-		
+
 			case Clutter.ScrollDirection.DOWN:
 				if (!this.last_scroll || time_delta > 500)
 					delta = -0.25;
-
 				break;
 
 			default: //exit (do nothing)
@@ -209,9 +207,9 @@ class MprisLabel extends PanelMenu.Button {
 					const time_delta = Date.now() - this.last_scroll;
 					const SCROLL_DELAY = this.settings.get_int('scroll-delay');
 					if (!this.last_scroll || time_delta > SCROLL_DELAY) {
-						if (delta > 0) 
+						if (delta > 0)
 							this._activateAction("next-track");
-						else if (delta < 0) 
+						else if (delta < 0)
 							this._activateAction("prev-track");
 					}
 					this.last_scroll = new Date().getTime();
