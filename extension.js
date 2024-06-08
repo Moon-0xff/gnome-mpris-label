@@ -174,30 +174,49 @@ class MprisLabel extends PanelMenu.Button {
 		if (event.is_pointer_emulated())
 			return Clutter.EVENT_PROPAGATE;
 
-		if (event.get_scroll_direction() == Clutter.ScrollDirection.SMOOTH){
-			let delta = -event.get_scroll_delta()[1];
-			delta = Math.clamp(-1,delta,1);
+		let delta = 0;
+		const time_delta = Date.now() - this.last_scroll;
+		switch (event.get_scroll_direction()) {
+			// UP=0,DOWN=1,LEFT=2,RIGHT=3,SMOOTH=4
+			case Clutter.ScrollDirection.SMOOTH:
+				delta = -event.get_scroll_delta()[1];
+				delta = Math.clamp(-1,delta,1);
+				this.last_scroll = new Date().getTime();
+				break;
 
-			if(!delta == 0)
-				switch(SCROLL_ACTION) {
-					case "volume-controls":
-						this._changeVolume(delta);
-						break;
-					case "track-change":
-						const time_delta = Date.now() - this.last_scroll;
-						const SCROLL_DELAY = this.settings.get_int('scroll-delay');
-						if (!this.last_scroll || time_delta > SCROLL_DELAY) {
-							if (delta > 0) 
-								this._activateAction("next-track");
-							else if (delta < 0) 
-								this._activateAction("prev-track");
-						}
-						this.last_scroll = new Date().getTime();
-						break;
-				}
+			case Clutter.ScrollDirection.UP:
+				if (!this.last_scroll || time_delta > 500)
+					delta = 0.25;
+				break;
+
+			case Clutter.ScrollDirection.DOWN:
+				if (!this.last_scroll || time_delta > 500)
+					delta = -0.25;
+				break;
+
+			default: //exit (do nothing)
+				return Clutter.EVENT_PROPAGATE;
+		}
+
+		if(!delta == 0)
+			switch(SCROLL_ACTION) {
+				case "volume-controls":
+					this._changeVolume(delta);
+					break;
+				case "track-change":
+					const time_delta = Date.now() - this.last_scroll;
+					const SCROLL_DELAY = this.settings.get_int('scroll-delay');
+					if (!this.last_scroll || time_delta > SCROLL_DELAY) {
+						if (delta > 0)
+							this._activateAction("next-track");
+						else if (delta < 0)
+							this._activateAction("prev-track");
+					}
+					this.last_scroll = new Date().getTime();
+					break;
+			}
 
 			return Clutter.EVENT_STOP;
-		}
 	}
 
 	_activateButtonAction(button,isDoubleClick) {
