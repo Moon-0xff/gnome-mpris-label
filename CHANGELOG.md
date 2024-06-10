@@ -72,7 +72,8 @@ Includes new options to customize the icon alongside the label:
 # Version 27 (v28 for GNOME 45)
 - Solves various problems triggered by an empty `Identity` field on a player
 - Allows binding the action 'Next/Prev track' to scroll up/down
-- Allows different font colors for the label text  
+- Allows different font colors for the label text
+
 Note: The unlisted version 26 for GNOME 45 users already included the `Identity` fixes
 
 # Version 29 (v30 for GNOME 45/46)
