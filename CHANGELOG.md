@@ -72,10 +72,15 @@ Includes new options to customize the icon alongside the label:
 # Version 27 (v28 for GNOME 45)
 - Solves various problems triggered by an empty `Identity` field on a player
 - Allows binding the action 'Next/Prev track' to scroll up/down
-- Allows different font colors for the label text
+- Allows different font colors for the label text  
 Note: The unlisted version 26 for GNOME 45 users already included the `Identity` fixes
 
 # Version 29 (v30 for GNOME 45/46)
 - Adds support for GNOME 46
 - Prevents shell crashes when changing the extension position in the panel
+
+# Version 31 (v32 for GNOME 45/46)
+- Captures UP/DOWN scroll signals, fixing a regression experienced by GNOME 46
+  users
+- Replaces the "info-symbolic" icon with an standard icon (v32 only)
 
