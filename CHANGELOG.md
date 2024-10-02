@@ -85,3 +85,6 @@ Note: The unlisted version 26 for GNOME 45 users already included the `Identity`
   users
 - Replaces the "info-symbolic" icon with an standard icon (v32 only)
 
+# Version 33
+- Adds support for GNOME 47
+
