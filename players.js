@@ -265,10 +265,12 @@ class Player {
 
 		this.proxy.PlayPauseRemote();
 
-		if (this.proxy.PlaybackStatus == "Playing" && prevStatus == "Playing"){ //fallback to "Stop"
-			this.proxy.StopRemote();
-			return
-		}
+		setTimeout(() => { //wait 1s s PlaybackStatus update has a lag
+			if (this.proxy.PlaybackStatus == "Playing" && prevStatus == "Playing"){ //fallback to "Stop"
+				this.proxy.StopRemote();
+				return
+			}
+		}, 1000);
 	}
 	goNext(){
 		if (this.proxy.CanGoNext)
