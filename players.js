@@ -3,6 +3,7 @@ const {Gio,Shell,St} = imports.gi;
 const mprisInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2.Player">
+		<method name="Play" />
 		<method name="PlayPause" />
 		<method name="Next" />
 		<method name="Previous" />
@@ -261,16 +262,19 @@ class Player {
 		return icon
 	}
 	toggleStatus() {
-		let prevStatus = this.proxy.PlaybackStatus;
-
-		this.proxy.PlayPauseRemote();
-
-		setTimeout(() => { //wait 1s s PlaybackStatus update has a lag
-			if (this.proxy.PlaybackStatus == "Playing" && prevStatus == "Playing"){ //fallback to "Stop"
-				this.proxy.StopRemote();
-				return
-			}
-		}, 1000);
+		if (this.proxy.CanPlay && this.proxy.CanPause){
+			this.proxy.PlayPauseRemote();
+			return
+		}
+		//workaround for some players (Plexamp) which incorrectly change CanPause set to false when paused
+		if (this.proxy.CanPlay && this.proxy.PlaybackStatus == "Paused"){ 
+			this.proxy.PlayRemote();
+			return
+		}
+		if (this.proxy.PlaybackStatus == "Playing"){ // fallback to "Stop"
+			this.proxy.StopRemote();
+			return
+		}
 	}
 	goNext(){
 		if (this.proxy.CanGoNext)
