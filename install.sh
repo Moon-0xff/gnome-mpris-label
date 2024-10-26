@@ -16,7 +16,7 @@ if [ $GNOME_VERSION -ge 45 ]; then #apply patch if Gnome 45+
 	patch -d $DEFAULT_INSTALL_DIR < patches/gnome45-compatibility.patch && echo "Gnome 45+ Patch applied!" || { echo "Patch failed!"; exit 1 ; }
 	if [ $GNOME_VERSION -ge 47 ]; then #apply patch if Gnome 47+
 		echo "You are running GNOME 47 or above."
-		patch -d $DEFAULT_INSTALL_DIR < patches/gnome47-compatibility.patch && echo "Gnome 47+ Patch applied!" || { echo "Patch failed!"; exit 1 ; }
+		patch --no-backup-if-mismatch -d $DEFAULT_INSTALL_DIR < patches/gnome47-compatibility.patch && echo "Gnome 47+ Patch applied!" || { echo "Patch failed!"; exit 1 ; }
 	fi
 fi
 
