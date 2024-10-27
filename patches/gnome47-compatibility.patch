@@ -1,16 +1,19 @@
 diff --git a/extension.js b/extension.js
-@@ -6,6 +6,7 @@
+index 1a3b8a6..a165951 100644
+--- a/extension.js
++++ b/extension.js
+@@ -6,6 +6,7 @@ import Gio from 'gi://Gio';
  import GLib from 'gi://GLib';
  import GObject from 'gi://GObject';
  import St from 'gi://St';
 +import Cogl from 'gi://Cogl';
  import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
  import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
-
-@@ -107,7 +108,12 @@
-			new_channels.push(Math.round((channel[0] + channel[1]) / 2));
-		});
-
+ 
+@@ -107,7 +108,12 @@ class MprisLabel extends PanelMenu.Button {
+ 			new_channels.push(Math.round((channel[0] + channel[1]) / 2));
+ 		});
+ 
 -		let mixedColor = Clutter.Color.new(new_channels[0],new_channels[1],new_channels[2],new_channels[3]);
 +		let mixedColor = new Cogl.Color({
 +			red: new_channels[0],
@@ -18,6 +21,19 @@ diff --git a/extension.js b/extension.js
 +			blue: new_channels[2],
 +			alpha: new_channels[3]
 +		});
-		let color_str = mixedColor.to_string();
-		this.unfocusColor = color_str.substring(0,7); //ignore alpha channel
-	}
+ 		let color_str = mixedColor.to_string();
+ 		this.unfocusColor = color_str.substring(0,7); //ignore alpha channel
+ 	}
+diff --git a/metadata.json b/metadata.json
+index 1f0d6c8..e29d0f9 100644
+--- a/metadata.json
++++ b/metadata.json
+@@ -3,7 +3,7 @@
+     "name": "Media Label and Controls (Mpris Label)",
+     "description": "Display a label in your panel with the song/title/album/artist information available from an mpris compatible player. You can also control the player, raise/lower its volume, customize the label, and a lot more! This extension works with Spotify, Vlc, Rhythmbox, Firefox, Chromium, and (probably) any MPRIS compatible player.",
+     "version": 33,
+-    "shell-version": [ "45", "46" ],
++    "shell-version": [ "45", "46", "47" ],
+     "url": "https://github.com/Moon-0xff/gnome-mpris-label",
+     "settings-schema": "org.gnome.shell.extensions.mpris-label"
+ }
