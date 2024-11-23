@@ -33,6 +33,9 @@ class MprisLabel extends PanelMenu.Button {
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const REPOSITION_DELAY = this.settings.get_int('reposition-delay');
 
+		this.mouseSettings = new Gio.Settings({ schema: 'org.gnome.desktop.peripherals.mouse' });
+		this.touchpadSettings = new Gio.Settings({ schema: 'org.gnome.desktop.peripherals.touchpad' });
+
 		this.box = new St.BoxLayout({
 			x_align: Clutter.ActorAlign.FILL
 		});
@@ -171,9 +174,6 @@ class MprisLabel extends PanelMenu.Button {
 		if(SCROLL_ACTION == 'none')
 			return Clutter.EVENT_STOP
 
-		if (event.is_pointer_emulated())
-			return Clutter.EVENT_PROPAGATE;
-
 		let delta = 0;
 		const time_delta = Date.now() - this.last_scroll;
 		switch (event.get_scroll_direction()) {
@@ -196,6 +196,22 @@ class MprisLabel extends PanelMenu.Button {
 
 			default: //exit (do nothing)
 				return Clutter.EVENT_PROPAGATE;
+		}
+
+		// If natural-scroll is enabled, the scroll event we get is inverted.
+		// We need to invert it back.
+		switch (event.get_source_device().get_device_type()) {
+			case Clutter.InputDeviceType.POINTER_DEVICE:
+				// mouse
+				if(this.mouseSettings.get_boolean('natural-scroll'))
+					delta = -delta;
+				break;
+
+			case Clutter.InputDeviceType.TOUCHPAD_DEVICE:
+				// touchpad
+				if(this.touchpadSettings.get_boolean('natural-scroll'))
+					delta = -delta;
+				break;
 		}
 
 		if(!delta == 0)
