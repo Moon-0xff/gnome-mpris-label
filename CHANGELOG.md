@@ -88,3 +88,9 @@ Note: The unlisted version 26 for GNOME 45 users already included the `Identity`
 # Version 33
 - Adds support for GNOME 47
 
+# Version 38 (v38 for GNOME 45/46, v37 for GNOME 47, v34 for GNOME 43/44)
+- Fixes problems with the player selection menu
+- Adds a workaround for plexamp
+
+Note: In interim versions, the problems with the selection menu were fixed for
+GNOME 47, but introduced as a bug in GNOME 45/46.
