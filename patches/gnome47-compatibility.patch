@@ -34,7 +34,7 @@ index 1f0d6c8..e29d0f9 100644
 -    "version": 38,
 +    "version": 37,
 -    "shell-version": [ "45", "46" ],
-+    "shell-version": [ "47" ],
++    "shell-version": [ "47", "48" ],
      "url": "https://github.com/Moon-0xff/gnome-mpris-label",
      "settings-schema": "org.gnome.shell.extensions.mpris-label"
  }
