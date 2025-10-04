@@ -1,24 +1,30 @@
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const {Clutter,Gio,GLib,GObject,St} = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const CurrentExtension = ExtensionUtils.getCurrentExtension();
-const Volume = imports.ui.status.volume;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+import Cogl from 'gi://Cogl';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
 
-const { Players } = CurrentExtension.imports.players;
-const { buildLabel } = CurrentExtension.imports.label;
+import {Players} from './players.js';
+import {buildLabel} from './label.js';
 
 let indicator = null;
 
-function enable(){
-	indicator = new MprisLabel(ExtensionUtils.getSettings());
-}
+export default class MprisLabelExtension extends Extension {
+	enable(){
+		indicator = new MprisLabel(this.getSettings());
+	}
 
-function disable(){
-	indicator._disable();
-	indicator.destroy();
-	indicator = null;
+	disable(){
+		indicator._disable();
+		indicator.destroy();
+		indicator = null;
+	}
 }
 
 var MprisLabel = GObject.registerClass(
@@ -102,7 +108,12 @@ class MprisLabel extends PanelMenu.Button {
 			new_channels.push(Math.round((channel[0] + channel[1]) / 2));
 		});
 
-		let mixedColor = Clutter.Color.new(new_channels[0],new_channels[1],new_channels[2],new_channels[3]);
+		let mixedColor = new Cogl.Color({
+			red: new_channels[0],
+			green: new_channels[1],
+			blue: new_channels[2],
+			alpha: new_channels[3]
+		});
 		let color_str = mixedColor.to_string();
 		this.unfocusColor = color_str.substring(0,7); //ignore alpha channel
 	}
@@ -430,7 +441,7 @@ class MprisLabel extends PanelMenu.Button {
 	//settings shortcut:
 		let settingsMenuItem = new PopupMenu.PopupMenuItem('Settings');
 		settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
-		settingsMenuItem.connect('activate', () => ExtensionUtils.openPrefs() );
+		settingsMenuItem.connect('activate', () => Extension.lookupByUUID('mprisLabel@moon-0xff.github.com').openPreferences());
 		this.menu.addMenuItem(settingsMenuItem);
 	}
 
