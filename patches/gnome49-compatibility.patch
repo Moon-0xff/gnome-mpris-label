@@ -1,5 +1,5 @@
 diff --git a/extension.js b/extension.js
-index a165951..f222338 100644
+index a165951..a5db27a 100644
 --- a/extension.js
 +++ b/extension.js
 @@ -336,7 +336,7 @@ class MprisLabel extends PanelMenu.Button {
@@ -7,7 +7,20 @@ index a165951..f222338 100644
  
  		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
 -		Main.osdWindowManager.show(monitor, icon, streamName, volumeRatio);
-+		Main.osdWindowManager.showAll(monitor, icon, streamName, volumeRatio);
++		Main.osdWindowManager.showOne(monitor, icon, streamName, volumeRatio);
  	}
  
  	_getStream(){
+diff --git a/metadata.json b/metadata.json
+index b26843a..9888946 100644
+--- a/metadata.json
++++ b/metadata.json
+@@ -3,7 +3,7 @@
+     "name": "Media Label and Controls (Mpris Label)",
+     "description": "Display a label in your panel with the song/title/album/artist information available from an mpris compatible player. You can also control the player, raise/lower its volume, customize the label, and a lot more! This extension works with Spotify, Vlc, Rhythmbox, Firefox, Chromium, and (probably) any MPRIS compatible player.",
+     "version": 37,
+-    "shell-version": [ "47", "48" ],
++    "shell-version": [ "49" ],
+     "url": "https://github.com/Moon-0xff/gnome-mpris-label",
+     "settings-schema": "org.gnome.shell.extensions.mpris-label"
+ }
