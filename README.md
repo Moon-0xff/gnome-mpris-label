@@ -29,11 +29,11 @@ Skip the third step to install the development version.
 
 The default installation path is: `~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com/`
 
-This extension (for GNOME 44/43) can be installed by simply copying the repository to the default installation path.
+This extension (for GNOME 47/48) can be installed by simply copying the repository to the default installation path.
 
-GNOME 45+ compatibility isn't provided directly, it needs to be patched.  
-The installation script will patch the extension if it detects a gnome-shell version above or equal to `45`.  
-You can patch it manually by running: `$ patch < patches/gnome45-compatibility.patch`
+GNOME 49+ compatibility isn't provided directly, it needs to be patched.  
+The installation script will patch the extension if it detects a gnome-shell version above or equal to `49`.  
+You can patch it manually by running: `$ patch < patches/gnome49-compatibility.patch`
 
 Recently installed extensions are only available after `gnome-shell` is reloaded. On Gnome-Wayland is necessary to log out and log back in. On Gnome-Xorg the shell can be reloaded by running `r` on the 'Run as a command' prompt (default shortcut: `Alt+F2`).
 
