@@ -94,3 +94,10 @@ Note: The unlisted version 26 for GNOME 45 users already included the `Identity`
 
 Note: In interim versions, the problems with the selection menu were fixed for
 GNOME 47, but introduced as a bug in GNOME 45/46.
+
+# Version 40
+- Adds support for GNOME 48
+
+# Version 41
+- Adds support for GNOME 49
+
