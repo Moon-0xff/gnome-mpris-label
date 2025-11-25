@@ -35,7 +35,7 @@ GNOME 49+ compatibility isn't provided directly, it needs to be patched.
 The installation script will patch the extension if it detects a gnome-shell version above or equal to `49`.  
 You can patch it manually by running: `$ patch < patches/gnome49-compatibility.patch`
 
-Recently installed extensions are only available after `gnome-shell` is reloaded. On Gnome-Wayland is necessary to log out and log back in. On Gnome-Xorg the shell can be reloaded by running `r` on the 'Run as a command' prompt (default shortcut: `Alt+F2`).
+Recently installed extensions are only available after `gnome-shell` is reloaded. On Gnome-Wayland is necessary to log out and log back in. On Gnome-Xorg the shell can be reloaded by running `r` on the 'Run as a command' prompt (default shortcut: <kbd>Alt</kbd>+<kbd>F2</kbd>).
 
 ## Contribution
 
