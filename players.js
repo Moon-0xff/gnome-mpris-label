@@ -235,16 +235,25 @@ class Player {
 		}
 		return ""
 	}
-	getArtUrlIcon(size){
+	getArtUrlIcon(size,radius){
 		const url = this.stringFromMetadata("mpris:artUrl",this.metadata);
 
-		if(url.length>0)
-			this.albumArt = new St.Icon({
-				gicon: Gio.Icon.new_for_string(url),
-				style_class: 'system-status-icon',
-				icon_size: size,
-				style: "padding: 0px;"
-			})
+		if(url.length>0){
+			let innerArt = new St.Bin({
+				style: `
+					border-radius: ${radius}px;
+					overflow: hidden;
+					padding: 0px;
+					width: ${size}px;
+					height: ${size}px;
+					background-image: url('${url}');
+					background-size: cover;
+					background-position: center;
+				`,
+			});
+			this.albumArt = new St.Bin();
+			this.albumArt.set_child(innerArt);
+		}
 		else this.albumArt = null;
 
 		return this.albumArt

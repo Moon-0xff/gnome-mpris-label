@@ -504,11 +504,13 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(USE_ALBUM){
 			const ALBUM_SIZE = this.settings.get_int('album-size');
+			const ALBUM_RADIUS = this.settings.get_int('album-radius');
 			let size = Math.floor(Main.panel.height*ALBUM_SIZE/100);
+			let corner_radius = Math.floor(size*ALBUM_RADIUS/200); //radius in pixels
 
 			const blacklist = ALBUM_BLACKLIST.toLowerCase().replaceAll(' ','').split(',');
 			if(!this.player.identity || !blacklist.includes(this.player.identity.toLowerCase()))
-				this.icon = this.player.getArtUrlIcon(size);
+				this.icon = this.player.getArtUrlIcon(size,corner_radius);
 		}
 
 		if(this.icon == null){
@@ -519,14 +521,29 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (this.icon != null | undefined){
 			if (ICON_PLACE == "right"){
-				this.icon.set_style(this.icon.get_style() + "padding-left: " + ICON_PADDING + "px;padding-right: 0px;");
+				this._update_style(this.label, "margin-right", ICON_PADDING + "px");
 				this.box.add_child(this.icon);
 			}
 			else if (ICON_PLACE == "left"){
-				this.icon.set_style(this.icon.get_style() + "padding-left: 0px;padding-right: " + ICON_PADDING + "px;");
+				this._update_style(this.label, "margin-right", "0px");
+				this._update_style(this.icon, "margin-right", ICON_PADDING + "px");
 				this.box.insert_child_at_index(this.icon,0);
 			}
 		}
+	}
+
+	_update_style(widget, property, value) {
+		if (!widget)
+			return;
+
+		let style = widget.get_style() || "";
+
+		let rules = style.split(";").map(s => s.trim()).filter(s => s.length > 0);
+		rules = rules.filter(rule => !rule.startsWith(property + ":"));
+		if (value !== null && value !== undefined)
+			rules.push(`${property}: ${value}`);
+
+		widget.set_style(rules.join("; ") + ";");
 	}
 
 	_setText() {
@@ -544,7 +561,10 @@ class MprisLabel extends PanelMenu.Button {
 
 	_setLabelStyle() {
 		const FONT_COLOR = this.settings.get_string('font-color');
-		this.label.set_style('color: '+FONT_COLOR);
+		if (FONT_COLOR && FONT_COLOR != "")
+			this._update_style(this.label, "color", FONT_COLOR);
+		else
+			this._update_style(this.label, "color", null);
 	}
 
 	_removeTimeout() {
