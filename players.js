@@ -177,6 +177,7 @@ class Player {
 	_onEntryProxyReady(){
 		this.identity = this.entryProxy.Identity;
 		this.desktopEntry = this.entryProxy.DesktopEntry;
+		this.canRaise = this.entryProxy.CanRaise;
 
 		this.desktopApp = null;
 		let matchedEntries = [];
@@ -294,11 +295,11 @@ class Player {
 		let currentWorkspace = global.workspace_manager.get_active_workspace();
 
 		if (!playerWindow){
-			if (this.entryProxy.CanRaise){
+			if (this.canRaise){
 				this.previousWorkspace = currentWorkspace;
 				this.previousWindow = focusedWindow;
 				this.raisedFromBackground = true;
-				this.entryProxy.RaiseRemote();
+				this.entryProxy.RaiseAsync().catch(logError);
 			}
 			return;
 		}
