@@ -167,7 +167,7 @@
     </key>
 
     <key name="album-radius" type="i">
-      <default>0</default>
+      <default>25</default>
     </key>
 
     <key name="album-blacklist" type="s">
