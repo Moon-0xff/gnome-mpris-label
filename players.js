@@ -290,6 +290,9 @@ class Player {
 			return
 		}
 	}
+	raise() { //activate source app / browser tab
+		this.entryProxy.RaiseAsync();
+	}
 	goNext(){
 		if (this.proxy.CanGoNext)
 			this.proxy.NextRemote()
@@ -308,7 +311,7 @@ class Player {
 				this.previousWorkspace = currentWorkspace;
 				this.previousWindow = focusedWindow;
 				this.raisedFromBackground = true;
-				this.entryProxy.RaiseAsync().catch(logError);
+				this.raise();
 			}
 			return;
 		}
@@ -335,6 +338,8 @@ class Player {
 				this.previousWindow = focusedWindow;
 				this.playerWindowMinimized = playerWindow.minimized;
 				playerWindow.activate(global.get_current_time());
+				if (this.canRaise) //try to raise player window/tab using mpris if available
+					this.raise();
 			}
 		}
 	}
