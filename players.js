@@ -23,6 +23,8 @@ const mprisInterface = `
 const entryInterface = `
 <node>
 	<interface name="org.mpris.MediaPlayer2">
+		<method name="Raise" />
+		<property name="CanRaise" type="b" access="read"/>
 		<property name="DesktopEntry" type="s" access="read"/>
 		<property name="Identity" type="s" access="read"/>
 	</interface>
@@ -175,6 +177,7 @@ class Player {
 	_onEntryProxyReady(){
 		this.identity = this.entryProxy.Identity;
 		this.desktopEntry = this.entryProxy.DesktopEntry;
+		this.canRaise = this.entryProxy.CanRaise;
 
 		this.desktopApp = null;
 		let matchedEntries = [];
@@ -291,10 +294,22 @@ class Player {
 		let playerWindow = this._matchAppWindow();
 		let currentWorkspace = global.workspace_manager.get_active_workspace();
 
-		if (!playerWindow)
-			return
+		if (!playerWindow){
+			if (this.canRaise){
+				this.previousWorkspace = currentWorkspace;
+				this.previousWindow = focusedWindow;
+				this.raisedFromBackground = true;
+				this.entryProxy.RaiseAsync().catch(logError);
+			}
+			return;
+		}
 
 		if (focusedWindow == playerWindow){
+			if (this.raisedFromBackground){
+				this.raisedFromBackground = false;
+				playerWindow.delete(global.get_current_time());
+				return;
+			}
 			if (currentWorkspace == this.previousWorkspace){ //go back to last workspace
 				if (this.playerWindowMinimized)
 					playerWindow.minimize();
@@ -305,6 +320,7 @@ class Player {
 				this.previousWorkspace.activate(global.get_current_time());
 		}
 		else{
+			this.raisedFromBackground = false;
 			if(this.desktopApp){
 				this.previousWorkspace = currentWorkspace;
 				this.previousWindow = focusedWindow;
