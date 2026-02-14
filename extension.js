@@ -514,7 +514,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		if(this.icon == null){
-			this.icon = this.player.getIcon(SYMBOLIC_ICON);
+			this.icon = this.player.getIcon();
 			if (SYMBOLIC_ICON)
 				this.icon.set_style('-st-icon-style: symbolic;');
 		}
@@ -528,6 +528,13 @@ class MprisLabel extends PanelMenu.Button {
 				this._update_style(this.label, "margin-right", "0px");
 				this._update_style(this.icon, "margin-right", ICON_PADDING + "px");
 				this.box.insert_child_at_index(this.icon,0);
+			}
+
+			const ICON_DESATURATION = this.settings.get_int('icon-desaturation');
+			if (ICON_DESATURATION > 0){
+				let desaturateEffect = new Clutter.DesaturateEffect();
+				desaturateEffect.set_factor(ICON_DESATURATION / 100);
+				this.icon.add_effect_with_name('desaturate', desaturateEffect);
 			}
 		}
 	}

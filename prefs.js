@@ -10,7 +10,7 @@ function init(){}
 export default class MprisLabelPreferences extends ExtensionPreferences {
 fillPreferencesWindow(window){
 	const settings = this.getSettings();
-	window.default_height = 1000;
+	window.default_height = 1050;
 
 //panel page:
 	let page = addPreferencesPage(window,'Panel','computer-symbolic');
@@ -20,8 +20,9 @@ fillPreferencesWindow(window){
 	addSpinButton(settings,group,'icon-padding', 'Icon padding', 0, 50, undefined);
 	addSwitch(settings,group,'symbolic-source-icon', 'Use symbolic source icon', "Uses an icon that follows the shell's color scheme");
 	addSwitch(settings,group,'use-album','Use album art as icon when available',undefined);
+	addSpinButton(settings,group,'icon-desaturation','Icon desaturation (in %)',0,100,"0% full color, 100%  greyscale");
 	addSpinButton(settings,group,'album-size','Album art scaling (in %)',20,250,undefined);
-	addSpinButton(settings,group,'album-radius','Album art corner radius (in %)',0,100,"0% makes is square, 100% makes it circular");
+	addSpinButton(settings,group,'album-radius','Album art corner radius (in %)',0,100,"0% for square, ~25% for rounded corners, 100% for circle");
 
 	group = addGroup(page,'Position');
 	let [extensionPlaceDropDown] = addDropDown(settings,group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
@@ -35,7 +36,7 @@ fillPreferencesWindow(window){
 
 	addResetButton(settings,group,'Reset Panel settings',[
 		'show-icon','left-padding','right-padding','extension-index','extension-place','reposition-delay','reposition-on-button-press','use-album',
-		'album-size','album-radius','symbolic-source-icon','icon-padding'],
+		'icon-desaturation','album-size','album-radius','symbolic-source-icon','icon-padding'],
 		[showIconDropDown,extensionPlaceDropDown]
 	);
 
