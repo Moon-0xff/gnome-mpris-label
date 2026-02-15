@@ -531,11 +531,8 @@ class MprisLabel extends PanelMenu.Button {
 			}
 
 			const ICON_DESATURATION = this.settings.get_int('icon-desaturation');
-			if (ICON_DESATURATION > 0){
-				let desaturateEffect = new Clutter.DesaturateEffect();
-				desaturateEffect.set_factor(ICON_DESATURATION / 100);
-				this.icon.add_effect_with_name('desaturate', desaturateEffect);
-			}
+			if (ICON_DESATURATION > 0)
+				this.icon.add_effect_with_name('desaturate', new Clutter.DesaturateEffect({ factor: ICON_DESATURATION / 100 }));
 		}
 	}
 
