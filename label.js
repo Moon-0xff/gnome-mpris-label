@@ -27,7 +27,7 @@ export var buildLabel = function buildLabel(players,settings){
 	let metadata = players.selected.metadata;
 
 	if(metadata == null)
-		return placeholder
+		return BUTTON_PLACEHOLDER
 
 	let fields = [FIRST_FIELD,SECOND_FIELD,LAST_FIELD]; //order is user-defined
 	fields.filter(field => field != ""); //discard fields that the user defined as empty(none)
@@ -43,7 +43,7 @@ export var buildLabel = function buildLabel(players,settings){
 	labelstring = labelstring.substring(0,labelstring.length - DIVIDER_STRING.length); //remove the trailing divider
 
 	if(labelstring.length === 0)
-		return placeholder
+		return BUTTON_PLACEHOLDER
 
 	return labelstring
 }
