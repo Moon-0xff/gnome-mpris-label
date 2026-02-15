@@ -78,6 +78,10 @@
       <default>5</default>
     </key>
 
+    <key name="icon-desaturation" type="i">
+      <default>0</default>
+    </key>
+
     <key name="reposition-delay" type="i">
       <default>2</default>
     </key>
