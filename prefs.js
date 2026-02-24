@@ -45,7 +45,7 @@ fillPreferencesWindow(window){
 	addSwitch(settings,group,'auto-switch-to-most-recent','Switch to the most recent source automatically',"This option can be annoying without the use of filter lists");
 	addSwitch(settings,group,'remove-text-when-paused','Hide when paused',undefined);
 	addSpinButton(settings,group,'remove-text-paused-delay','Hide when paused delay (seconds)',0,9999,undefined);
-	addSpinButton(settings,group,'refresh-rate','Refresh rate (milliseconds)',30,3000,undefined);
+	addSpinButton(settings,group,'refresh-rate','Refresh rate (milliseconds)',60,10000,undefined);
 	addEntry(settings,group,'label-filtered-list','Filter segments containing',"Separate entries with commas, special characters will be removed\n\nThe targeted segments are defined in code as:\n\t\A substring enclosed by parentheses, square brackets,\n\t or between the end of the string and a hyphen");
 
 	group = addGroup(page,'Appearance');
