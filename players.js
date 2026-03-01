@@ -1,4 +1,5 @@
 import Gio from 'gi://Gio';
+import GioUnix from 'gi://GioUnix';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 
@@ -182,12 +183,12 @@ class Player {
 		this.desktopApp = null;
 		let matchedEntries = [];
 		if(! (this.identity == null | undefined))
-			matchedEntries = Gio.DesktopAppInfo.search(this.identity);
+			matchedEntries = GioUnix.DesktopAppInfo.search(this.identity);
 
 		if ( matchedEntries.length === 0 && !(this.desktopEntry == null | undefined) )//backup method using DesktopEntry info
-			matchedEntries = Gio.DesktopAppInfo.search(this.desktopEntry);
+			matchedEntries = GioUnix.DesktopAppInfo.search(this.desktopEntry);
 
-		//de-nest matchedEntries. Gio.DesktopAppInfo.search returns a nested array
+		//de-nest matchedEntries. GioUnix.DesktopAppInfo.search returns a nested array
 		let entries = [];
 		matchedEntries.forEach(nest => {
 			nest.forEach(entry => {
@@ -270,7 +271,7 @@ class Player {
 		if(this.desktopApp == null | undefined)
 			return icon
 
-		let entry = Gio.DesktopAppInfo.new(this.desktopApp);
+		let entry = GioUnix.DesktopAppInfo.new(this.desktopApp);
 		let gioIcon = entry.get_icon();
 		icon.set_gicon(gioIcon);
 		return icon
