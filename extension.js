@@ -130,15 +130,10 @@ class MprisLabel extends PanelMenu.Button {
 		else //gnome will issue "Object St.Bin has been already disposed" error but return to prevent crash
 			return
 
-		if (EXTENSION_PLACE == "left"){
-			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
-		else if (EXTENSION_PLACE == "center"){
-			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
-		else if (EXTENSION_PLACE == "right"){
-			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
+		if (Main.panel.statusArea['Mpris Label'])
+			delete Main.panel.statusArea['Mpris Label'];
+
+		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
 		this._refresh(); //call and re-enable the refresh loop
 	}
