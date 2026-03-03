@@ -127,6 +127,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (this.container.get_parent())
 			this.container.get_parent().remove_child(this.container);
+		else //gnome will issue "Object St.Bin has been already disposed" error but return to prevent crash
+			return
 
 		if (EXTENSION_PLACE == "left"){
 			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
@@ -447,6 +449,10 @@ class MprisLabel extends PanelMenu.Button {
 
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
+
+		// prevent crash when extension is being recreated while timeout is still running
+		if (!this.container || this.container.is_destroyed?.())
+			return GLib.SOURCE_REMOVE;
 
 		if(this._timeout) //prevent simultaneous timeouts
 			this._removeTimeout();
