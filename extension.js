@@ -445,10 +445,6 @@ class MprisLabel extends PanelMenu.Button {
 	_refresh() {
 		const REFRESH_RATE = this.settings.get_int('refresh-rate');
 
-		// prevent crash when extension is being recreated while timeout is still running
-		if (!this.container || this.container.is_destroyed?.())
-			return GLib.SOURCE_REMOVE;
-
 		if(this._timeout) //prevent simultaneous timeouts
 			this._removeTimeout();
 
