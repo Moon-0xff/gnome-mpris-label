@@ -26,7 +26,7 @@ fillPreferencesWindow(window){
 
 	group = addGroup(page,'Position');
 	let [extensionPlaceDropDown] = addDropDown(settings,group,'extension-place','Extension place',{'left':'left','center':'center','right':'right'},undefined);
-	addSpinButton(settings,group,'extension-index','Extension index',0,20,"Set widget location within with respect to other adjacent widgets");
+	addSpinButton(settings,group,'extension-index','Extension index',0,20,"Set widget location with respect to other adjacent widgets");
 	addSpinButton(settings,group,'left-padding','Left padding',0,500,undefined);
 	addSpinButton(settings,group,'right-padding','Right padding',0,500,undefined);
 

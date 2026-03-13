@@ -63,8 +63,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
 		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
-		this.settings.connect('changed::extension-index',this._updateTrayPosition.bind(this));
-		this.settings.connect('changed::extension-place',this._updateTrayPosition.bind(this));
+		this._updateTrayPositionPending = false;
+		this.settings.connect('changed::extension-index',() => {this._updateTrayPositionPending = true;});
+		this.settings.connect('changed::extension-place',() => {this._updateTrayPositionPending = true;});
 		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
 		this.settings.connect('changed::use-album',this._setIcon.bind(this));
 		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
@@ -72,7 +73,7 @@ class MprisLabel extends PanelMenu.Button {
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
-		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,this._updateTrayPosition.bind(this));
+		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,() => {this._updateTrayPositionPending = true;});
 
 		this.lastClick = new Map(); // place where occurrences of click actions will be stored
 
@@ -122,23 +123,17 @@ class MprisLabel extends PanelMenu.Button {
 		const EXTENSION_PLACE = this.settings.get_string('extension-place');
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
 
-		if(this._timeout) //prevent refreshes while changing position
-			this._removeTimeout();
+		if (!this.container.get_parent()) //return to prevent crash on delete
+			return
+		
+		this.container.get_parent().remove_child(this.container);
 
-		if (this.container.get_parent())
-			this.container.get_parent().remove_child(this.container);
+		if (Main.panel.statusArea['Mpris Label'])
+			delete Main.panel.statusArea['Mpris Label'];
 
-		if (EXTENSION_PLACE == "left"){
-			Main.panel._leftBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
-		else if (EXTENSION_PLACE == "center"){
-			Main.panel._centerBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
-		else if (EXTENSION_PLACE == "right"){
-			Main.panel._rightBox.insert_child_at_index(this.container, EXTENSION_INDEX);
-		}
+		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
-		this._refresh(); //call and re-enable the refresh loop
+		this._updateTrayPositionPending = false; //repositioning completed
 	}
 
 	_onClick(event){
@@ -450,6 +445,9 @@ class MprisLabel extends PanelMenu.Button {
 
 		if(this._timeout) //prevent simultaneous timeouts
 			this._removeTimeout();
+
+		if (this._updateTrayPositionPending) //if signal tiggered a position update
+			this._updateTrayPosition();
 
 		let prevPlayer = this.player;
 
