@@ -331,7 +331,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-		Main.osdWindowManager.show(monitor, icon, streamName, volumeRatio);
+		Main.osdWindowManager.showOne(monitor, icon, streamName, volumeRatio);
 	}
 
 	_getStream(){

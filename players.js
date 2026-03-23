@@ -348,7 +348,7 @@ class Player {
 		let app = Shell.AppSystem.get_default().lookup_app(this.desktopApp);
 		let appPID = app.get_pids();
 
-		let windows_list = global.get_window_actors();
+		let windows_list = global.display.get_window_actors();
 		windows_list = windows_list.filter(element => element.get_meta_window().get_window_type() == 0); //only keep normal windows
 		
 		for (const actor of windows_list) {//match window based on pid
