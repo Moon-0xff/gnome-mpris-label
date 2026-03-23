@@ -31,7 +31,22 @@ var MprisLabel = GObject.registerClass(
 	{ GTypeName: 'MprisLabel' },
 class MprisLabel extends PanelMenu.Button {
 	_init(settings){
-		super._init(0.0,'Mpris Label',false);
+		super._init(0.5, 'Mpris Label', false);
+
+		// GNOME 49+ fix: Remove the Clutter.ClickGesture that intercepts button events
+		// PanelMenu.Button adds this gesture which consumes button-press-event before our handlers
+		if (this._clickGesture) {
+			this.remove_action(this._clickGesture);
+			this._clickGesture = null;
+		}
+
+		// Prevent PanelMenu.Button from opening menu on click by default
+		this.toggle_mode = false;
+		this.can_focus = false;
+
+		// Ensure the button is reactive to receive events
+		this.reactive = true;
+		this.track_hover = true;
 
 		this.settings = settings;
 
@@ -40,22 +55,41 @@ class MprisLabel extends PanelMenu.Button {
 		const REPOSITION_DELAY = this.settings.get_int('reposition-delay');
 
 		this.box = new St.BoxLayout({
-			x_align: Clutter.ActorAlign.FILL
+			x_align: Clutter.ActorAlign.FILL,
+			reactive: true  // Make box reactive so events propagate
 		});
 		this._onPaddingChanged();//apply padding
 		this.add_child(this.box);
 
 		this.label = new St.Label({
 			text: "",
-			y_align: Clutter.ActorAlign.CENTER
+			y_align: Clutter.ActorAlign.CENTER,
+			reactive: true  // Make label reactive so events propagate
 		});
 		this._setLabelStyle();
 		this.box.add_child(this.label);
 
+		// Connect button press events to child actors too (events may land on them directly)
+		this.box.connect('button-press-event', (actor, event) => {
+			return this._onClick(actor, event);
+		});
+		this.label.connect('button-press-event', (actor, event) => {
+			return this._onClick(actor, event);
+		});
+		this.connect('button-press-event', (actor, event) => {
+			return this._onClick(actor, event);
+		});
+
 		this.players = new Players(this.settings);
 
-		this.connect('button-press-event',(_a, event) => this._onClick(event));
-		this.connect('scroll-event', (_a, event) => this._onScroll(event));
+		// Connect scroll event
+		this.connect('scroll-event', (actor, event) => {
+			return this._onScroll(event);
+		});
+
+		// Make the actor reactive to receive events
+		this.track_hover = true;
+		this.reactive = true;
 
 		this.volumeControl = Volume.getMixerControl();
 		this.volumeControl.connect("stream-added", this._getStream.bind(this));
@@ -76,6 +110,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,() => {this._updateTrayPositionPending = true;});
 
 		this.lastClick = new Map(); // place where occurrences of click actions will be stored
+		this.last_scroll = 0; // initialize last_scroll for scroll event timing
 
 		this._refresh();
 	}
@@ -136,7 +171,7 @@ class MprisLabel extends PanelMenu.Button {
 		this._updateTrayPositionPending = false; //repositioning completed
 	}
 
-	_onClick(event){
+	_onClick(_actor, event){
 		const REPOSITION_ON_BUTTON_PRESS = this.settings.get_boolean('reposition-on-button-press');
 		const DOUBLE_CLICK = this.settings.get_boolean('enable-double-clicks');
 
@@ -144,6 +179,8 @@ class MprisLabel extends PanelMenu.Button {
 			this._updateTrayPosition(); //force tray position update on button press
 
 		const button = event.get_button();
+
+		// Button is always valid if we received the event
 
 		if (!DOUBLE_CLICK) {
 			this._activateButtonAction(button,false);
@@ -243,9 +280,12 @@ class MprisLabel extends PanelMenu.Button {
 			case 9:
 				option = isDoubleClick ? 'thumb-double-forward-action' : 'thumb-forward-action';
 				break;
+			default:
+				return;
 		}
 
-		this._activateAction(this.settings.get_string(option));
+		const action = this.settings.get_string(option);
+		this._activateAction(action);
 	}
 
 	_activateAction(value) {
@@ -518,6 +558,9 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		if (this.icon != null | undefined){
+			// Make icon non-reactive so clicks pass through to the button
+			this.icon.reactive = false;
+			
 			if (ICON_PLACE == "right"){
 				this._update_style(this.label, "margin-right", ICON_PADDING + "px");
 				this.box.add_child(this.icon);
@@ -574,10 +617,6 @@ class MprisLabel extends PanelMenu.Button {
 			GLib.Source.remove(this._timeout);
 			this._timeout = null;
 		}
-	}
-
-	vfunc_event(event){
-		return Clutter.EVENT_PROPAGATE;
 	}
 
 	_disable(){
