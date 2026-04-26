@@ -8,7 +8,7 @@ fi
 mkdir -p $DEFAULT_INSTALL_DIR
 cd "$(dirname "$0")"
 printf "\e[32mCopying extension files to target directory...\e[0m"
-cp -R ./* $DEFAULT_INSTALL_DIR
+cp -Rv ./* $DEFAULT_INSTALL_DIR
 printf "\e[32mDone!\e[0m\n"
 
 # Extension source code already includes GNOME 49-50 compatibility
