@@ -54,7 +54,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		this.players = new Players(this.settings);
 
-		this.connect('button-press-event',(_a, event) => this._onClick(event));
+		this.box.reactive = true;
+		this.box.connect('button-press-event',(_a, event) => this._onClick(event));
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
 		this.volumeControl = Volume.getMixerControl();
@@ -331,7 +332,7 @@ class MprisLabel extends PanelMenu.Button {
 		}
 
 		const icon = Gio.Icon.new_for_string(this._setVolumeIcon(volumeRatio));
-		Main.osdWindowManager.show(monitor, icon, streamName, volumeRatio);
+		Main.osdWindowManager.showOne(monitor, icon, streamName, volumeRatio);
 	}
 
 	_getStream(){
