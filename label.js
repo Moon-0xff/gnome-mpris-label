@@ -67,7 +67,7 @@ function parseMetadataField(data,settings,[LABEL_FILTERED_LIST,MAX_STRING_LENGTH
 			settings.set_string('label-filtered-list',sanitizedInput);
 		}
 
-		const filterRegex = new RegExp("(?:-|\\(|\\[).*(?:" + sanitizedInput.replace(",","|") + ").*(?:$|\\)|\\])","gi");
+		const filterRegex = new RegExp("\\s*(?:-|\\(|\\[)[^-\\(\\[]*(?:" + sanitizedInput.replace(",","|") + ").*(?:$|\\)|\\])","gi");
 
 		data = data.replace(filterRegex,"");
 	}
