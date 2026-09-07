@@ -29,11 +29,14 @@ Skip the third step to install the development version.
 
 The default installation path is: `~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com/`
 
-This extension (for GNOME 47/48) can be installed by simply copying the repository to the default installation path.
+The extension can also be installed manually by copying the repository to the default installation path and compiling the settings schema:
 
-GNOME 49+ compatibility isn't provided directly, it needs to be patched.  
-The installation script will patch the extension if it detects a gnome-shell version above or equal to `49`.  
-You can patch it manually by running: `$ patch < patches/gnome49-compatibility.patch`
+```
+$ cp -R gnome-mpris-label/ ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com/
+$ glib-compile-schemas ~/.local/share/gnome-shell/extensions/mprisLabel@moon-0xff.github.com/schemas/
+```
+
+The compiled schema (`schemas/gschemas.compiled`) isn't tracked in this repository, so that second step is required: without it the extension fails to load its settings. This is what `install.sh` does for you.
 
 Recently installed extensions are only available after `gnome-shell` is reloaded. On Gnome-Wayland is necessary to log out and log back in. On Gnome-Xorg the shell can be reloaded by running `r` on the 'Run as a command' prompt (default shortcut: <kbd>Alt</kbd>+<kbd>F2</kbd>).
 

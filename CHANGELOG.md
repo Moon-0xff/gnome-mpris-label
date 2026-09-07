@@ -101,3 +101,11 @@ GNOME 47, but introduced as a bug in GNOME 45/46.
 # Version 41
 - Adds support for GNOME 49
 
+# Version 42
+- Uses MPRIS Raise to activate players running in the background (e.g.
+  minimized to tray)
+
+# Version 43
+- Adds support for GNOME 50
+- Drops compatibility with GNOME 47/48
+

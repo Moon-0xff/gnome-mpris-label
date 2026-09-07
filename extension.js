@@ -17,7 +17,7 @@ let indicator = null;
 
 export default class MprisLabelExtension extends Extension {
 	enable(){
-		indicator = new MprisLabel(this.getSettings());
+		indicator = new MprisLabel(this, this.getSettings());
 	}
 
 	disable(){
@@ -30,9 +30,10 @@ export default class MprisLabelExtension extends Extension {
 var MprisLabel = GObject.registerClass(
 	{ GTypeName: 'MprisLabel' },
 class MprisLabel extends PanelMenu.Button {
-	_init(settings){
+	_init(extension, settings){
 		super._init(0.0,'Mpris Label',false);
 
+		this.extension = extension;
 		this.settings = settings;
 
 		const EXTENSION_INDEX = this.settings.get_int('extension-index');
@@ -59,22 +60,32 @@ class MprisLabel extends PanelMenu.Button {
 		this.connect('scroll-event', (_a, event) => this._onScroll(event));
 
 		this.volumeControl = Volume.getMixerControl();
-		this.volumeControl.connect("stream-added", this._getStream.bind(this));
-		this.volumeControl.connect("stream-removed",this._getStream.bind(this));
+		this._volumeControlHandlerIds = [
+			this.volumeControl.connect("stream-added", this._getStream.bind(this)),
+			this.volumeControl.connect("stream-removed",this._getStream.bind(this)),
+		];
 
-		this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this));
-		this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this));
+		this._settingsHandlerIds = [
+			this.settings.connect('changed::left-padding',this._onPaddingChanged.bind(this)),
+			this.settings.connect('changed::right-padding',this._onPaddingChanged.bind(this)),
+		];
 		this._updateTrayPositionPending = false;
-		this.settings.connect('changed::extension-index',() => {this._updateTrayPositionPending = true;});
-		this.settings.connect('changed::extension-place',() => {this._updateTrayPositionPending = true;});
-		this.settings.connect('changed::show-icon',this._setIcon.bind(this));
-		this.settings.connect('changed::use-album',this._setIcon.bind(this));
-		this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this));
-		this.settings.connect('changed::font-color', this._setLabelStyle.bind(this));
+		this._settingsHandlerIds.push(
+			this.settings.connect('changed::extension-index',() => {this._updateTrayPositionPending = true;}),
+			this.settings.connect('changed::extension-place',() => {this._updateTrayPositionPending = true;}),
+			this.settings.connect('changed::show-icon',this._setIcon.bind(this)),
+			this.settings.connect('changed::use-album',this._setIcon.bind(this)),
+			this.settings.connect('changed::symbolic-source-icon', this._setIcon.bind(this)),
+			this.settings.connect('changed::font-color', this._setLabelStyle.bind(this)),
+		);
 
 		Main.panel.addToStatusArea('Mpris Label',this,EXTENSION_INDEX,EXTENSION_PLACE);
 
-		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,() => {this._updateTrayPositionPending = true;});
+		this._repositionTimeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,REPOSITION_DELAY,() => {
+			this._updateTrayPositionPending = true;
+			this._repositionTimeout = null;
+			return GLib.SOURCE_REMOVE;
+		});
 
 		this.lastClick = new Map(); // place where occurrences of click actions will be stored
 
@@ -157,8 +168,11 @@ class MprisLabel extends PanelMenu.Button {
 
 		// if is a double click, remove the scheduled action and activate the double click action
 		if (lastClickTimestamp &&  (currentTimestamp - lastClickTimestamp <= DOUBLE_CLICK_TIME)) {
-			GLib.source_remove(this._scheduledActionTimeout);
-			this._scheduledActionTimeout = null;
+			if (this._scheduledActionTimeout){
+				GLib.source_remove(this._scheduledActionTimeout);
+				this._scheduledActionTimeout = null;
+			}
+			this.lastClick.delete(button); //so a third click starts a new sequence
 			this._activateButtonAction(button,true);
 			return Clutter.EVENT_STOP;
 		}
@@ -166,6 +180,7 @@ class MprisLabel extends PanelMenu.Button {
 		this.lastClick.set(button,currentTimestamp);
 		this._scheduledActionTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DOUBLE_CLICK_TIME, () => {
 				this._activateButtonAction(button,false);
+				this._scheduledActionTimeout = null;
 				return GLib.SOURCE_REMOVE; // callback function will be executed once
 			}
 		);
@@ -437,7 +452,7 @@ class MprisLabel extends PanelMenu.Button {
 	//settings shortcut:
 		let settingsMenuItem = new PopupMenu.PopupMenuItem('Settings');
 		settingsMenuItem.setOrnament(PopupMenu.Ornament.NONE); //to force item horizontal alignment
-		settingsMenuItem.connect('activate', () => Extension.lookupByUUID('mprisLabel@moon-0xff.github.com').openPreferences());
+		settingsMenuItem.connect('activate', () => this.extension.openPreferences());
 		this.menu.addMenuItem(settingsMenuItem);
 	}
 
@@ -467,7 +482,7 @@ class MprisLabel extends PanelMenu.Button {
 			this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
 				REFRESH_RATE, this._refresh.bind(this));
 
-			return
+			return GLib.SOURCE_REMOVE;
 		}
 
 		if(!this.visible)
@@ -483,6 +498,8 @@ class MprisLabel extends PanelMenu.Button {
 
 		this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
 			REFRESH_RATE, this._refresh.bind(this));
+
+		return GLib.SOURCE_REMOVE;
 	}
 
 	_setIcon(){
@@ -591,13 +608,21 @@ class MprisLabel extends PanelMenu.Button {
 
 		if (this._scheduledActionTimeout){
 			GLib.Source.remove(this._scheduledActionTimeout);
-			this._repositionTimeout = null;
+			this._scheduledActionTimeout = null;
 		}
 
 		if (this._repositionTimeout){
 			GLib.Source.remove(this._repositionTimeout);
 			this._repositionTimeout = null;
 		}
+
+		this._volumeControlHandlerIds.forEach(id => this.volumeControl.disconnect(id));
+		this._volumeControlHandlerIds = [];
+
+		this._settingsHandlerIds.forEach(id => this.settings.disconnect(id));
+		this._settingsHandlerIds = [];
+
+		this.players.destroy();
 	}
 });
 

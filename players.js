@@ -49,6 +49,7 @@ export var Players = class Players {
 	constructor(settings){
 		this.list = [];
 		this.activePlayers= [];
+		this._destroyed = false;
 		const dBusProxyWrapper = Gio.DBusProxy.makeProxyWrapper(dBusInterface);
 		this.dBusProxy = dBusProxyWrapper(Gio.DBus.session,"org.freedesktop.DBus","/org/freedesktop/DBus",this._initList.bind(this));
 		this.settings = settings;
@@ -112,13 +113,27 @@ export var Players = class Players {
 		return this.selected
 	}
 	_initList(){
+		if(this._destroyed) //the extension was disabled before the proxy finished initializing
+			return
+
 		let dBusList = this.dBusProxy.ListNamesSync()[0];
 		dBusList = dBusList.filter(element => element.startsWith("org.mpris.MediaPlayer2"));
 
 		this.unfilteredList = [];
 		dBusList.forEach(address => this.unfilteredList.push(new Player(address)));
 
-		this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
+		this._nameOwnerChangedId = this.dBusProxy.connectSignal('NameOwnerChanged',this._updateList.bind(this));
+	}
+	destroy(){
+		this._destroyed = true;
+
+		if(this._nameOwnerChangedId){
+			this.dBusProxy.disconnectSignal(this._nameOwnerChangedId);
+			this._nameOwnerChangedId = null;
+		}
+
+		if(this.unfilteredList)
+			this.unfilteredList.forEach(player => player.destroy());
 	}
 	_updateList(proxy, sender, [name,oldOwner,newOwner]){
 		if(name.startsWith("org.mpris.MediaPlayer2")){
@@ -127,7 +142,13 @@ export var Players = class Players {
 				this.unfilteredList.push(player);
 			}
 			else if (!newOwner && oldOwner){ //delete player
-				this.unfilteredList = this.unfilteredList.filter(player => player.address != name);
+				this.unfilteredList = this.unfilteredList.filter(player => {
+					if(player.address != name)
+						return true
+
+					player.destroy();
+					return false
+				});
 			}
 		}
 	}
@@ -169,11 +190,17 @@ class Player {
 
 		const proxyWrapper = Gio.DBusProxy.makeProxyWrapper(mprisInterface);
 		this.proxy = proxyWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this.update.bind(this));
-		this.proxy.connect('g-properties-changed', this.update.bind(this));
+		this._propertiesChangedId = this.proxy.connect('g-properties-changed', this.update.bind(this));
 
 		const entryWrapper = Gio.DBusProxy.makeProxyWrapper(entryInterface);
 		this.entryProxy = entryWrapper(Gio.DBus.session,this.address, "/org/mpris/MediaPlayer2",this._onEntryProxyReady.bind(this));
 
+	}
+	destroy(){
+		if(this._propertiesChangedId){
+			this.proxy.disconnect(this._propertiesChangedId);
+			this._propertiesChangedId = null;
+		}
 	}
 	_onEntryProxyReady(){
 		this.identity = this.entryProxy.Identity;
