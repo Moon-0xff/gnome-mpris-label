@@ -350,12 +350,11 @@ class MprisLabel extends PanelMenu.Button {
 		if (this.stream.length > 0)
 			return this.stream
 
+		//plain substring match: stream names aren't valid regular expressions (eg: "PipeWire ALSA [music-assistant-companion]")
+		const identity = this.player.identity.toLowerCase();
 		streamList.forEach(stream => {
-			if(
-				stream.get_name() && (
-				stream.get_name().match(new RegExp(this.player.identity,"i")) ||
-				this.player.identity.match(new RegExp(stream.get_name(),"i")) )
-			)
+			const streamName = stream.get_name()?.toLowerCase();
+			if(streamName && (streamName.includes(identity) || identity.includes(streamName)))
 				this.stream.push(stream);
 		});
 
